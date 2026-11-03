@@ -1,0 +1,27 @@
+{
+  "name": "indonesian-railway-visualizer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "3D visualizer of Indonesian commuter rail, starting with KAI Commuter Wilayah 8 (Surabaya)",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "sync:data": "node scripts/copy-bundle.mjs",
+    "predev": "npm run sync:data",
+    "dev": "vite",
+    "prebuild": "npm run sync:data",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "check": "tsc --noEmit",
+    "verify:geometry": "node scripts/check-geometry.mjs"
+  },
+  "dependencies": {
+    "maplibre-gl": "^6.16.0",
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.187.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
+  }
+}

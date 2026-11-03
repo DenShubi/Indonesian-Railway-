@@ -1,0 +1,540 @@
+/* Dispatcher-board chrome over a full-bleed 3D map. Dark panels, light basemap. */
+:root {
+  --bg: #0a0f12;
+  --panel: rgba(16, 23, 27, 0.92);
+  --panel-solid: #101717;
+  --edge: rgba(255, 255, 255, 0.1);
+  --fg: #e4edf0;
+  --muted: #8ba0a8;
+  --dim: #5b6d75;
+  --accent: #e9c46a;
+  --ok: #4ec98a;
+  --display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --body: 'IBM Plex Sans', system-ui, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+#map {
+  position: absolute;
+  inset: 0;
+}
+
+.panel {
+  position: absolute;
+  z-index: 5;
+  background: var(--panel);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ---------- header ---------- */
+
+#hud {
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-areas: 'brand clock controls' 'scrub scrub scrub';
+  align-items: center;
+  gap: 8px 18px;
+  padding: 10px 14px 12px;
+}
+
+.hud-brand {
+  grid-area: brand;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hud-title {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.hud-sub {
+  color: var(--dim);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hud-clock {
+  grid-area: clock;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+#clock {
+  font-family: var(--mono);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-count {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.hud-count.is-live::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 0 0 rgba(78, 201, 138, 0.7);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  70% {
+    box-shadow: 0 0 0 7px rgba(78, 201, 138, 0);
+  }
+}
+
+.hud-controls {
+  grid-area: controls;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.speeds {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+
+.btn {
+  appearance: none;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--edge);
+  border-radius: 7px;
+  color: var(--fg);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  padding: 6px 11px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.btn-speed {
+  border-color: transparent;
+  background: transparent;
+  font-family: var(--mono);
+  padding: 5px 8px;
+}
+
+.btn.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #1a1407;
+  font-weight: 600;
+}
+
+.btn-wide {
+  display: block;
+  width: 100%;
+  margin: 10px 0 4px;
+  text-align: center;
+}
+
+.scrub {
+  grid-area: scrub;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  margin: 2px 0 0;
+  background: linear-gradient(90deg, rgba(233, 196, 106, 0.55), rgba(255, 255, 255, 0.12));
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.scrub::-webkit-slider-thumb {
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  border: 2px solid var(--panel-solid);
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.scrub::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border: 2px solid var(--panel-solid);
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ---------- side panels ---------- */
+
+#lines {
+  left: 12px;
+  top: 112px;
+  width: 198px;
+  padding: 10px 12px 12px;
+}
+
+#detail {
+  right: 12px;
+  top: 112px;
+  bottom: 12px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--edge);
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+#lines .panel-head {
+  padding: 0 0 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.panel-head .x {
+  margin-left: auto;
+  background: none;
+  border: 0;
+  color: var(--dim);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  padding: 0 2px;
+}
+
+.panel-head .x:hover {
+  color: var(--fg);
+}
+
+.panel-note {
+  color: var(--dim);
+  font-size: 11px;
+  line-height: 1.4;
+  margin: 10px 0 0;
+}
+
+.chips {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: var(--dim);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+}
+
+.chip:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.chip.is-on {
+  color: var(--fg);
+}
+
+.chip-dot {
+  width: 10px;
+  height: 10px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--chip, var(--dim));
+  opacity: 0.35;
+}
+
+.chip.is-on .chip-dot {
+  opacity: 1;
+  box-shadow: 0 0 8px var(--chip);
+}
+
+.chip-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip-count {
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+/* ---------- detail body ---------- */
+
+.detail-body {
+  overflow-y: auto;
+  padding: 12px;
+  scrollbar-width: thin;
+}
+
+.headsign {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0 0 6px;
+}
+
+.status {
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 0 0 10px;
+}
+
+.muted {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.small {
+  font-size: 11px;
+}
+
+.progress {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.25s linear;
+}
+
+.calls {
+  width: 100%;
+  margin-top: 12px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.calls th {
+  color: var(--dim);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-align: left;
+  text-transform: uppercase;
+  padding: 0 6px 5px 0;
+  border-bottom: 1px solid var(--edge);
+}
+
+.calls td {
+  padding: 4px 6px 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.045);
+  vertical-align: middle;
+}
+
+.calls .time,
+.calls .km,
+.calls .num {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.calls .km,
+.calls .num {
+  color: var(--dim);
+  text-align: right;
+}
+
+.calls tr.is-done td {
+  color: var(--dim);
+}
+
+.calls tr.is-current td {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.calls tr[data-action] {
+  cursor: pointer;
+}
+
+.calls tr[data-action]:hover td {
+  color: var(--accent);
+}
+
+.calls .route {
+  white-space: nowrap;
+}
+
+.calls .route .chip-dot {
+  display: inline-block;
+  margin-right: 5px;
+  vertical-align: -1px;
+  opacity: 1;
+}
+
+/* ---------- loading / error ---------- */
+
+.loading {
+  position: absolute;
+  z-index: 8;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 12px 20px;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.loading.is-error {
+  color: #ff9c8a;
+  border-color: rgba(255, 156, 138, 0.4);
+  max-width: 420px;
+  text-align: center;
+}
+
+/* MapLibre chrome restyled to match the panels */
+.maplibregl-ctrl-group {
+  background: var(--panel) !important;
+  border: 1px solid var(--edge);
+}
+
+.maplibregl-ctrl-group button + button {
+  border-top-color: var(--edge);
+}
+
+.maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+  filter: invert(1) brightness(1.4);
+}
+
+.maplibregl-ctrl-attrib,
+.maplibregl-ctrl-attrib a {
+  color: #2a3338;
+}
+
+.maplibregl-ctrl-scale {
+  background: rgba(16, 23, 27, 0.7) !important;
+  border-color: var(--edge) !important;
+  color: var(--fg) !important;
+}
+
+/* ---------- narrow screens ---------- */
+
+@media (max-width: 760px) {
+  #hud {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: 'brand clock' 'controls controls' 'scrub scrub';
+    gap: 6px 10px;
+  }
+
+  .hud-title {
+    font-size: 18px;
+  }
+
+  #clock {
+    font-size: 21px;
+  }
+
+  .hud-controls {
+    justify-content: space-between;
+  }
+
+  #lines {
+    left: 12px;
+    right: 12px;
+    top: auto;
+    bottom: 12px;
+    width: auto;
+    padding: 8px 10px;
+  }
+
+  #lines .chips {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  #lines .chip {
+    width: auto;
+    flex: none;
+  }
+
+  #lines .panel-note {
+    display: none;
+  }
+
+  #detail {
+    left: 12px;
+    right: 12px;
+    top: auto;
+    bottom: 12px;
+    width: auto;
+    max-height: 56vh;
+  }
+}

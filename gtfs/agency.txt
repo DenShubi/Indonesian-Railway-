@@ -1,0 +1,2 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_lang
+KAIC,KAI Commuter,https://commuterline.id,Asia/Jakarta,id
