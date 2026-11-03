@@ -1,5 +1,6 @@
 import zipfile, pathlib
-G=pathlib.Path('/home/claude/jtv/gtfs'); D=pathlib.Path('/home/claude/jtv/data')
+ROOT=pathlib.Path(__file__).resolve().parents[1]
+G=ROOT/'gtfs'; D=ROOT/'data'
 zp=D/'gtfs_wilayah8_surabaya.zip'
 with zipfile.ZipFile(zp,'w',zipfile.ZIP_DEFLATED) as z:
     for f in sorted(G.glob('*.txt')): z.write(f,f.name)

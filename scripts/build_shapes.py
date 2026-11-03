@@ -6,11 +6,13 @@ import networkx as nx
 from scipy.spatial import cKDTree
 import numpy as np
 
-D=pathlib.Path('/home/claude/jtv/data'); G=pathlib.Path('/home/claude/jtv/gtfs')
-RAIL='/home/claude/ext/tk/static/data/indonesia-railway.geojson'
+ROOT=pathlib.Path(__file__).resolve().parents[1]
+D=ROOT/'data'; G=ROOT/'gtfs'
+RAIL=D/'osm'/'rail.geojson'
 BB=(-8.80,-6.50,110.50,114.50)
 STITCH=25.0        # metres: join way endpoints this close
 MAXJUMP=2000.0     # metres: split a way here instead of bridging
+BRIDGE=6000.0      # metres: span a hole in the OSM data between components
 RDP=8.0            # metres: output simplification
 
 def hav(a,b):
@@ -49,8 +51,34 @@ for i,j in tree.query_pairs(r=STITCH):
     if not g.has_edge(a,b):
         g.add_edge(a,b,weight=max(hav(a,b),0.1)); added+=1
 print(f"stitched {added} node pairs within {STITCH}m -> edges: {g.number_of_edges()}",file=sys.stderr)
-comps=sorted((len(c) for c in nx.connected_components(g)),reverse=True)
-print(f"connected components: {len(comps)}  largest: {comps[:5]}",file=sys.stderr)
+comps=sorted(nx.connected_components(g), key=len, reverse=True)
+print(f"connected components: {len(comps)}  largest: {[len(c) for c in comps[:5]]}",file=sys.stderr)
+
+# ---- 2b. bridge components across holes in the OSM data ----
+# The Lamongan-Duduk-Cerme stretch and the Kandangan-Indro branch are mapped in
+# pieces, so the rail graph arrives in disconnected islands. Attach each island
+# to the trunk at its closest approach; the shape then follows real track
+# everywhere except the missing metres, instead of giving up on the whole
+# station-to-station leg.
+trunk=set(comps[0]); rest=[set(c) for c in comps[1:]]; bridges=[]
+while rest:
+    tnodes=np.array(sorted(trunk))
+    ttree=cKDTree(np.c_[tnodes[:,0]*111320.0, tnodes[:,1]*111320.0*math.cos(lat0)])
+    best=None
+    for ci,c in enumerate(rest):
+        cn=np.array(sorted(c))
+        d,idx=ttree.query(np.c_[cn[:,0]*111320.0, cn[:,1]*111320.0*math.cos(lat0)],k=1)
+        i=int(np.argmin(d))
+        if best is None or d[i]<best[0]: best=(float(d[i]), ci, tuple(cn[i]), tuple(tnodes[idx[i]]))
+    gap,ci,a,b=best
+    if gap>BRIDGE:
+        print(f"  {len(rest)} component(s) left unbridged, nearest is {gap:.0f}m away",file=sys.stderr)
+        break
+    g.add_edge(a,b,weight=gap)
+    bridges.append((round(gap), a, b))
+    trunk |= rest.pop(ci)
+for gap,a,b in sorted(bridges,reverse=True):
+    print(f"  bridged {gap:>5}m hole at {a[1]:.4f},{a[0]:.4f}",file=sys.stderr)
 
 # ---- 3. snap stations ----
 stations={r['code']:(float(r['lat']),float(r['lon'])) for r in csv.DictReader(open(D/'stations.csv'))}

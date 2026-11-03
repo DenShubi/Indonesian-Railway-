@@ -1,7 +1,8 @@
 """Structural + domain validation of the generated GTFS feed."""
 import csv, io, zipfile, math, sys
 from collections import defaultdict
-Z='/home/claude/jtv/data/gtfs_wilayah8_surabaya.zip'
+import pathlib
+Z=pathlib.Path(__file__).resolve().parents[1]/'data'/'gtfs_wilayah8_surabaya.zip'
 zf=zipfile.ZipFile(Z)
 def rd(n): return list(csv.DictReader(io.TextIOWrapper(zf.open(n),'utf-8')))
 

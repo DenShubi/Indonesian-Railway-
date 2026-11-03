@@ -1,5 +1,7 @@
 import json, pathlib
-B=json.load(open('/home/claude/jtv/data/bundle.json'))
+import pathlib
+ROOT=pathlib.Path(__file__).resolve().parents[1]
+B=json.load(open(ROOT/'data'/'bundle.json'))
 HTML = r'''<title>Wilayah 8 Rail Board</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -401,6 +403,6 @@ const d0=new Date(); T=Math.min(Math.max(d0.getHours()*3600+d0.getMinutes()*60,T
 requestAnimationFrame(frame);
 </script>
 '''
-out=pathlib.Path('/home/claude/jtv/viz/index.html')
+out=ROOT/'viz'/'index.html'
 out.write_text(HTML.replace('__BUNDLE__', json.dumps(B,separators=(',',':'))))
 print("wrote",out,out.stat().st_size,"bytes")

@@ -1,0 +1,9 @@
+# Pipeline dependencies (scripts/*.py). Install with: pip install -r requirements.txt
+# Pinned where a newer release conflicts with other tools in a typical environment:
+# pdfplumber 0.11.10 demands Pillow >= 12.2, which breaks Streamlit installs.
+pdfplumber==0.11.4
+pillow<12
+requests>=2.31
+networkx>=3.0
+scipy>=1.11
+numpy>=1.24

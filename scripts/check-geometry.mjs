@@ -7,9 +7,8 @@
  *   - times going backwards, or departure before arrival
  *
  * Reports (without failing) how far each raw station coordinate sits from the
- * routed track. The app draws stations on the track, so these offsets are a data
- * quality signal, not a runtime fault: the worst ones are stations whose
- * coordinates should be re-sourced from OpenStreetMap.
+ * routed track. Anything over a few hundred metres means the shape does not
+ * really serve that station, or its coordinate is wrong.
  */
 import { readFile } from 'node:fs/promises';
 import { resolve, dirname } from 'node:path';

@@ -1,0 +1,4014 @@
+{
+ "trips": [
+  {
+   "line": "Dhoho",
+   "number": "412",
+   "relasi": "",
+   "page": 1,
+   "stops": [
+    {
+     "code": "ML",
+     "time": "04:10"
+    },
+    {
+     "code": "BMG",
+     "time": "04:19"
+    },
+    {
+     "code": "SGS",
+     "time": "04:29"
+    },
+    {
+     "code": "LW",
+     "time": "04:42"
+    },
+    {
+     "code": "WN",
+     "time": "05:06"
+    },
+    {
+     "code": "BG",
+     "time": "05:21"
+    },
+    {
+     "code": "PR",
+     "time": "05:43"
+    },
+    {
+     "code": "TGA",
+     "time": "05:51"
+    },
+    {
+     "code": "SDA",
+     "time": "06:05"
+    },
+    {
+     "code": "GDG",
+     "time": "06:25"
+    },
+    {
+     "code": "WR",
+     "time": "06:38"
+    },
+    {
+     "code": "WO",
+     "time": "06:48"
+    },
+    {
+     "code": "SGU",
+     "time": "06:58"
+    },
+    {
+     "code": "SB",
+     "time": "07:06"
+    }
+   ]
+  },
+  {
+   "line": "Dhoho",
+   "number": "414",
+   "relasi": "",
+   "page": 1,
+   "stops": [
+    {
+     "code": "BL",
+     "time": "03:40"
+    },
+    {
+     "code": "GRM",
+     "time": "03:52"
+    },
+    {
+     "code": "TAL",
+     "time": "04:05"
+    },
+    {
+     "code": "WG",
+     "time": "04:14"
+    },
+    {
+     "code": "KSB",
+     "time": "04:27"
+    },
+    {
+     "code": "PGJ",
+     "time": "04:44"
+    },
+    {
+     "code": "SBP",
+     "time": "04:57"
+    },
+    {
+     "code": "NB",
+     "time": "05:07"
+    },
+    {
+     "code": "KPN",
+     "time": "05:19"
+    },
+    {
+     "code": "PSI",
+     "time": "05:46"
+    },
+    {
+     "code": "MLK",
+     "time": "05:59"
+    },
+    {
+     "code": "ML",
+     "time": "06:12"
+    },
+    {
+     "code": "BMG",
+     "time": "06:24"
+    },
+    {
+     "code": "SGS",
+     "time": "06:35"
+    },
+    {
+     "code": "LW",
+     "time": "06:52"
+    },
+    {
+     "code": "WN",
+     "time": "07:16"
+    },
+    {
+     "code": "BG",
+     "time": "07:30"
+    },
+    {
+     "code": "PR",
+     "time": "07:46"
+    },
+    {
+     "code": "TGA",
+     "time": "07:55"
+    },
+    {
+     "code": "SDA",
+     "time": "08:08"
+    },
+    {
+     "code": "GDG",
+     "time": "08:24"
+    },
+    {
+     "code": "WR",
+     "time": "08:33"
+    },
+    {
+     "code": "WO",
+     "time": "08:47"
+    },
+    {
+     "code": "SGU",
+     "time": "08:57"
+    },
+    {
+     "code": "SB",
+     "time": "09:05"
+    }
+   ]
+  },
+  {
+   "line": "Dhoho",
+   "number": "401-402",
+   "relasi": "",
+   "page": 1,
+   "stops": [
+    {
+     "code": "SB",
+     "time": "03:45"
+    },
+    {
+     "code": "SGU",
+     "time": "03:57"
+    },
+    {
+     "code": "WO",
+     "time": "04:08"
+    },
+    {
+     "code": "SPJ",
+     "time": "04:18"
+    },
+    {
+     "code": "BH",
+     "time": "04:29"
+    },
+    {
+     "code": "KRN",
+     "time": "04:39"
+    },
+    {
+     "code": "KDN",
+     "time": "04:46"
+    },
+    {
+     "code": "TRK",
+     "time": "04:56"
+    },
+    {
+     "code": "MR",
+     "time": "05:10"
+    },
+    {
+     "code": "CRM",
+     "time": "05:19"
+    },
+    {
+     "code": "SBO",
+     "time": "05:28"
+    },
+    {
+     "code": "PTR",
+     "time": "05:37"
+    },
+    {
+     "code": "JG",
+     "time": "05:48"
+    },
+    {
+     "code": "SMB",
+     "time": "06:19"
+    },
+    {
+     "code": "KTS",
+     "time": "07:00"
+    },
+    {
+     "code": "PWA",
+     "time": "07:11"
+    },
+    {
+     "code": "PPR",
+     "time": "07:20"
+    },
+    {
+     "code": "KD",
+     "time": "07:39"
+    },
+    {
+     "code": "NDL",
+     "time": "08:02"
+    },
+    {
+     "code": "KRS",
+     "time": "08:13"
+    },
+    {
+     "code": "NJG",
+     "time": "08:24"
+    },
+    {
+     "code": "TA",
+     "time": "08:35"
+    },
+    {
+     "code": "SBL",
+     "time": "08:44"
+    },
+    {
+     "code": "NT",
+     "time": "08:55"
+    },
+    {
+     "code": "RJ",
+     "time": "09:06"
+    },
+    {
+     "code": "BL",
+     "time": "09:25"
+    },
+    {
+     "code": "GRM",
+     "time": "09:46"
+    },
+    {
+     "code": "TAL",
+     "time": "10:01"
+    },
+    {
+     "code": "WG",
+     "time": "10:11"
+    },
+    {
+     "code": "KSB",
+     "time": "10:24"
+    },
+    {
+     "code": "PGJ",
+     "time": "10:37"
+    },
+    {
+     "code": "SBP",
+     "time": "10:50"
+    },
+    {
+     "code": "NB",
+     "time": "11:00"
+    },
+    {
+     "code": "KPN",
+     "time": "11:13"
+    },
+    {
+     "code": "PSI",
+     "time": "11:24"
+    },
+    {
+     "code": "MLK",
+     "time": "11:37"
+    },
+    {
+     "code": "ML",
+     "time": "11:49"
+    },
+    {
+     "code": "BMG",
+     "time": "12:01"
+    },
+    {
+     "code": "SGS",
+     "time": "12:13"
+    },
+    {
+     "code": "LW",
+     "time": "12:27"
+    },
+    {
+     "code": "WN",
+     "time": "12:51"
+    },
+    {
+     "code": "BG",
+     "time": "13:06"
+    },
+    {
+     "code": "PR",
+     "time": "13:26"
+    },
+    {
+     "code": "TGA",
+     "time": "13:34"
+    },
+    {
+     "code": "SDA",
+     "time": "13:43"
+    },
+    {
+     "code": "GDG",
+     "time": "13:58"
+    },
+    {
+     "code": "WR",
+     "time": "14:07"
+    },
+    {
+     "code": "WO",
+     "time": "14:18"
+    },
+    {
+     "code": "SGU",
+     "time": "14:30"
+    },
+    {
+     "code": "SB",
+     "time": "14:38"
+    }
+   ]
+  },
+  {
+   "line": "Dhoho",
+   "number": "403-404",
+   "relasi": "",
+   "page": 1,
+   "stops": [
+    {
+     "code": "SB",
+     "time": "08:10"
+    },
+    {
+     "code": "SGU",
+     "time": "08:21"
+    },
+    {
+     "code": "WO",
+     "time": "08:43"
+    },
+    {
+     "code": "SPJ",
+     "time": "08:53"
+    },
+    {
+     "code": "BH",
+     "time": "09:04"
+    },
+    {
+     "code": "KRN",
+     "time": "09:29"
+    },
+    {
+     "code": "KDN",
+     "time": "09:36"
+    },
+    {
+     "code": "TRK",
+     "time": "09:46"
+    },
+    {
+     "code": "MR",
+     "time": "10:01"
+    },
+    {
+     "code": "CRM",
+     "time": "10:10"
+    },
+    {
+     "code": "SBO",
+     "time": "10:41"
+    },
+    {
+     "code": "PTR",
+     "time": "10:50"
+    },
+    {
+     "code": "JG",
+     "time": "11:00"
+    },
+    {
+     "code": "SMB",
+     "time": "11:10"
+    },
+    {
+     "code": "KTS",
+     "time": "11:47"
+    },
+    {
+     "code": "PWA",
+     "time": "11:58"
+    },
+    {
+     "code": "PPR",
+     "time": "12:07"
+    },
+    {
+     "code": "KD",
+     "time": "12:25"
+    },
+    {
+     "code": "NDL",
+     "time": "12:37"
+    },
+    {
+     "code": "KRS",
+     "time": "12:47"
+    },
+    {
+     "code": "NJG",
+     "time": "12:58"
+    },
+    {
+     "code": "TA",
+     "time": "13:09"
+    },
+    {
+     "code": "SBL",
+     "time": "13:23"
+    },
+    {
+     "code": "NT",
+     "time": "13:38"
+    },
+    {
+     "code": "RJ",
+     "time": "13:49"
+    },
+    {
+     "code": "BL",
+     "time": "14:07"
+    },
+    {
+     "code": "GRM",
+     "time": "14:19"
+    },
+    {
+     "code": "TAL",
+     "time": "14:31"
+    },
+    {
+     "code": "WG",
+     "time": "14:39"
+    },
+    {
+     "code": "KSB",
+     "time": "14:52"
+    },
+    {
+     "code": "PGJ",
+     "time": "15:04"
+    },
+    {
+     "code": "SBP",
+     "time": "15:16"
+    },
+    {
+     "code": "NB",
+     "time": "15:28"
+    },
+    {
+     "code": "KPN",
+     "time": "15:39"
+    },
+    {
+     "code": "PSI",
+     "time": "15:51"
+    },
+    {
+     "code": "MLK",
+     "time": "16:11"
+    },
+    {
+     "code": "ML",
+     "time": "16:23"
+    },
+    {
+     "code": "BMG",
+     "time": "16:33"
+    },
+    {
+     "code": "SGS",
+     "time": "16:44"
+    },
+    {
+     "code": "LW",
+     "time": "16:57"
+    },
+    {
+     "code": "WN",
+     "time": "17:22"
+    },
+    {
+     "code": "BG",
+     "time": "17:49"
+    },
+    {
+     "code": "PR",
+     "time": "18:05"
+    },
+    {
+     "code": "TGA",
+     "time": "18:13"
+    },
+    {
+     "code": "SDA",
+     "time": "18:23"
+    },
+    {
+     "code": "GDG",
+     "time": "18:34"
+    },
+    {
+     "code": "WR",
+     "time": "18:42"
+    },
+    {
+     "code": "WO",
+     "time": "18:52"
+    },
+    {
+     "code": "SGU",
+     "time": "19:01"
+    },
+    {
+     "code": "SB",
+     "time": "19:09"
+    }
+   ]
+  },
+  {
+   "line": "Dhoho",
+   "number": "405-406",
+   "relasi": "",
+   "page": 1,
+   "stops": [
+    {
+     "code": "SB",
+     "time": "11:25"
+    },
+    {
+     "code": "SGU",
+     "time": "11:37"
+    },
+    {
+     "code": "WO",
+     "time": "11:47"
+    },
+    {
+     "code": "SPJ",
+     "time": "11:56"
+    },
+    {
+     "code": "BH",
+     "time": "12:07"
+    },
+    {
+     "code": "KRN",
+     "time": "12:19"
+    },
+    {
+     "code": "KDN",
+     "time": "12:26"
+    },
+    {
+     "code": "TRK",
+     "time": "12:38"
+    },
+    {
+     "code": "MR",
+     "time": "12:54"
+    },
+    {
+     "code": "CRM",
+     "time": "13:03"
+    },
+    {
+     "code": "SBO",
+     "time": "13:13"
+    },
+    {
+     "code": "PTR",
+     "time": "13:22"
+    },
+    {
+     "code": "JG",
+     "time": "13:34"
+    },
+    {
+     "code": "SMB",
+     "time": "14:04"
+    },
+    {
+     "code": "KTS",
+     "time": "14:50"
+    },
+    {
+     "code": "PWA",
+     "time": "15:01"
+    },
+    {
+     "code": "PPR",
+     "time": "15:11"
+    },
+    {
+     "code": "KD",
+     "time": "15:30"
+    },
+    {
+     "code": "NDL",
+     "time": "15:42"
+    },
+    {
+     "code": "KRS",
+     "time": "15:51"
+    },
+    {
+     "code": "NJG",
+     "time": "16:01"
+    },
+    {
+     "code": "TA",
+     "time": "16:12"
+    },
+    {
+     "code": "SBL",
+     "time": "16:21"
+    },
+    {
+     "code": "NT",
+     "time": "16:37"
+    },
+    {
+     "code": "RJ",
+     "time": "16:53"
+    },
+    {
+     "code": "BL",
+     "time": "17:20"
+    },
+    {
+     "code": "GRM",
+     "time": "17:36"
+    },
+    {
+     "code": "TAL",
+     "time": "17:53"
+    },
+    {
+     "code": "WG",
+     "time": "18:08"
+    },
+    {
+     "code": "KSB",
+     "time": "18:21"
+    },
+    {
+     "code": "PGJ",
+     "time": "18:38"
+    },
+    {
+     "code": "SBP",
+     "time": "18:49"
+    },
+    {
+     "code": "NB",
+     "time": "18:57"
+    },
+    {
+     "code": "KPN",
+     "time": "19:08"
+    },
+    {
+     "code": "PSI",
+     "time": "19:20"
+    },
+    {
+     "code": "MLK",
+     "time": "19:38"
+    },
+    {
+     "code": "ML",
+     "time": "19:48"
+    },
+    {
+     "code": "BMG",
+     "time": "19:56"
+    },
+    {
+     "code": "SGS",
+     "time": "20:06"
+    },
+    {
+     "code": "LW",
+     "time": "20:21"
+    },
+    {
+     "code": "WN",
+     "time": "20:53"
+    },
+    {
+     "code": "BG",
+     "time": "21:07"
+    },
+    {
+     "code": "PR",
+     "time": "21:28"
+    },
+    {
+     "code": "TGA",
+     "time": "21:35"
+    },
+    {
+     "code": "SDA",
+     "time": "21:44"
+    },
+    {
+     "code": "GDG",
+     "time": "21:55"
+    },
+    {
+     "code": "WR",
+     "time": "22:07"
+    },
+    {
+     "code": "WO",
+     "time": "22:19"
+    },
+    {
+     "code": "SGU",
+     "time": "22:29"
+    },
+    {
+     "code": "SB",
+     "time": "22:37"
+    }
+   ]
+  },
+  {
+   "line": "Dhoho",
+   "number": "407-408",
+   "relasi": "",
+   "page": 1,
+   "stops": [
+    {
+     "code": "SB",
+     "time": "14:45"
+    },
+    {
+     "code": "SGU",
+     "time": "14:57"
+    },
+    {
+     "code": "WO",
+     "time": "15:07"
+    },
+    {
+     "code": "SPJ",
+     "time": "15:17"
+    },
+    {
+     "code": "BH",
+     "time": "15:28"
+    },
+    {
+     "code": "KRN",
+     "time": "15:39"
+    },
+    {
+     "code": "KDN",
+     "time": "15:46"
+    },
+    {
+     "code": "TRK",
+     "time": "15:57"
+    },
+    {
+     "code": "MR",
+     "time": "16:12"
+    },
+    {
+     "code": "CRM",
+     "time": "16:21"
+    },
+    {
+     "code": "SBO",
+     "time": "16:31"
+    },
+    {
+     "code": "PTR",
+     "time": "16:40"
+    },
+    {
+     "code": "JG",
+     "time": "16:52"
+    },
+    {
+     "code": "SMB",
+     "time": "17:03"
+    },
+    {
+     "code": "KTS",
+     "time": "17:40"
+    },
+    {
+     "code": "PWA",
+     "time": "17:59"
+    },
+    {
+     "code": "PPR",
+     "time": "18:09"
+    },
+    {
+     "code": "KD",
+     "time": "18:49"
+    },
+    {
+     "code": "NDL",
+     "time": "19:08"
+    },
+    {
+     "code": "KRS",
+     "time": "19:26"
+    },
+    {
+     "code": "NJG",
+     "time": "19:37"
+    },
+    {
+     "code": "TA",
+     "time": "19:49"
+    },
+    {
+     "code": "SBL",
+     "time": "19:58"
+    },
+    {
+     "code": "NT",
+     "time": "20:09"
+    },
+    {
+     "code": "RJ",
+     "time": "20:20"
+    },
+    {
+     "code": "BL",
+     "time": "21:27"
+    },
+    {
+     "code": "GRM",
+     "time": "21:39"
+    },
+    {
+     "code": "TAL",
+     "time": "21:51"
+    },
+    {
+     "code": "WG",
+     "time": "22:01"
+    },
+    {
+     "code": "KSB",
+     "time": "22:16"
+    },
+    {
+     "code": "PGJ",
+     "time": "22:33"
+    },
+    {
+     "code": "SBP",
+     "time": "22:45"
+    },
+    {
+     "code": "NB",
+     "time": "22:53"
+    },
+    {
+     "code": "KPN",
+     "time": "23:04"
+    },
+    {
+     "code": "PSI",
+     "time": "23:16"
+    },
+    {
+     "code": "MLK",
+     "time": "23:29"
+    },
+    {
+     "code": "ML",
+     "time": "23:35"
+    }
+   ]
+  },
+  {
+   "line": "Dhoho",
+   "number": "409-410",
+   "relasi": "",
+   "page": 1,
+   "stops": [
+    {
+     "code": "SB",
+     "time": "18:05"
+    },
+    {
+     "code": "SGU",
+     "time": "18:18"
+    },
+    {
+     "code": "WO",
+     "time": "18:34"
+    },
+    {
+     "code": "SPJ",
+     "time": "18:45"
+    },
+    {
+     "code": "BH",
+     "time": "18:56"
+    },
+    {
+     "code": "KRN",
+     "time": "19:06"
+    },
+    {
+     "code": "KDN",
+     "time": "19:13"
+    },
+    {
+     "code": "TRK",
+     "time": "19:22"
+    },
+    {
+     "code": "MR",
+     "time": "19:37"
+    },
+    {
+     "code": "CRM",
+     "time": "19:46"
+    },
+    {
+     "code": "SBO",
+     "time": "20:11"
+    },
+    {
+     "code": "PTR",
+     "time": "20:20"
+    },
+    {
+     "code": "JG",
+     "time": "20:33"
+    },
+    {
+     "code": "SMB",
+     "time": "20:45"
+    },
+    {
+     "code": "KTS",
+     "time": "21:23"
+    },
+    {
+     "code": "PWA",
+     "time": "21:34"
+    },
+    {
+     "code": "PPR",
+     "time": "21:43"
+    },
+    {
+     "code": "KD",
+     "time": "22:03"
+    },
+    {
+     "code": "NDL",
+     "time": "22:15"
+    },
+    {
+     "code": "KRS",
+     "time": "22:25"
+    },
+    {
+     "code": "NJG",
+     "time": "22:36"
+    },
+    {
+     "code": "TA",
+     "time": "22:46"
+    },
+    {
+     "code": "SBL",
+     "time": "22:55"
+    },
+    {
+     "code": "NT",
+     "time": "23:06"
+    },
+    {
+     "code": "RJ",
+     "time": "23:17"
+    },
+    {
+     "code": "BL",
+     "time": "23:30"
+    }
+   ]
+  },
+  {
+   "line": "Dhoho",
+   "number": "411",
+   "relasi": "",
+   "page": 1,
+   "stops": [
+    {
+     "code": "SB",
+     "time": "20:15"
+    },
+    {
+     "code": "SGU",
+     "time": "20:27"
+    },
+    {
+     "code": "WO",
+     "time": "20:37"
+    },
+    {
+     "code": "SPJ",
+     "time": "20:46"
+    },
+    {
+     "code": "BH",
+     "time": "20:57"
+    },
+    {
+     "code": "KRN",
+     "time": "21:07"
+    },
+    {
+     "code": "KDN",
+     "time": "21:14"
+    },
+    {
+     "code": "TRK",
+     "time": "21:24"
+    },
+    {
+     "code": "MR",
+     "time": "21:39"
+    },
+    {
+     "code": "CRM",
+     "time": "21:48"
+    },
+    {
+     "code": "SBO",
+     "time": "21:57"
+    },
+    {
+     "code": "PTR",
+     "time": "22:06"
+    },
+    {
+     "code": "JG",
+     "time": "22:18"
+    },
+    {
+     "code": "SMB",
+     "time": "22:30"
+    },
+    {
+     "code": "KTS",
+     "time": "22:40"
+    }
+   ]
+  },
+  {
+   "line": "Penataran",
+   "number": "432",
+   "relasi": "",
+   "page": 2,
+   "stops": [
+    {
+     "code": "KTS",
+     "time": "04:30"
+    },
+    {
+     "code": "SMB",
+     "time": "04:41"
+    },
+    {
+     "code": "JG",
+     "time": "05:10"
+    },
+    {
+     "code": "PTR",
+     "time": "05:17"
+    },
+    {
+     "code": "SBO",
+     "time": "05:29"
+    },
+    {
+     "code": "CRM",
+     "time": "05:35"
+    },
+    {
+     "code": "MR",
+     "time": "05:47"
+    },
+    {
+     "code": "TRK",
+     "time": "06:00"
+    },
+    {
+     "code": "KDN",
+     "time": "06:07"
+    },
+    {
+     "code": "KRN",
+     "time": "06:30"
+    },
+    {
+     "code": "BH",
+     "time": "06:37"
+    },
+    {
+     "code": "SPJ",
+     "time": "06:52"
+    },
+    {
+     "code": "WO",
+     "time": "07:04"
+    },
+    {
+     "code": "SGU",
+     "time": "07:15"
+    },
+    {
+     "code": "SB",
+     "time": "07:23"
+    }
+   ]
+  },
+  {
+   "line": "Penataran",
+   "number": "421-422",
+   "relasi": "",
+   "page": 2,
+   "stops": [
+    {
+     "code": "BL",
+     "time": "04:20"
+    },
+    {
+     "code": "RJ",
+     "time": "04:42"
+    },
+    {
+     "code": "NT",
+     "time": "04:57"
+    },
+    {
+     "code": "SBL",
+     "time": "05:18"
+    },
+    {
+     "code": "TA",
+     "time": "05:28"
+    },
+    {
+     "code": "NJG",
+     "time": "05:38"
+    },
+    {
+     "code": "KRS",
+     "time": "05:48"
+    },
+    {
+     "code": "NDL",
+     "time": "05:57"
+    },
+    {
+     "code": "KD",
+     "time": "06:10"
+    },
+    {
+     "code": "PPR",
+     "time": "06:27"
+    },
+    {
+     "code": "PWA",
+     "time": "06:37"
+    },
+    {
+     "code": "KTS",
+     "time": "07:15"
+    },
+    {
+     "code": "SMB",
+     "time": "07:27"
+    },
+    {
+     "code": "JG",
+     "time": "07:39"
+    },
+    {
+     "code": "PTR",
+     "time": "07:46"
+    },
+    {
+     "code": "SBO",
+     "time": "07:58"
+    },
+    {
+     "code": "CRM",
+     "time": "08:04"
+    },
+    {
+     "code": "MR",
+     "time": "08:17"
+    },
+    {
+     "code": "TRK",
+     "time": "08:31"
+    },
+    {
+     "code": "KDN",
+     "time": "08:38"
+    },
+    {
+     "code": "KRN",
+     "time": "08:50"
+    },
+    {
+     "code": "BH",
+     "time": "08:57"
+    },
+    {
+     "code": "SPJ",
+     "time": "09:17"
+    },
+    {
+     "code": "WO",
+     "time": "09:29"
+    },
+    {
+     "code": "SGU",
+     "time": "09:39"
+    },
+    {
+     "code": "SB",
+     "time": "09:47"
+    }
+   ]
+  },
+  {
+   "line": "Penataran",
+   "number": "423-424",
+   "relasi": "",
+   "page": 2,
+   "stops": [
+    {
+     "code": "ML",
+     "time": "03:40"
+    },
+    {
+     "code": "MLK",
+     "time": "03:48"
+    },
+    {
+     "code": "PSI",
+     "time": "04:01"
+    },
+    {
+     "code": "KPN",
+     "time": "04:12"
+    },
+    {
+     "code": "NB",
+     "time": "04:23"
+    },
+    {
+     "code": "SBP",
+     "time": "04:32"
+    },
+    {
+     "code": "PGJ",
+     "time": "04:46"
+    },
+    {
+     "code": "KSB",
+     "time": "04:58"
+    },
+    {
+     "code": "WG",
+     "time": "05:18"
+    },
+    {
+     "code": "TAL",
+     "time": "05:31"
+    },
+    {
+     "code": "GRM",
+     "time": "05:48"
+    },
+    {
+     "code": "BL",
+     "time": "06:02"
+    },
+    {
+     "code": "RJ",
+     "time": "06:17"
+    },
+    {
+     "code": "NT",
+     "time": "06:28"
+    },
+    {
+     "code": "SBL",
+     "time": "06:39"
+    },
+    {
+     "code": "TA",
+     "time": "06:49"
+    },
+    {
+     "code": "NJG",
+     "time": "06:59"
+    },
+    {
+     "code": "KRS",
+     "time": "07:10"
+    },
+    {
+     "code": "NDL",
+     "time": "07:20"
+    },
+    {
+     "code": "KD",
+     "time": "07:37"
+    },
+    {
+     "code": "PPR",
+     "time": "08:01"
+    },
+    {
+     "code": "PWA",
+     "time": "08:11"
+    },
+    {
+     "code": "KTS",
+     "time": "08:50"
+    },
+    {
+     "code": "SMB",
+     "time": "09:02"
+    },
+    {
+     "code": "JG",
+     "time": "09:14"
+    },
+    {
+     "code": "PTR",
+     "time": "09:21"
+    },
+    {
+     "code": "SBO",
+     "time": "09:33"
+    },
+    {
+     "code": "CRM",
+     "time": "09:39"
+    },
+    {
+     "code": "MR",
+     "time": "09:52"
+    },
+    {
+     "code": "TRK",
+     "time": "10:23"
+    },
+    {
+     "code": "KDN",
+     "time": "10:30"
+    },
+    {
+     "code": "KRN",
+     "time": "10:40"
+    },
+    {
+     "code": "BH",
+     "time": "10:47"
+    },
+    {
+     "code": "SPJ",
+     "time": "11:01"
+    },
+    {
+     "code": "WO",
+     "time": "11:13"
+    },
+    {
+     "code": "SGU",
+     "time": "11:24"
+    },
+    {
+     "code": "SB",
+     "time": "11:32"
+    }
+   ]
+  },
+  {
+   "line": "Penataran",
+   "number": "425-426",
+   "relasi": "",
+   "page": 2,
+   "stops": [
+    {
+     "code": "SB",
+     "time": "04:15"
+    },
+    {
+     "code": "SGU",
+     "time": "04:27"
+    },
+    {
+     "code": "WO",
+     "time": "04:37"
+    },
+    {
+     "code": "WR",
+     "time": "04:48"
+    },
+    {
+     "code": "GDG",
+     "time": "05:03"
+    },
+    {
+     "code": "SDA",
+     "time": "05:25"
+    },
+    {
+     "code": "TGA",
+     "time": "05:34"
+    },
+    {
+     "code": "PR",
+     "time": "05:41"
+    },
+    {
+     "code": "BG",
+     "time": "05:58"
+    },
+    {
+     "code": "WN",
+     "time": "06:23"
+    },
+    {
+     "code": "LW",
+     "time": "06:54"
+    },
+    {
+     "code": "SGS",
+     "time": "07:07"
+    },
+    {
+     "code": "BMG",
+     "time": "07:18"
+    },
+    {
+     "code": "ML",
+     "time": "07:29"
+    },
+    {
+     "code": "MLK",
+     "time": "07:37"
+    },
+    {
+     "code": "PSI",
+     "time": "08:09"
+    },
+    {
+     "code": "KPN",
+     "time": "08:21"
+    },
+    {
+     "code": "NB",
+     "time": "08:32"
+    },
+    {
+     "code": "SBP",
+     "time": "08:41"
+    },
+    {
+     "code": "PGJ",
+     "time": "08:53"
+    },
+    {
+     "code": "KSB",
+     "time": "09:05"
+    },
+    {
+     "code": "WG",
+     "time": "09:40"
+    },
+    {
+     "code": "TAL",
+     "time": "09:59"
+    },
+    {
+     "code": "GRM",
+     "time": "10:13"
+    },
+    {
+     "code": "BL",
+     "time": "10:26"
+    },
+    {
+     "code": "RJ",
+     "time": "10:41"
+    },
+    {
+     "code": "NT",
+     "time": "10:51"
+    },
+    {
+     "code": "SBL",
+     "time": "11:06"
+    },
+    {
+     "code": "TA",
+     "time": "11:15"
+    },
+    {
+     "code": "NJG",
+     "time": "11:29"
+    },
+    {
+     "code": "KRS",
+     "time": "11:40"
+    },
+    {
+     "code": "NDL",
+     "time": "11:50"
+    },
+    {
+     "code": "KD",
+     "time": "12:03"
+    },
+    {
+     "code": "PPR",
+     "time": "12:31"
+    },
+    {
+     "code": "PWA",
+     "time": "12:40"
+    },
+    {
+     "code": "KTS",
+     "time": "13:18"
+    },
+    {
+     "code": "SMB",
+     "time": "13:29"
+    },
+    {
+     "code": "JG",
+     "time": "13:40"
+    },
+    {
+     "code": "PTR",
+     "time": "13:47"
+    },
+    {
+     "code": "SBO",
+     "time": "13:59"
+    },
+    {
+     "code": "CRM",
+     "time": "14:05"
+    },
+    {
+     "code": "MR",
+     "time": "14:17"
+    },
+    {
+     "code": "TRK",
+     "time": "14:30"
+    },
+    {
+     "code": "KDN",
+     "time": "14:37"
+    },
+    {
+     "code": "KRN",
+     "time": "14:47"
+    },
+    {
+     "code": "BH",
+     "time": "14:54"
+    },
+    {
+     "code": "SPJ",
+     "time": "15:26"
+    },
+    {
+     "code": "WO",
+     "time": "15:41"
+    },
+    {
+     "code": "SGU",
+     "time": "15:51"
+    },
+    {
+     "code": "SB",
+     "time": "15:59"
+    }
+   ]
+  },
+  {
+   "line": "Penataran",
+   "number": "427-428",
+   "relasi": "",
+   "page": 2,
+   "stops": [
+    {
+     "code": "SB",
+     "time": "07:40"
+    },
+    {
+     "code": "SGU",
+     "time": "07:52"
+    },
+    {
+     "code": "WO",
+     "time": "08:02"
+    },
+    {
+     "code": "WR",
+     "time": "08:14"
+    },
+    {
+     "code": "GDG",
+     "time": "08:26"
+    },
+    {
+     "code": "SDA",
+     "time": "08:41"
+    },
+    {
+     "code": "TGA",
+     "time": "08:53"
+    },
+    {
+     "code": "PR",
+     "time": "09:02"
+    },
+    {
+     "code": "BG",
+     "time": "09:24"
+    },
+    {
+     "code": "WN",
+     "time": "09:34"
+    },
+    {
+     "code": "LW",
+     "time": "10:02"
+    },
+    {
+     "code": "SGS",
+     "time": "10:14"
+    },
+    {
+     "code": "BMG",
+     "time": "10:24"
+    },
+    {
+     "code": "ML",
+     "time": "10:35"
+    },
+    {
+     "code": "MLK",
+     "time": "10:43"
+    },
+    {
+     "code": "PSI",
+     "time": "10:55"
+    },
+    {
+     "code": "KPN",
+     "time": "11:11"
+    },
+    {
+     "code": "NB",
+     "time": "11:23"
+    },
+    {
+     "code": "SBP",
+     "time": "11:34"
+    },
+    {
+     "code": "PGJ",
+     "time": "11:48"
+    },
+    {
+     "code": "KSB",
+     "time": "12:02"
+    },
+    {
+     "code": "WG",
+     "time": "12:18"
+    },
+    {
+     "code": "TAL",
+     "time": "12:27"
+    },
+    {
+     "code": "GRM",
+     "time": "12:40"
+    },
+    {
+     "code": "BL",
+     "time": "13:10"
+    },
+    {
+     "code": "RJ",
+     "time": "13:26"
+    },
+    {
+     "code": "NT",
+     "time": "13:40"
+    },
+    {
+     "code": "SBL",
+     "time": "13:51"
+    },
+    {
+     "code": "TA",
+     "time": "14:01"
+    },
+    {
+     "code": "NJG",
+     "time": "14:11"
+    },
+    {
+     "code": "KRS",
+     "time": "14:22"
+    },
+    {
+     "code": "NDL",
+     "time": "14:41"
+    },
+    {
+     "code": "KD",
+     "time": "14:54"
+    },
+    {
+     "code": "PPR",
+     "time": "15:26"
+    },
+    {
+     "code": "PWA",
+     "time": "15:36"
+    },
+    {
+     "code": "KTS",
+     "time": "16:17"
+    },
+    {
+     "code": "SMB",
+     "time": "16:29"
+    },
+    {
+     "code": "JG",
+     "time": "16:41"
+    },
+    {
+     "code": "PTR",
+     "time": "16:48"
+    },
+    {
+     "code": "SBO",
+     "time": "17:00"
+    },
+    {
+     "code": "CRM",
+     "time": "17:06"
+    },
+    {
+     "code": "MR",
+     "time": "17:19"
+    },
+    {
+     "code": "TRK",
+     "time": "17:37"
+    },
+    {
+     "code": "KDN",
+     "time": "17:44"
+    },
+    {
+     "code": "KRN",
+     "time": "17:56"
+    },
+    {
+     "code": "BH",
+     "time": "18:03"
+    },
+    {
+     "code": "SPJ",
+     "time": "18:23"
+    },
+    {
+     "code": "WO",
+     "time": "18:39"
+    },
+    {
+     "code": "SGU",
+     "time": "18:49"
+    },
+    {
+     "code": "SB",
+     "time": "18:57"
+    }
+   ]
+  },
+  {
+   "line": "Penataran",
+   "number": "429-430",
+   "relasi": "",
+   "page": 2,
+   "stops": [
+    {
+     "code": "SB",
+     "time": "11:15"
+    },
+    {
+     "code": "SGU",
+     "time": "11:27"
+    },
+    {
+     "code": "WO",
+     "time": "11:36"
+    },
+    {
+     "code": "WR",
+     "time": "11:49"
+    },
+    {
+     "code": "GDG",
+     "time": "11:58"
+    },
+    {
+     "code": "SDA",
+     "time": "12:12"
+    },
+    {
+     "code": "TGA",
+     "time": "12:24"
+    },
+    {
+     "code": "PR",
+     "time": "12:38"
+    },
+    {
+     "code": "BG",
+     "time": "13:04"
+    },
+    {
+     "code": "WN",
+     "time": "13:16"
+    },
+    {
+     "code": "LW",
+     "time": "14:09"
+    },
+    {
+     "code": "SGS",
+     "time": "14:22"
+    },
+    {
+     "code": "BMG",
+     "time": "14:35"
+    },
+    {
+     "code": "ML",
+     "time": "14:47"
+    },
+    {
+     "code": "MLK",
+     "time": "15:10"
+    },
+    {
+     "code": "PSI",
+     "time": "15:23"
+    },
+    {
+     "code": "KPN",
+     "time": "15:41"
+    },
+    {
+     "code": "NB",
+     "time": "15:54"
+    },
+    {
+     "code": "SBP",
+     "time": "16:03"
+    },
+    {
+     "code": "PGJ",
+     "time": "16:19"
+    },
+    {
+     "code": "KSB",
+     "time": "16:32"
+    },
+    {
+     "code": "WG",
+     "time": "16:47"
+    },
+    {
+     "code": "TAL",
+     "time": "16:56"
+    },
+    {
+     "code": "GRM",
+     "time": "17:09"
+    },
+    {
+     "code": "BL",
+     "time": "17:23"
+    },
+    {
+     "code": "RJ",
+     "time": "17:39"
+    },
+    {
+     "code": "NT",
+     "time": "18:04"
+    },
+    {
+     "code": "SBL",
+     "time": "18:16"
+    },
+    {
+     "code": "TA",
+     "time": "18:26"
+    },
+    {
+     "code": "NJG",
+     "time": "18:36"
+    },
+    {
+     "code": "KRS",
+     "time": "18:47"
+    },
+    {
+     "code": "NDL",
+     "time": "19:14"
+    },
+    {
+     "code": "KD",
+     "time": "19:27"
+    },
+    {
+     "code": "PPR",
+     "time": "19:55"
+    },
+    {
+     "code": "PWA",
+     "time": "20:05"
+    },
+    {
+     "code": "KTS",
+     "time": "20:46"
+    },
+    {
+     "code": "SMB",
+     "time": "20:58"
+    },
+    {
+     "code": "JG",
+     "time": "21:12"
+    },
+    {
+     "code": "PTR",
+     "time": "21:19"
+    },
+    {
+     "code": "SBO",
+     "time": "21:32"
+    },
+    {
+     "code": "CRM",
+     "time": "21:38"
+    },
+    {
+     "code": "MR",
+     "time": "21:52"
+    },
+    {
+     "code": "TRK",
+     "time": "22:05"
+    },
+    {
+     "code": "KDN",
+     "time": "22:12"
+    },
+    {
+     "code": "KRN",
+     "time": "22:22"
+    },
+    {
+     "code": "BH",
+     "time": "22:29"
+    },
+    {
+     "code": "SPJ",
+     "time": "22:43"
+    },
+    {
+     "code": "WO",
+     "time": "22:59"
+    },
+    {
+     "code": "SGU",
+     "time": "23:10"
+    },
+    {
+     "code": "SB",
+     "time": "23:18"
+    }
+   ]
+  },
+  {
+   "line": "Penataran",
+   "number": "431",
+   "relasi": "",
+   "page": 2,
+   "stops": [
+    {
+     "code": "SB",
+     "time": "17:40"
+    },
+    {
+     "code": "SGU",
+     "time": "17:52"
+    },
+    {
+     "code": "WO",
+     "time": "18:07"
+    },
+    {
+     "code": "WR",
+     "time": "18:18"
+    },
+    {
+     "code": "GDG",
+     "time": "18:36"
+    },
+    {
+     "code": "SDA",
+     "time": "18:58"
+    },
+    {
+     "code": "TGA",
+     "time": "19:10"
+    },
+    {
+     "code": "PR",
+     "time": "19:20"
+    },
+    {
+     "code": "BG",
+     "time": "19:52"
+    },
+    {
+     "code": "WN",
+     "time": "20:02"
+    },
+    {
+     "code": "LW",
+     "time": "20:52"
+    },
+    {
+     "code": "SGS",
+     "time": "21:04"
+    },
+    {
+     "code": "BMG",
+     "time": "21:14"
+    },
+    {
+     "code": "ML",
+     "time": "21:26"
+    },
+    {
+     "code": "MLK",
+     "time": "21:34"
+    },
+    {
+     "code": "PSI",
+     "time": "21:47"
+    },
+    {
+     "code": "KPN",
+     "time": "22:03"
+    },
+    {
+     "code": "NB",
+     "time": "22:13"
+    },
+    {
+     "code": "SBP",
+     "time": "22:21"
+    },
+    {
+     "code": "PGJ",
+     "time": "22:35"
+    },
+    {
+     "code": "KSB",
+     "time": "22:48"
+    },
+    {
+     "code": "WG",
+     "time": "23:04"
+    },
+    {
+     "code": "TAL",
+     "time": "23:13"
+    },
+    {
+     "code": "GRM",
+     "time": "23:25"
+    },
+    {
+     "code": "BL",
+     "time": "23:35"
+    }
+   ]
+  },
+  {
+   "line": "Penataran",
+   "number": "433",
+   "relasi": "",
+   "page": 2,
+   "stops": [
+    {
+     "code": "SB",
+     "time": "20:05"
+    },
+    {
+     "code": "SGU",
+     "time": "20:17"
+    },
+    {
+     "code": "WO",
+     "time": "20:27"
+    },
+    {
+     "code": "WR",
+     "time": "20:46"
+    },
+    {
+     "code": "GDG",
+     "time": "20:55"
+    },
+    {
+     "code": "SDA",
+     "time": "21:12"
+    },
+    {
+     "code": "TGA",
+     "time": "21:21"
+    },
+    {
+     "code": "PR",
+     "time": "21:30"
+    },
+    {
+     "code": "BG",
+     "time": "21:54"
+    },
+    {
+     "code": "WN",
+     "time": "22:05"
+    },
+    {
+     "code": "LW",
+     "time": "22:35"
+    },
+    {
+     "code": "SGS",
+     "time": "22:48"
+    },
+    {
+     "code": "BMG",
+     "time": "22:58"
+    },
+    {
+     "code": "ML",
+     "time": "23:05"
+    }
+   ]
+  },
+  {
+   "line": "Supas",
+   "number": "453",
+   "relasi": "Surabaya Kota–Pasuruan 02:20",
+   "page": 3,
+   "stops": [
+    {
+     "code": "SB",
+     "time": "02:20"
+    },
+    {
+     "code": "SGU",
+     "time": "02:32"
+    },
+    {
+     "code": "WO",
+     "time": "02:41"
+    },
+    {
+     "code": "WR",
+     "time": "02:51"
+    },
+    {
+     "code": "GDG",
+     "time": "03:00"
+    },
+    {
+     "code": "SDA",
+     "time": "03:18"
+    },
+    {
+     "code": "TGA",
+     "time": "03:27"
+    },
+    {
+     "code": "PR",
+     "time": "03:35"
+    },
+    {
+     "code": "BG",
+     "time": "03:51"
+    },
+    {
+     "code": "PS",
+     "time": "04:09"
+    }
+   ]
+  },
+  {
+   "line": "Supas",
+   "number": "455",
+   "relasi": "Surabaya Kota–Pasuruan 07:15",
+   "page": 3,
+   "stops": [
+    {
+     "code": "SB",
+     "time": "07:15"
+    },
+    {
+     "code": "SGU",
+     "time": "07:27"
+    },
+    {
+     "code": "WO",
+     "time": "07:37"
+    },
+    {
+     "code": "WR",
+     "time": "07:47"
+    },
+    {
+     "code": "GDG",
+     "time": "07:56"
+    },
+    {
+     "code": "SDA",
+     "time": "08:10"
+    },
+    {
+     "code": "TGA",
+     "time": "08:20"
+    },
+    {
+     "code": "PR",
+     "time": "08:32"
+    },
+    {
+     "code": "BG",
+     "time": "08:50"
+    },
+    {
+     "code": "PS",
+     "time": "09:08"
+    }
+   ]
+  },
+  {
+   "line": "Supas",
+   "number": "457",
+   "relasi": "Surabaya Kota–Pasuruan 12:10",
+   "page": 3,
+   "stops": [
+    {
+     "code": "SB",
+     "time": "12:10"
+    },
+    {
+     "code": "SGU",
+     "time": "12:21"
+    },
+    {
+     "code": "WO",
+     "time": "12:31"
+    },
+    {
+     "code": "WR",
+     "time": "12:42"
+    },
+    {
+     "code": "GDG",
+     "time": "12:58"
+    },
+    {
+     "code": "SDA",
+     "time": "13:09"
+    },
+    {
+     "code": "TGA",
+     "time": "13:18"
+    },
+    {
+     "code": "PR",
+     "time": "13:28"
+    },
+    {
+     "code": "BG",
+     "time": "13:46"
+    },
+    {
+     "code": "PS",
+     "time": "14:04"
+    }
+   ]
+  },
+  {
+   "line": "Supas",
+   "number": "459",
+   "relasi": "Surabaya Kota–Pasuruan 18:45",
+   "page": 3,
+   "stops": [
+    {
+     "code": "SB",
+     "time": "18:45"
+    },
+    {
+     "code": "SGU",
+     "time": "18:57"
+    },
+    {
+     "code": "WO",
+     "time": "19:15"
+    },
+    {
+     "code": "WR",
+     "time": "19:28"
+    },
+    {
+     "code": "GDG",
+     "time": "19:37"
+    },
+    {
+     "code": "SDA",
+     "time": "19:51"
+    },
+    {
+     "code": "TGA",
+     "time": "20:01"
+    },
+    {
+     "code": "PR",
+     "time": "20:09"
+    },
+    {
+     "code": "BG",
+     "time": "20:44"
+    },
+    {
+     "code": "PS",
+     "time": "21:02"
+    }
+   ]
+  },
+  {
+   "line": "Supas",
+   "number": "454",
+   "relasi": "Pasuruan–Surabaya Kota 04:30",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PS",
+     "time": "04:30"
+    },
+    {
+     "code": "BG",
+     "time": "04:52"
+    },
+    {
+     "code": "PR",
+     "time": "05:08"
+    },
+    {
+     "code": "TGA",
+     "time": "05:15"
+    },
+    {
+     "code": "SDA",
+     "time": "05:27"
+    },
+    {
+     "code": "GDG",
+     "time": "05:38"
+    },
+    {
+     "code": "WR",
+     "time": "05:51"
+    },
+    {
+     "code": "WO",
+     "time": "06:02"
+    },
+    {
+     "code": "SGU",
+     "time": "06:12"
+    },
+    {
+     "code": "SB",
+     "time": "06:20"
+    }
+   ]
+  },
+  {
+   "line": "Supas",
+   "number": "456",
+   "relasi": "Pasuruan–Surabaya Kota 09:45",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PS",
+     "time": "09:45"
+    },
+    {
+     "code": "BG",
+     "time": "10:20"
+    },
+    {
+     "code": "PR",
+     "time": "10:36"
+    },
+    {
+     "code": "TGA",
+     "time": "10:47"
+    },
+    {
+     "code": "SDA",
+     "time": "10:58"
+    },
+    {
+     "code": "GDG",
+     "time": "11:10"
+    },
+    {
+     "code": "WR",
+     "time": "11:19"
+    },
+    {
+     "code": "WO",
+     "time": "11:32"
+    },
+    {
+     "code": "SGU",
+     "time": "11:42"
+    },
+    {
+     "code": "SB",
+     "time": "11:50"
+    }
+   ]
+  },
+  {
+   "line": "Supas",
+   "number": "458",
+   "relasi": "Pasuruan–Surabaya Kota 14:55",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PS",
+     "time": "14:55"
+    },
+    {
+     "code": "BG",
+     "time": "15:16"
+    },
+    {
+     "code": "PR",
+     "time": "15:38"
+    },
+    {
+     "code": "TGA",
+     "time": "15:57"
+    },
+    {
+     "code": "SDA",
+     "time": "16:32"
+    },
+    {
+     "code": "GDG",
+     "time": "16:46"
+    },
+    {
+     "code": "WR",
+     "time": "16:54"
+    },
+    {
+     "code": "WO",
+     "time": "17:17"
+    },
+    {
+     "code": "SGU",
+     "time": "17:31"
+    },
+    {
+     "code": "SB",
+     "time": "17:38"
+    }
+   ]
+  },
+  {
+   "line": "Supas",
+   "number": "460",
+   "relasi": "Pasuruan–Surabaya Kota 21:20",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PS",
+     "time": "21:20"
+    },
+    {
+     "code": "BG",
+     "time": "21:45"
+    },
+    {
+     "code": "PR",
+     "time": "22:00"
+    },
+    {
+     "code": "TGA",
+     "time": "22:07"
+    },
+    {
+     "code": "SDA",
+     "time": "22:21"
+    },
+    {
+     "code": "GDG",
+     "time": "22:32"
+    },
+    {
+     "code": "WR",
+     "time": "22:40"
+    },
+    {
+     "code": "WO",
+     "time": "22:50"
+    },
+    {
+     "code": "SGU",
+     "time": "23:00"
+    },
+    {
+     "code": "SB",
+     "time": "23:08"
+    }
+   ]
+  },
+  {
+   "line": "Jenggala",
+   "number": "473",
+   "relasi": "Surabaya Pasar Turi-Sidoarjo",
+   "page": 4,
+   "stops": [
+    {
+     "code": "SBI",
+     "time": "03:50"
+    },
+    {
+     "code": "SGU",
+     "time": "04:08"
+    },
+    {
+     "code": "WO",
+     "time": "04:18"
+    },
+    {
+     "code": "WR",
+     "time": "04:28"
+    },
+    {
+     "code": "GDG",
+     "time": "04:37"
+    },
+    {
+     "code": "SDA",
+     "time": "04:47"
+    }
+   ]
+  },
+  {
+   "line": "Jenggala",
+   "number": "462-463",
+   "relasi": "Babat-Surabaya Sepanjang) Pasar Turi-Mojokerto (via 05:12",
+   "page": 4,
+   "stops": [
+    {
+     "code": "BBT",
+     "time": "05:12"
+    },
+    {
+     "code": "PC",
+     "time": "05:27"
+    },
+    {
+     "code": "LMG",
+     "time": "05:45"
+    },
+    {
+     "code": "DD",
+     "time": "05:59"
+    },
+    {
+     "code": "CME",
+     "time": "06:11"
+    },
+    {
+     "code": "BNW",
+     "time": "06:20"
+    },
+    {
+     "code": "KDA",
+     "time": "06:30"
+    },
+    {
+     "code": "TES",
+     "time": "06:37"
+    },
+    {
+     "code": "SBI",
+     "time": "06:52"
+    },
+    {
+     "code": "SGU",
+     "time": "07:09"
+    },
+    {
+     "code": "WO",
+     "time": "07:18"
+    },
+    {
+     "code": "SPJ",
+     "time": "07:29"
+    },
+    {
+     "code": "BH",
+     "time": "07:40"
+    },
+    {
+     "code": "KRN",
+     "time": "07:50"
+    },
+    {
+     "code": "KDN",
+     "time": "07:57"
+    },
+    {
+     "code": "TRK",
+     "time": "08:07"
+    },
+    {
+     "code": "MR",
+     "time": "08:19"
+    }
+   ]
+  },
+  {
+   "line": "Jenggala",
+   "number": "476-477",
+   "relasi": "Indro-Surabaya Pasar Tulangan) Turi-Mojokerto (via",
+   "page": 4,
+   "stops": [
+    {
+     "code": "IDO",
+     "time": "08:20"
+    },
+    {
+     "code": "KDA",
+     "time": "08:40"
+    },
+    {
+     "code": "TES",
+     "time": "08:48"
+    },
+    {
+     "code": "SBI",
+     "time": "09:15"
+    },
+    {
+     "code": "SGU",
+     "time": "09:33"
+    },
+    {
+     "code": "WO",
+     "time": "09:45"
+    },
+    {
+     "code": "WR",
+     "time": "09:56"
+    },
+    {
+     "code": "GDG",
+     "time": "10:05"
+    },
+    {
+     "code": "SDA",
+     "time": "10:27"
+    },
+    {
+     "code": "TLN",
+     "time": "10:40"
+    },
+    {
+     "code": "TRK",
+     "time": "10:58"
+    },
+    {
+     "code": "MR",
+     "time": "11:09"
+    }
+   ]
+  },
+  {
+   "line": "Jenggala",
+   "number": "466-467",
+   "relasi": "Indro-Surabaya Pasar Sepanjang) Turi-Mojokerto (via",
+   "page": 4,
+   "stops": [
+    {
+     "code": "IDO",
+     "time": "11:50"
+    },
+    {
+     "code": "KDA",
+     "time": "12:10"
+    },
+    {
+     "code": "TES",
+     "time": "12:19"
+    },
+    {
+     "code": "SBI",
+     "time": "12:37"
+    },
+    {
+     "code": "SGU",
+     "time": "12:56"
+    },
+    {
+     "code": "WO",
+     "time": "13:05"
+    },
+    {
+     "code": "SPJ",
+     "time": "13:17"
+    },
+    {
+     "code": "BH",
+     "time": "13:28"
+    },
+    {
+     "code": "KRN",
+     "time": "13:38"
+    },
+    {
+     "code": "KDN",
+     "time": "13:45"
+    },
+    {
+     "code": "TRK",
+     "time": "13:55"
+    },
+    {
+     "code": "MR",
+     "time": "14:06"
+    }
+   ]
+  },
+  {
+   "line": "Jenggala",
+   "number": "480-481",
+   "relasi": "Indro-Surabaya Pasar Tulangan) Turi-Mojokerto (via",
+   "page": 4,
+   "stops": [
+    {
+     "code": "IDO",
+     "time": "14:40"
+    },
+    {
+     "code": "KDA",
+     "time": "15:06"
+    },
+    {
+     "code": "TES",
+     "time": "15:14"
+    },
+    {
+     "code": "SBI",
+     "time": "15:38"
+    },
+    {
+     "code": "SGU",
+     "time": "15:57"
+    },
+    {
+     "code": "WO",
+     "time": "16:07"
+    },
+    {
+     "code": "WR",
+     "time": "16:17"
+    },
+    {
+     "code": "GDG",
+     "time": "16:44"
+    },
+    {
+     "code": "SDA",
+     "time": "17:00"
+    },
+    {
+     "code": "TLN",
+     "time": "17:12"
+    },
+    {
+     "code": "TRK",
+     "time": "17:29"
+    },
+    {
+     "code": "MR",
+     "time": "17:40"
+    }
+   ]
+  },
+  {
+   "line": "Jenggala",
+   "number": "470-471",
+   "relasi": "Indro-Surabaya Pasar Turi-Sidoarjo",
+   "page": 4,
+   "stops": [
+    {
+     "code": "IDO",
+     "time": "18:25"
+    },
+    {
+     "code": "KDA",
+     "time": "18:45"
+    },
+    {
+     "code": "TES",
+     "time": "18:52"
+    },
+    {
+     "code": "SBI",
+     "time": "19:04"
+    },
+    {
+     "code": "SGU",
+     "time": "19:28"
+    },
+    {
+     "code": "WO",
+     "time": "19:39"
+    },
+    {
+     "code": "WR",
+     "time": "19:49"
+    },
+    {
+     "code": "GDG",
+     "time": "19:58"
+    },
+    {
+     "code": "SDA",
+     "time": "20:09"
+    }
+   ]
+  },
+  {
+   "line": "Jenggala",
+   "number": "484",
+   "relasi": "Babat-Surabaya Pasar Turi 21:45",
+   "page": 4,
+   "stops": [
+    {
+     "code": "BBT",
+     "time": "21:45"
+    },
+    {
+     "code": "PC",
+     "time": "22:01"
+    },
+    {
+     "code": "LMG",
+     "time": "22:20"
+    },
+    {
+     "code": "DD",
+     "time": "22:34"
+    },
+    {
+     "code": "CME",
+     "time": "22:46"
+    },
+    {
+     "code": "BNW",
+     "time": "22:55"
+    },
+    {
+     "code": "KDA",
+     "time": "23:05"
+    },
+    {
+     "code": "TES",
+     "time": "23:13"
+    },
+    {
+     "code": "SBI",
+     "time": "23:21"
+    }
+   ]
+  },
+  {
+   "line": "Jenggala",
+   "number": "461",
+   "relasi": "Surabaya Pasar Turi-Babat",
+   "page": 4,
+   "stops": [
+    {
+     "code": "SBI",
+     "time": "03:25"
+    },
+    {
+     "code": "TES",
+     "time": "03:35"
+    },
+    {
+     "code": "KDA",
+     "time": "03:42"
+    },
+    {
+     "code": "BNW",
+     "time": "03:52"
+    },
+    {
+     "code": "CME",
+     "time": "04:02"
+    },
+    {
+     "code": "DD",
+     "time": "04:15"
+    },
+    {
+     "code": "LMG",
+     "time": "04:30"
+    },
+    {
+     "code": "PC",
+     "time": "04:49"
+    },
+    {
+     "code": "BBT",
+     "time": "05:03"
+    }
+   ]
+  },
+  {
+   "line": "Jenggala",
+   "number": "474-475",
+   "relasi": "Sidoarjo-Surabaya Pasar Turi-Indro",
+   "page": 4,
+   "stops": [
+    {
+     "code": "SDA",
+     "time": "05:40"
+    },
+    {
+     "code": "GDG",
+     "time": "05:56"
+    },
+    {
+     "code": "WR",
+     "time": "06:16"
+    },
+    {
+     "code": "WO",
+     "time": "06:26"
+    },
+    {
+     "code": "SGU",
+     "time": "06:36"
+    },
+    {
+     "code": "SBI",
+     "time": "07:08"
+    },
+    {
+     "code": "TES",
+     "time": "07:20"
+    },
+    {
+     "code": "KDA",
+     "time": "07:29"
+    },
+    {
+     "code": "IDO",
+     "time": "07:45"
+    }
+   ]
+  },
+  {
+   "line": "Jenggala",
+   "number": "464-465",
+   "relasi": "Mojokerto-Surabaya Tulangan) Pasar Turi-Indro (via 08:40",
+   "page": 4,
+   "stops": [
+    {
+     "code": "MR",
+     "time": "08:40"
+    },
+    {
+     "code": "TRK",
+     "time": "08:53"
+    },
+    {
+     "code": "TLN",
+     "time": "09:11"
+    },
+    {
+     "code": "SDA",
+     "time": "09:25"
+    },
+    {
+     "code": "GDG",
+     "time": "09:43"
+    },
+    {
+     "code": "WR",
+     "time": "09:58"
+    },
+    {
+     "code": "WO",
+     "time": "10:08"
+    },
+    {
+     "code": "SGU",
+     "time": "10:18"
+    },
+    {
+     "code": "SBI",
+     "time": "10:40"
+    },
+    {
+     "code": "TES",
+     "time": "10:50"
+    },
+    {
+     "code": "KDA",
+     "time": "10:59"
+    },
+    {
+     "code": "IDO",
+     "time": "11:15"
+    }
+   ]
+  },
+  {
+   "line": "Jenggala",
+   "number": "478-479",
+   "relasi": "Mojokerto-Surabaya Sepanjang) Pasar Turi-Indro (via 12:20",
+   "page": 4,
+   "stops": [
+    {
+     "code": "MR",
+     "time": "12:20"
+    },
+    {
+     "code": "TRK",
+     "time": "12:33"
+    },
+    {
+     "code": "KDN",
+     "time": "12:40"
+    },
+    {
+     "code": "KRN",
+     "time": "12:49"
+    },
+    {
+     "code": "BH",
+     "time": "12:56"
+    },
+    {
+     "code": "SPJ",
+     "time": "13:15"
+    },
+    {
+     "code": "WO",
+     "time": "13:27"
+    },
+    {
+     "code": "SGU",
+     "time": "13:36"
+    },
+    {
+     "code": "SBI",
+     "time": "13:55"
+    },
+    {
+     "code": "TES",
+     "time": "14:05"
+    },
+    {
+     "code": "KDA",
+     "time": "14:13"
+    },
+    {
+     "code": "IDO",
+     "time": "14:30"
+    }
+   ]
+  },
+  {
+   "line": "Jenggala",
+   "number": "468-469",
+   "relasi": "Mojokerto-Surabaya Tulangan) Pasar Turi-Indro (via 14:40",
+   "page": 4,
+   "stops": [
+    {
+     "code": "MR",
+     "time": "14:40"
+    },
+    {
+     "code": "TRK",
+     "time": "14:53"
+    },
+    {
+     "code": "TLN",
+     "time": "15:11"
+    },
+    {
+     "code": "SDA",
+     "time": "15:26"
+    },
+    {
+     "code": "GDG",
+     "time": "15:41"
+    },
+    {
+     "code": "WR",
+     "time": "15:49"
+    },
+    {
+     "code": "WO",
+     "time": "15:58"
+    },
+    {
+     "code": "SGU",
+     "time": "16:08"
+    },
+    {
+     "code": "SBI",
+     "time": "16:30"
+    },
+    {
+     "code": "TES",
+     "time": "16:40"
+    },
+    {
+     "code": "KDA",
+     "time": "16:51"
+    },
+    {
+     "code": "IDO",
+     "time": "17:07"
+    }
+   ]
+  },
+  {
+   "line": "Jenggala",
+   "number": "482-483",
+   "relasi": "Mojokerto-Surabaya Sepanjang) Pasar Turi-Babat (via 18:00",
+   "page": 4,
+   "stops": [
+    {
+     "code": "MR",
+     "time": "18:00"
+    },
+    {
+     "code": "TRK",
+     "time": "18:13"
+    },
+    {
+     "code": "KDN",
+     "time": "18:20"
+    },
+    {
+     "code": "KRN",
+     "time": "18:30"
+    },
+    {
+     "code": "BH",
+     "time": "18:35"
+    },
+    {
+     "code": "SPJ",
+     "time": "18:48"
+    },
+    {
+     "code": "WO",
+     "time": "19:01"
+    },
+    {
+     "code": "SGU",
+     "time": "19:11"
+    },
+    {
+     "code": "SBI",
+     "time": "19:31"
+    },
+    {
+     "code": "TES",
+     "time": "19:40"
+    },
+    {
+     "code": "KDA",
+     "time": "20:03"
+    },
+    {
+     "code": "BNW",
+     "time": "20:13"
+    },
+    {
+     "code": "CME",
+     "time": "20:34"
+    },
+    {
+     "code": "DD",
+     "time": "20:47"
+    },
+    {
+     "code": "LMG",
+     "time": "21:01"
+    },
+    {
+     "code": "PC",
+     "time": "21:19"
+    },
+    {
+     "code": "BBT",
+     "time": "21:32"
+    }
+   ]
+  },
+  {
+   "line": "Jenggala",
+   "number": "472",
+   "relasi": "Sidoarjo-Surabaya Pasar Turi",
+   "page": 4,
+   "stops": [
+    {
+     "code": "SDA",
+     "time": "20:25"
+    },
+    {
+     "code": "GDG",
+     "time": "20:37"
+    },
+    {
+     "code": "WR",
+     "time": "20:48"
+    },
+    {
+     "code": "WO",
+     "time": "21:02"
+    },
+    {
+     "code": "SGU",
+     "time": "21:12"
+    },
+    {
+     "code": "SBI",
+     "time": "21:26"
+    }
+   ]
+  },
+  {
+   "line": "Arjonegoro",
+   "number": "444-445",
+   "relasi": "Babat–Surabaya Pasar Turi–Sidoarjo",
+   "page": 5,
+   "stops": [
+    {
+     "code": "BBT",
+     "time": "04:25"
+    },
+    {
+     "code": "PC",
+     "time": "04:41"
+    },
+    {
+     "code": "LMG",
+     "time": "04:59"
+    },
+    {
+     "code": "DD",
+     "time": "05:13"
+    },
+    {
+     "code": "CME",
+     "time": "05:25"
+    },
+    {
+     "code": "BNW",
+     "time": "05:34"
+    },
+    {
+     "code": "KDA",
+     "time": "05:44"
+    },
+    {
+     "code": "TES",
+     "time": "05:51"
+    },
+    {
+     "code": "SGU",
+     "time": "06:21"
+    },
+    {
+     "code": "WO",
+     "time": "06:29"
+    },
+    {
+     "code": "WR",
+     "time": "06:40"
+    },
+    {
+     "code": "GDG",
+     "time": "06:51"
+    },
+    {
+     "code": "SDA",
+     "time": "07:02"
+    }
+   ]
+  },
+  {
+   "line": "Arjonegoro",
+   "number": "448-449",
+   "relasi": "Bojonegoro–Surabaya Pasar Turi–Sidoarjo 12:10",
+   "page": 5,
+   "stops": [
+    {
+     "code": "BJ",
+     "time": "12:10"
+    },
+    {
+     "code": "KPS",
+     "time": "12:21"
+    },
+    {
+     "code": "SRJ",
+     "time": "12:33"
+    },
+    {
+     "code": "BWO",
+     "time": "12:48"
+    },
+    {
+     "code": "BBT",
+     "time": "13:01"
+    },
+    {
+     "code": "PC",
+     "time": "13:16"
+    },
+    {
+     "code": "LMG",
+     "time": "13:35"
+    },
+    {
+     "code": "DD",
+     "time": "13:49"
+    },
+    {
+     "code": "CME",
+     "time": "14:01"
+    },
+    {
+     "code": "BNW",
+     "time": "14:10"
+    },
+    {
+     "code": "KDA",
+     "time": "14:19"
+    },
+    {
+     "code": "TES",
+     "time": "14:26"
+    },
+    {
+     "code": "SGU",
+     "time": "15:22"
+    },
+    {
+     "code": "WO",
+     "time": "15:35"
+    },
+    {
+     "code": "WR",
+     "time": "15:51"
+    },
+    {
+     "code": "GDG",
+     "time": "15:59"
+    },
+    {
+     "code": "SDA",
+     "time": "16:09"
+    }
+   ]
+  },
+  {
+   "line": "Arjonegoro",
+   "number": "452",
+   "relasi": "Babat–Surabaya Pasar Turi",
+   "page": 5,
+   "stops": [
+    {
+     "code": "BBT",
+     "time": "20:30"
+    },
+    {
+     "code": "PC",
+     "time": "20:46"
+    },
+    {
+     "code": "LMG",
+     "time": "21:03"
+    },
+    {
+     "code": "DD",
+     "time": "21:20"
+    },
+    {
+     "code": "CME",
+     "time": "21:45"
+    },
+    {
+     "code": "BNW",
+     "time": "22:10"
+    },
+    {
+     "code": "KDA",
+     "time": "22:20"
+    },
+    {
+     "code": "TES",
+     "time": "22:28"
+    }
+   ]
+  },
+  {
+   "line": "Arjonegoro",
+   "number": "446-447",
+   "relasi": "Sidoarjo–Surabaya Pasar Turi–Bojonegoro 07:20",
+   "page": 5,
+   "stops": [
+    {
+     "code": "SDA",
+     "time": "07:20"
+    },
+    {
+     "code": "GDG",
+     "time": "07:33"
+    },
+    {
+     "code": "WR",
+     "time": "07:49"
+    },
+    {
+     "code": "WO",
+     "time": "08:18"
+    },
+    {
+     "code": "SGU",
+     "time": "08:29"
+    },
+    {
+     "code": "TES",
+     "time": "09:00"
+    },
+    {
+     "code": "KDA",
+     "time": "09:22"
+    },
+    {
+     "code": "BNW",
+     "time": "09:32"
+    },
+    {
+     "code": "CME",
+     "time": "09:42"
+    },
+    {
+     "code": "DD",
+     "time": "09:55"
+    },
+    {
+     "code": "LMG",
+     "time": "10:09"
+    },
+    {
+     "code": "PC",
+     "time": "10:27"
+    },
+    {
+     "code": "BBT",
+     "time": "10:41"
+    },
+    {
+     "code": "BWO",
+     "time": "10:53"
+    },
+    {
+     "code": "SRJ",
+     "time": "11:07"
+    },
+    {
+     "code": "KPS",
+     "time": "11:18"
+    },
+    {
+     "code": "BJ",
+     "time": "11:27"
+    }
+   ]
+  },
+  {
+   "line": "Arjonegoro",
+   "number": "450-451",
+   "relasi": "Sidoarjo–Surabaya Pasar Turi–Babat 17:35",
+   "page": 5,
+   "stops": [
+    {
+     "code": "SDA",
+     "time": "17:35"
+    },
+    {
+     "code": "GDG",
+     "time": "17:47"
+    },
+    {
+     "code": "WR",
+     "time": "17:57"
+    },
+    {
+     "code": "WO",
+     "time": "18:09"
+    },
+    {
+     "code": "SGU",
+     "time": "18:18"
+    },
+    {
+     "code": "TES",
+     "time": "18:47"
+    },
+    {
+     "code": "KDA",
+     "time": "18:55"
+    },
+    {
+     "code": "BNW",
+     "time": "19:05"
+    },
+    {
+     "code": "CME",
+     "time": "19:15"
+    },
+    {
+     "code": "DD",
+     "time": "19:28"
+    },
+    {
+     "code": "LMG",
+     "time": "19:42"
+    },
+    {
+     "code": "PC",
+     "time": "20:01"
+    },
+    {
+     "code": "BBT",
+     "time": "20:14"
+    }
+   ]
+  },
+  {
+   "line": "Blorasura",
+   "number": "439",
+   "relasi": "Surabaya Pasar Turi–Cepu 08:15",
+   "page": 5,
+   "stops": [
+    {
+     "code": "SBI",
+     "time": "08:15"
+    },
+    {
+     "code": "TES",
+     "time": "08:24"
+    },
+    {
+     "code": "KDA",
+     "time": "08:34"
+    },
+    {
+     "code": "BNW",
+     "time": "08:43"
+    },
+    {
+     "code": "CME",
+     "time": "08:52"
+    },
+    {
+     "code": "DD",
+     "time": "09:05"
+    },
+    {
+     "code": "LMG",
+     "time": "09:18"
+    },
+    {
+     "code": "PC",
+     "time": "09:51"
+    },
+    {
+     "code": "BBT",
+     "time": "10:04"
+    },
+    {
+     "code": "BWO",
+     "time": "10:15"
+    },
+    {
+     "code": "SRJ",
+     "time": "10:29"
+    },
+    {
+     "code": "KPS",
+     "time": "10:39"
+    },
+    {
+     "code": "BJ",
+     "time": "10:49"
+    },
+    {
+     "code": "CU",
+     "time": "11:19"
+    }
+   ]
+  },
+  {
+   "line": "Blorasura",
+   "number": "441",
+   "relasi": "Surabaya Pasar Turi–Cepu 19:00",
+   "page": 5,
+   "stops": [
+    {
+     "code": "SBI",
+     "time": "19:00"
+    },
+    {
+     "code": "TES",
+     "time": "19:09"
+    },
+    {
+     "code": "KDA",
+     "time": "19:17"
+    },
+    {
+     "code": "BNW",
+     "time": "19:27"
+    },
+    {
+     "code": "CME",
+     "time": "19:36"
+    },
+    {
+     "code": "DD",
+     "time": "19:48"
+    },
+    {
+     "code": "LMG",
+     "time": "20:23"
+    },
+    {
+     "code": "PC",
+     "time": "20:41"
+    },
+    {
+     "code": "BBT",
+     "time": "21:11"
+    },
+    {
+     "code": "BWO",
+     "time": "21:23"
+    },
+    {
+     "code": "SRJ",
+     "time": "21:37"
+    },
+    {
+     "code": "KPS",
+     "time": "21:48"
+    },
+    {
+     "code": "BJ",
+     "time": "21:58"
+    },
+    {
+     "code": "CU",
+     "time": "22:29"
+    }
+   ]
+  },
+  {
+   "line": "Blorasura",
+   "number": "438",
+   "relasi": "Cepu–Surabaya Pasar Turi 04:40",
+   "page": 5,
+   "stops": [
+    {
+     "code": "CU",
+     "time": "04:40"
+    },
+    {
+     "code": "BJ",
+     "time": "05:13"
+    },
+    {
+     "code": "KPS",
+     "time": "05:23"
+    },
+    {
+     "code": "SRJ",
+     "time": "05:34"
+    },
+    {
+     "code": "BWO",
+     "time": "05:48"
+    },
+    {
+     "code": "BBT",
+     "time": "06:00"
+    },
+    {
+     "code": "PC",
+     "time": "06:13"
+    },
+    {
+     "code": "LMG",
+     "time": "06:30"
+    },
+    {
+     "code": "DD",
+     "time": "06:44"
+    },
+    {
+     "code": "CME",
+     "time": "06:57"
+    },
+    {
+     "code": "BNW",
+     "time": "07:05"
+    },
+    {
+     "code": "KDA",
+     "time": "07:14"
+    },
+    {
+     "code": "TES",
+     "time": "07:22"
+    },
+    {
+     "code": "SBI",
+     "time": "07:29"
+    }
+   ]
+  },
+  {
+   "line": "Blorasura",
+   "number": "440",
+   "relasi": "Cepu–Surabaya Pasar Turi 12:00",
+   "page": 5,
+   "stops": [
+    {
+     "code": "CU",
+     "time": "12:00"
+    },
+    {
+     "code": "BJ",
+     "time": "12:33"
+    },
+    {
+     "code": "KPS",
+     "time": "12:43"
+    },
+    {
+     "code": "SRJ",
+     "time": "12:54"
+    },
+    {
+     "code": "BWO",
+     "time": "13:08"
+    },
+    {
+     "code": "BBT",
+     "time": "13:20"
+    },
+    {
+     "code": "PC",
+     "time": "13:33"
+    },
+    {
+     "code": "LMG",
+     "time": "13:50"
+    },
+    {
+     "code": "DD",
+     "time": "14:04"
+    },
+    {
+     "code": "CME",
+     "time": "14:16"
+    },
+    {
+     "code": "BNW",
+     "time": "14:24"
+    },
+    {
+     "code": "KDA",
+     "time": "14:32"
+    },
+    {
+     "code": "TES",
+     "time": "14:39"
+    },
+    {
+     "code": "SBI",
+     "time": "14:46"
+    }
+   ]
+  }
+ ],
+ "names": {
+  "SB": "Surabaya Kota",
+  "SGU": "Surabaya Gubeng",
+  "WO": "Wonokromo",
+  "SPJ": "Sepanjang",
+  "BH": "Boharan",
+  "KRN": "Krian",
+  "KDN": "Kedinding",
+  "TRK": "Tarik",
+  "MR": "Mojokerto",
+  "CRM": "Curahmalang",
+  "SBO": "Sumobito",
+  "PTR": "Peterongan",
+  "JG": "Jombang",
+  "SMB": "Sembung",
+  "KTS": "Kertosono",
+  "PWA": "Purwoasri",
+  "PPR": "Papar",
+  "KD": "Kediri",
+  "NDL": "Ngadiluwih",
+  "KRS": "Kras",
+  "NJG": "Ngujang",
+  "TA": "Tulungagung",
+  "SBL": "Sumbergempol",
+  "NT": "Ngunut",
+  "RJ": "Rejotangan",
+  "BL": "Blitar",
+  "GRM": "Garum",
+  "TAL": "Talun",
+  "WG": "Wlingi",
+  "KSB": "Kesamben",
+  "PGJ": "Pogajih",
+  "SBP": "Sumberpucung",
+  "NB": "Ngebruk",
+  "KPN": "Kepanjen",
+  "PSI": "Pakisaji",
+  "MLK": "Malang Kota Lama",
+  "ML": "Malang",
+  "BMG": "Blimbing",
+  "SGS": "Singosari",
+  "LW": "Lawang",
+  "WN": "Wonokerto",
+  "BG": "Bangil",
+  "PR": "Porong",
+  "TGA": "Tanggulangin",
+  "SDA": "Sidoarjo",
+  "GDG": "Gedangan",
+  "WR": "Waru",
+  "PS": "Pasuruan",
+  "BBT": "Babat",
+  "PC": "Pucuk",
+  "LMG": "Lamongan",
+  "DD": "Duduk",
+  "CME": "Cerme",
+  "BNW": "Benowo",
+  "IDO": "Indro",
+  "KDA": "Kandangan",
+  "TES": "Tandes",
+  "SBI": "Surabaya Pasar Turi",
+  "TLN": "Tulangan",
+  "BJ": "Bojonegoro",
+  "KPS": "Kapas",
+  "BWO": "Bowerno",
+  "SRJ": "Sumberrejo",
+  "CU": "Cepu"
+ }
+}

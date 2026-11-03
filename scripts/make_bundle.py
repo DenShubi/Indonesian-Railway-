@@ -1,7 +1,8 @@
 """Precompute a compact animation bundle for the web visualizer."""
 import csv, json, math, pathlib
 from collections import defaultdict
-G=pathlib.Path('/home/claude/jtv/gtfs'); D=pathlib.Path('/home/claude/jtv/data')
+ROOT=pathlib.Path(__file__).resolve().parents[1]
+G=ROOT/'gtfs'; D=ROOT/'data'
 
 def hav(a,b):
     p=math.pi/180
@@ -28,14 +29,48 @@ for sid,pts in shp.items():
     shapes[sid]={'c':[[round(lo,5),round(la,5)] for _,la,lo,_ in pts],
                  'd':[round(d,4) for *_,d in pts]}
 
+TOL=0.15   # km: how much further than the closest approach still counts as "here"
+LAT0=math.radians(-7.5)   # mid-latitude of the network, for the local metric frame
+
 def proj(sid, la, lo, after=0.0):
-    """distance (km) along shape of nearest vertex at or after `after`"""
-    best=None
-    for (_,sla,slo,sd) in shp[sid]:
-        if sd < after-0.001: continue
-        m=hav((la,lo),(sla,slo))
-        if best is None or m<best[0]: best=(m,sd)
-    return best[1] if best else after
+    """Distance (km) along the shape where it FIRST passes this station, at or
+    after `after`.
+
+    Projects onto the shape's SEGMENTS, not just its vertices: build_shapes
+    simplifies straight stretches away, so a station in the middle of one (Ngujang,
+    Tulangan, Peterongan) has no vertex within kilometres even though the line
+    runs right through it.
+
+    "First" matters because the circular Dhoho and Penataran runs pass Wonokromo
+    and Gubeng twice. Both passes are metres away, so taking the globally nearest
+    one was a coin flip, and picking the second dragged the monotonic cursor to the
+    end of the line and flattened every later stop onto the same distance.
+    """
+    pts = shp[sid]
+    px, py = lo * 111320.0 * math.cos(LAT0), la * 110570.0
+    cands = []
+    for i in range(1, len(pts)):
+        _, la1, lo1, d1 = pts[i - 1]
+        _, la2, lo2, d2 = pts[i]
+        if d2 < after - 0.001:
+            continue
+        ax, ay = lo1 * 111320.0 * math.cos(LAT0), la1 * 110570.0
+        bx, by = lo2 * 111320.0 * math.cos(LAT0), la2 * 110570.0
+        vx, vy = bx - ax, by - ay
+        span = vx * vx + vy * vy
+        t = 0.0 if span < 1e-9 else max(0.0, min(1.0, ((px - ax) * vx + (py - ay) * vy) / span))
+        along = d1 + (d2 - d1) * t
+        if along < after - 0.001:
+            continue
+        dist = math.hypot(px - (ax + vx * t), py - (ay + vy * t))
+        cands.append((dist, along))
+    if not cands:
+        return after
+    closest = min(d for d, _ in cands)
+    for dist, along in cands:               # segments come in order along the shape
+        if dist <= closest + TOL * 1000:
+            return along
+    return cands[0][1]
 
 out_trips=[]
 for t in trips:
