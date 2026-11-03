@@ -94,7 +94,7 @@ console.log('\nraw station coordinate vs routed track:');
 for (const [band, n] of Object.entries(bands)) console.log(`  ${band.padEnd(12)} ${n}`);
 
 const worst = [...offsets.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
-console.log('\nworst offsets (re-source these from OSM):');
+console.log('\nlargest offsets:');
 for (const [code, off] of worst) {
   console.log(`  ${code.padEnd(5)} ${bundle.stops[code].n.padEnd(22)} ${(off / 1000).toFixed(2)} km`);
 }

@@ -16,7 +16,7 @@ page 5 and picks up Jenggala on page 4.
 Output: data/trips_parsed.json
 Usage:  python scripts/parse_timetable.py
 """
-import csv, json, pathlib, re, sys, unicodedata
+import csv, json, pathlib, re, statistics, sys, unicodedata
 from collections import defaultdict
 
 import pdfplumber
@@ -177,13 +177,19 @@ def parse_train_rows(page, resolver):
     for hi, htop in enumerate(heads):
         nxt = heads[hi + 1] if hi + 1 < len(heads) else 10 ** 6
 
-        # Station header: codes just below this table's NO. row.
+        # Station header: codes around this table's NO. row. The window reaches a
+        # little ABOVE that row because a station split into arrival/departure
+        # columns (Surabaya Pasarturi on page 5) carries its code in a merged cell
+        # that sits higher than the rest of the header.
         header = sorted((w['mid'], w['top'], CODE.match(w['text']).group(1)) for w in W
                         if CODE.match(w['text']) and w['x0'] >= code_x0
-                        and htop < w['top'] < htop + 20)
+                        and htop - 9 < w['top'] < htop + 20)
         if len(header) < 3:
             continue
-        band_top = min(t for _, t, _ in header)
+        # Station names sit just above the MAIN code row. Use the median code top,
+        # not the minimum: a merged arrival/departure cell puts one code higher
+        # than the rest and would drag the name band off the names entirely.
+        band_top = statistics.median(sorted(t for _, t, _ in header))
 
         centres = [mid for mid, _, _ in header]
         pitch = min((b - a for a, b in zip(centres, centres[1:])), default=24)

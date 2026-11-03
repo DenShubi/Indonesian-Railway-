@@ -4,9 +4,10 @@ A 3D map of Indonesian commuter trains, animated from the published timetable â€
 inspired by [Mini Tokyo 3D](https://minitokyo3d.com/), built on a stack that needs
 no API keys and costs nothing to run.
 
-The first network is **KAI Commuter Wilayah 8 (Surabaya)**: the Dhoho, Penataran,
-Supas, Arjonegoro, Jenggala and Blorasura lines - 64 stations, 47 daily trips -
-running over real OpenStreetMap rail alignments.
+The first network is **KAI Commuter Wilayah 8 (Surabaya)**: all six of its lines -
+Dhoho, Penataran, Supas, Arjonegoro, Jenggala and Blorasura - with 64 stations and
+47 daily trips, running over real OpenStreetMap rail alignments and checked against
+the official GAPEKA 2025 register.
 
 > **Scheduled positions, not live GPS.** No public realtime feed exists for this
 > network, so trains are placed from the published timetable. Where a train is drawn
@@ -78,7 +79,15 @@ python scripts/build_shapes.py       # routes every trip over the rail graph -> 
 python scripts/validate.py           # structural + speed checks on the feed
 python scripts/make_bundle.py        # -> data/bundle.json, what the app loads
 npm run verify:geometry              # stations must sit on their routed track
+npm run verify:gapeka                # feed vs the official GAPEKA 2025 register
 ```
+
+`verify:gapeka` is the strongest check in the repo. `Train Timetables/GAPEKA
+Jadwal Kereta.pdf` is Lampiran II of DJKA decree KP-DJKA 224/2024: every train in
+Java with its number, relasi, distance and end-to-end times. Cross-checking
+against it says independently that we parsed every train and that each
+OSM-routed shape is the right length. All 47 trips currently agree, the largest
+disagreement being 1.9 km on a 350 km circular run.
 
 Three things in that pipeline are worth knowing about, because each one produced a
 wrong map before it was handled:
@@ -100,19 +109,30 @@ wrong map before it was handled:
   station - the circular Dhoho and Penataran runs call at Wonokromo and Gubeng
   twice.
 
+### What about Tumapel and Sindro?
+
+They do not exist under GAPEKA 2025. News coverage and older summaries describe
+Wilayah 8 as having eight Commuter Line services, but the official register lists
+exactly six - Dhoho, Penataran, Supas, Arjonegoro, Jenggala and Blorasura - and
+neither Tumapel nor Sindro appears anywhere in it. The Sidoarjo-Indro service
+that used to be Sindro is now part of Commuter Line Jenggala, which is why
+Jenggala trips in this feed call at Indro. So the network here is complete, not
+partial.
+
 ### Known data gaps
 
-1. **Two lines are missing.** Wilayah 8 advertises eight Commuter Line services;
-   this PDF contains six. Tumapel and Sindro need another source.
-2. **Paired train numbers are one trip.** The timetable presents runs like
+1. **Paired train numbers are one trip.** The timetable presents runs like
    `462-463` as a single through service, and the feed follows that, so a trip id
-   can carry two train numbers.
-3. **The timetable is a snapshot.** `calendar.txt` claims daily service with no
+   can carry two train numbers. The register sometimes splits the same run into
+   its two legs (Arjonegoro `444` + `445`), which `verify:gapeka` accounts for.
+2. **The timetable is a snapshot.** `calendar.txt` claims daily service with no
    exceptions; real operations have engineering works and holiday extras.
+3. **Two stretches of track are not fully mapped in OpenStreetMap**
+   (Lamongan-Duduk-Cerme, Kandangan-Indro), so shapes cross those holes in a
+   straight line. See `build_shapes.py`.
 
 ## Roadmap
 
-- Add Tumapel and Sindro once a timetable for them is in hand
 - Expand to other KAI Commuter regions (Yogyakarta and Bandung timetables are already
   in `Train Timetables/`), then to intercity services
 - A live adapter behind `activeTrains()` if a realtime feed ever becomes available
