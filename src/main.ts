@@ -70,6 +70,25 @@ async function boot(): Promise<void> {
     return current ? regionBounds(current) : net.bbox;
   };
 
+  /**
+   * Fit the current region. A tilted camera sees a trapezoid, so the far corners
+   * of a very wide fit fall outside the screen - flatten the view when showing
+   * the whole island, and tilt back in for a single network.
+   */
+  function fitRegion(duration: number): void {
+    const b = bounds();
+    const narrow = map.getCanvas().clientWidth < 760;
+    map.fitBounds([[b.west, b.south], [b.east, b.north]], {
+      // Keep the fit clear of the header and the side panels, which float over
+      // the map rather than sitting beside it.
+      padding: narrow
+        ? { top: 150, bottom: 220, left: 30, right: 30 }
+        : { top: 130, bottom: 50, left: 240, right: 60 },
+      duration,
+      pitch: region.current ? 55 : 15,
+    });
+  }
+
   const map = createMap(document.getElementById('map') as HTMLElement, bounds());
   const trainLayer = new TrainLayer(colors);
   const hud = initHud(clock, net);
@@ -88,10 +107,7 @@ async function boot(): Promise<void> {
     }
     clearSelection();
     hud.setRegion(net.regions.find((r) => r.id === region.current) ?? null);
-    if (fly) {
-      const b = bounds();
-      map.fitBounds([[b.west, b.south], [b.east, b.north]], { padding: 60, duration: 900 });
-    }
+    if (fly) fitRegion(900);
   }
 
   const panel = initLinePanel(
@@ -122,8 +138,7 @@ async function boot(): Promise<void> {
     loadingEl.remove();
     // Fit again now the container has its real size: the constructor fit can land
     // while the pane is still being laid out.
-    const b = bounds();
-    map.fitBounds([[b.west, b.south], [b.east, b.north]], { padding: 60, duration: 0 });
+    fitRegion(0);
   });
 
   map.on('error', (event) => {
