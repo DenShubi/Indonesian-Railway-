@@ -1,41 +1,87 @@
 /**
- * Line chips: one per route, in the route's own colour, toggling its track and trains.
+ * The left panel: which network you are looking at, and which of its lines are on.
  */
-import type { Bundle, RouteId } from '../data/bundle';
+import type { Network, RegionId, RouteId } from '../data/bundle';
+
+export interface LinePanel {
+  /** Re-render the chips, e.g. after the region changed. */
+  refresh(): void;
+}
 
 export function initLinePanel(
-  bundle: Bundle,
+  net: Network,
   visible: Set<RouteId>,
-  onChange: () => void,
-): void {
+  region: { current: RegionId | null },
+  onRegionChange: (id: RegionId | null) => void,
+  onLinesChange: () => void,
+): LinePanel {
   const root = document.getElementById('lines') as HTMLElement;
-  root.innerHTML = `<div class="panel-head">Lines</div>`;
 
-  const list = document.createElement('div');
-  list.className = 'chips';
+  function render(): void {
+    root.innerHTML = '';
 
-  for (const [routeId, route] of Object.entries(bundle.routes)) {
-    const trips = bundle.trips.filter((trip) => trip.r === routeId).length;
-    const chip = document.createElement('button');
-    chip.type = 'button';
-    chip.className = 'chip is-on';
-    chip.style.setProperty('--chip', route.color);
-    chip.innerHTML =
-      `<span class="chip-dot"></span><span class="chip-name">${route.name}</span>` +
-      `<span class="chip-count">${trips}</span>`;
-    chip.addEventListener('click', () => {
-      if (visible.has(routeId)) visible.delete(routeId);
-      else visible.add(routeId);
-      chip.classList.toggle('is-on', visible.has(routeId));
-      onChange();
-    });
-    list.append(chip);
+    const picker = document.createElement('div');
+    picker.className = 'regions';
+    const entries: Array<[RegionId | null, string]> = [
+      [null, 'All Java'],
+      ...net.regions.map((r) => [r.id, r.name] as [RegionId, string]),
+    ];
+    for (const [id, label] of entries) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'btn btn-region' + (region.current === id ? ' is-active' : '');
+      button.textContent = label;
+      button.addEventListener('click', () => onRegionChange(id));
+      picker.append(button);
+    }
+    root.append(picker);
+
+    const shown = region.current
+      ? net.regions.filter((r) => r.id === region.current)
+      : net.regions;
+
+    for (const r of shown) {
+      const head = document.createElement('div');
+      head.className = 'panel-head';
+      head.textContent = r.name;
+      root.append(head);
+
+      const list = document.createElement('div');
+      list.className = 'chips';
+      for (const routeId of net.routeIdsByRegion.get(r.id) ?? []) {
+        const route = net.bundle.routes[routeId];
+        const trips = net.tripsByRoute.get(routeId)?.length ?? 0;
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'chip' + (visible.has(routeId) ? ' is-on' : '');
+        chip.style.setProperty('--chip', route.color);
+        chip.innerHTML =
+          `<span class="chip-dot"></span><span class="chip-name">${route.name}</span>` +
+          `<span class="chip-count">${trips}</span>`;
+        chip.addEventListener('click', () => {
+          if (visible.has(routeId)) visible.delete(routeId);
+          else visible.add(routeId);
+          chip.classList.toggle('is-on', visible.has(routeId));
+          onLinesChange();
+        });
+        list.append(chip);
+      }
+      root.append(list);
+
+      if (r.note) {
+        const note = document.createElement('p');
+        note.className = 'panel-note is-warn';
+        note.textContent = r.note;
+        root.append(note);
+      }
+    }
+
+    const hint = document.createElement('p');
+    hint.className = 'panel-note';
+    hint.textContent = 'Click a train or a station for details.';
+    root.append(hint);
   }
 
-  root.append(list);
-
-  const note = document.createElement('p');
-  note.className = 'panel-note';
-  note.textContent = 'Click a train or a station for details.';
-  root.append(note);
+  render();
+  return { refresh: render };
 }

@@ -1,8 +1,12 @@
 """Build data/stations.csv: one row per station called at, with OpenStreetMap coordinates.
 
 Stations are matched on OSM's railway:ref, which is the KAI station code the
-timetable prints, so there is no name guessing. Anything that fails to match
+timetable prints, so there is no name guessing. Where OSM has not tagged a
+station with a ref, the printed name is used instead. Anything that fails both
 falls back to the previous stations.csv and is reported loudly.
+
+Each region is searched in its own OSM cache, and a station used by two regions
+keeps one row.
 
 Usage:  python scripts/build_stations.py
 """
@@ -19,16 +23,28 @@ def norm(s: str) -> str:
 
 
 def main() -> None:
+    regions = json.load(open(D / 'regions.json', encoding='utf-8'))
     parsed = json.load(open(D / 'trips_parsed.json', encoding='utf-8'))
-    codes = sorted({s['code'] for t in parsed['trips'] for s in t['stops']})
     pdf_names = parsed['names']
 
-    osm = list(csv.DictReader(open(D / 'osm' / 'stations.csv', encoding='utf-8')))
-    by_ref = {r['ref']: r for r in osm if r['ref']}
-    by_name = {}
-    for r in osm:
-        if r['norm']:
-            by_name.setdefault(r['norm'], r)
+    # A station belongs to the first region whose trips call at it.
+    region_of = {}
+    for trip in parsed['trips']:
+        for stop in trip['stops']:
+            region_of.setdefault(stop['code'], trip['region'])
+    codes = sorted(region_of)
+
+    by_ref, by_name = {}, {}
+    for region in regions:
+        path = D / 'osm' / region['id'] / 'stations.csv'
+        if not path.exists():
+            print(f'  !! no OSM cache for {region["id"]} - run scripts/fetch_osm.py')
+            continue
+        for r in csv.DictReader(open(path, encoding='utf-8')):
+            if r['ref']:
+                by_ref.setdefault(r['ref'], r)
+            if r['norm']:
+                by_name.setdefault(r['norm'], r)
 
     previous = {}
     old_path = D / 'stations.csv'
@@ -39,8 +55,8 @@ def main() -> None:
     for code in codes:
         hit = by_ref.get(code) or by_name.get(norm(pdf_names.get(code, '')))
         if hit:
-            rows.append({'code': code, 'name': hit['name'],
-                         'lat': hit['lat'], 'lon': hit['lon'], 'source': 'osm'})
+            rows.append({'code': code, 'name': hit['name'], 'lat': hit['lat'],
+                         'lon': hit['lon'], 'region': region_of[code], 'source': 'osm'})
             was = previous.get(code)
             if was:
                 dlat = float(hit['lat']) - float(was['lat'])
@@ -51,14 +67,14 @@ def main() -> None:
         elif code in previous:
             was = previous[code]
             rows.append({'code': code, 'name': was['name'], 'lat': was['lat'],
-                         'lon': was['lon'], 'source': 'previous'})
+                         'lon': was['lon'], 'region': region_of[code], 'source': 'previous'})
             fallbacks.append(code)
         else:
             fallbacks.append(code)
             print(f'  !! {code} ({pdf_names.get(code, "?")}) has no coordinate at all')
 
     with open(old_path, 'w', newline='', encoding='utf-8') as fh:
-        writer = csv.DictWriter(fh, fieldnames=['code', 'name', 'lat', 'lon', 'source'])
+        writer = csv.DictWriter(fh, fieldnames=['code', 'name', 'lat', 'lon', 'region', 'source'])
         writer.writeheader()
         writer.writerows(rows)
 

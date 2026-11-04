@@ -1,7 +1,13 @@
-route_id,agency_id,route_short_name,route_long_name,route_type,route_color
-CL_DHOHO,KAIC,Dhoho,Commuter Line Dhoho,2,E4572E
-CL_PENATARAN,KAIC,Penataran,Commuter Line Penataran,2,2E9BD6
-CL_SUPAS,KAIC,Supas,Commuter Line Supas,2,27A567
-CL_ARJONEGORO,KAIC,Arjonegoro,Commuter Line Arjonegoro,2,9B6BC9
-CL_JENGGALA,KAIC,Jenggala,Commuter Line Jenggala,2,E9A13B
-CL_BLORASURA,KAIC,Blorasura,Commuter Line Blorasura,2,C2456E
+route_id,agency_id,route_short_name,route_long_name,route_type,route_color,region
+CL_SURABAYA_DHOHO,KAIC,Dhoho,Commuter Line Dhoho,2,E4572E,surabaya
+CL_SURABAYA_PENATARAN,KAIC,Penataran,Commuter Line Penataran,2,2E9BD6,surabaya
+CL_SURABAYA_SUPAS,KAIC,Supas,Commuter Line Supas,2,27A567,surabaya
+CL_SURABAYA_ARJONEGORO,KAIC,Arjonegoro,Commuter Line Arjonegoro,2,9B6BC9,surabaya
+CL_SURABAYA_JENGGALA,KAIC,Jenggala,Commuter Line Jenggala,2,E9A13B,surabaya
+CL_SURABAYA_BLORASURA,KAIC,Blorasura,Commuter Line Blorasura,2,C2456E,surabaya
+CL_BANDUNG_BANDUNG_RAYA,KAIC,Bandung Raya,Commuter Line Bandung Raya,2,1F8FA8,bandung
+CL_BANDUNG_GARUT,KAIC,Garut,Commuter Line Garut,2,6AA84F,bandung
+CL_BANDUNG_WALAHAR,KAIC,Walahar,Commuter Line Walahar,2,B4603A,bandung
+CL_BANDUNG_JATILUHUR,KAIC,Jatiluhur,Commuter Line Jatiluhur,2,8E6BB5,bandung
+CL_YOGYAKARTA_YOGYAKARTA,KAIC,Yogyakarta,Commuter Line Yogyakarta,2,D14836,yogyakarta
+CL_YOGYAKARTA_PRAMEKS,KAIC,Prameks,Commuter Line Prameks,2,2E8B74,yogyakarta

@@ -1,7 +1,9 @@
-"""Build a GTFS feed for KAI Commuter Wilayah 8 (Surabaya) from the parsed timetable.
+"""Build one GTFS feed covering every region, from the parsed timetables.
 
-Reads data/trips_parsed.json (scripts/parse_timetable.py) and data/stations.csv
-(scripts/build_stations.py), and writes gtfs/*.txt plus a zipped copy.
+Reads data/regions.json, data/trips_parsed.json (scripts/parse_timetable.py) and
+data/stations.csv (scripts/build_stations.py), and writes gtfs/*.txt plus a
+zipped copy. Routes carry a non-standard `region` column so the visualizer and
+the shape builder can tell the networks apart.
 """
 import csv, json, pathlib, sys, zipfile
 from collections import defaultdict
@@ -11,17 +13,9 @@ D = ROOT / 'data'
 G = ROOT / 'gtfs'
 G.mkdir(parents=True, exist_ok=True)
 
-# One colour per line, in the order they appear on the network map.
-LINE_COLORS = {
-    'Dhoho': 'E4572E',
-    'Penataran': '2E9BD6',
-    'Supas': '27A567',
-    'Arjonegoro': '9B6BC9',
-    'Jenggala': 'E9A13B',
-    'Blorasura': 'C2456E',
-}
 FALLBACK_COLOR = '7A8A94'
 
+REGIONS = {r['id']: r for r in json.load(open(D / 'regions.json', encoding='utf-8'))}
 parsed = json.load(open(D / 'trips_parsed.json', encoding='utf-8'))
 stations = {r['code']: r for r in csv.DictReader(open(D / 'stations.csv', encoding='utf-8'))}
 
@@ -56,23 +50,31 @@ def trip_stop_times(stops):
     return rows
 
 
-def route_id(line: str) -> str:
-    return 'CL_' + line.upper()
+def route_id(region: str, line: str) -> str:
+    return f'CL_{region.upper()}_{line.upper().replace(" ", "_")}'
 
 
-# Group trips by line, keeping the order they were parsed in.
+# Group trips by (region, line), keeping the order they were parsed in.
 by_line = defaultdict(list)
 for t in parsed['trips']:
-    by_line[t['line']].append(t)
+    by_line[(t['region'], t['line'])].append(t)
+
+
+def line_order(key):
+    region, line = key
+    order = list(REGIONS[region].get('colors', {}))
+    return (list(REGIONS).index(region), order.index(line) if line in order else 99, line)
 
 stops_used = set()
 trips = []
 stop_times = []
 seen_ids = set()
 
-for line in sorted(by_line, key=lambda l: list(LINE_COLORS).index(l) if l in LINE_COLORS else 99):
-    rid = route_id(line)
-    for t in by_line[line]:
+for key in sorted(by_line, key=line_order):
+    region, line = key
+    hubs = set(REGIONS[region].get('hubs', []))
+    rid = route_id(region, line)
+    for t in by_line[key]:
         number = t.get('number')
         if not number:
             continue
@@ -85,9 +87,8 @@ for line in sorted(by_line, key=lambda l: list(LINE_COLORS).index(l) if l in LIN
         last = rows[-1][3]
         first = rows[0][3]
         head = stations.get(last, {}).get('name', last)
-        # direction 0 runs towards Surabaya, 1 away from it; SB/SBI/SGU are the
-        # three Surabaya termini.
-        direction = 0 if last in ('SB', 'SBI', 'SGU') else 1
+        # direction 0 runs towards the region's hub stations, 1 away from them.
+        direction = 0 if last in hubs else 1
 
         trips.append({'route_id': rid, 'service_id': 'DAILY', 'trip_id': tid,
                       'trip_short_name': number, 'trip_headsign': head,
@@ -121,12 +122,13 @@ write('stops.txt', ['stop_id', 'stop_name', 'stop_lat', 'stop_lon'],
        for c in sorted(stops_used)])
 
 write('routes.txt',
-      ['route_id', 'agency_id', 'route_short_name', 'route_long_name', 'route_type', 'route_color'],
-      [{'route_id': route_id(line), 'agency_id': 'KAIC', 'route_short_name': line,
+      ['route_id', 'agency_id', 'route_short_name', 'route_long_name', 'route_type',
+       'route_color', 'region'],
+      [{'route_id': route_id(region, line), 'agency_id': 'KAIC', 'route_short_name': line,
         'route_long_name': f'Commuter Line {line}', 'route_type': 2,
-        'route_color': LINE_COLORS.get(line, FALLBACK_COLOR)}
-       for line in sorted(by_line, key=lambda l: list(LINE_COLORS).index(l)
-                          if l in LINE_COLORS else 99)])
+        'route_color': REGIONS[region].get('colors', {}).get(line, FALLBACK_COLOR),
+        'region': region}
+       for region, line in sorted(by_line, key=line_order)])
 
 write('trips.txt',
       ['route_id', 'service_id', 'trip_id', 'trip_short_name', 'trip_headsign', 'direction_id'],
@@ -139,13 +141,13 @@ write('calendar.txt',
       [{'service_id': 'DAILY', 'monday': 1, 'tuesday': 1, 'wednesday': 1, 'thursday': 1,
         'friday': 1, 'saturday': 1, 'sunday': 1, 'start_date': '20260101', 'end_date': '20271231'}])
 
-zp = D / 'gtfs_wilayah8_surabaya.zip'
+zp = D / 'gtfs_java_commuter.zip'
 with zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED) as z:
     for f in sorted(G.glob('*.txt')):
         z.write(f, f.name)
 
 print(f'routes={len(by_line)} trips={len(trips)} stops={len(stops_used)} '
       f'stop_times={len(stop_times)}')
-for line in sorted(by_line):
-    print(f'  {line:<12} {len(by_line[line]):>3} trips')
+for region, line in sorted(by_line, key=line_order):
+    print(f'  {region:<11} {line:<14} {len(by_line[(region, line)]):>3} trips')
 print(f'zip: {zp.relative_to(ROOT)} {zp.stat().st_size} bytes')

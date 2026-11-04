@@ -9,12 +9,25 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import './styles.css';
 
 import type { Map as MapLibreMap, PointLike } from 'maplibre-gl';
-import { buildNetwork, loadBundle, type Network, type RouteId, type StopCode } from './data/bundle';
+import {
+  buildNetwork,
+  loadBundle,
+  regionBounds,
+  type Network,
+  type RegionId,
+  type RouteId,
+  type StopCode,
+} from './data/bundle';
 import { ServiceClock } from './sim/clock';
 import { activeTrains, trainAt, type TrainState } from './sim/trains';
 import { createMap, tuneBuildings } from './map/basemap';
 import { addTrackLayers, setVisibleRoutes } from './map/trackLayer';
-import { addStationLayers, enableStationHover, STATION_CIRCLE_LAYER } from './map/stationLayer';
+import {
+  addStationLayers,
+  enableStationHover,
+  setVisibleStationRegions,
+  STATION_CIRCLE_LAYER,
+} from './map/stationLayer';
 import { TrainLayer } from './map/trainLayer';
 import { initHud } from './ui/hud';
 import { initLinePanel } from './ui/linePanel';
@@ -39,7 +52,10 @@ async function boot(): Promise<void> {
   }
 
   const clock = new ServiceClock();
-  const visible = new Set<RouteId>(net.routeIds);
+  // Start on the first region rather than the whole island: at Java-wide zoom
+  // individual trains are specks.
+  const region: { current: RegionId | null } = { current: net.regions[0]?.id ?? null };
+  const visible = new Set<RouteId>();
   const colors = Object.fromEntries(
     Object.entries(net.bundle.routes).map(([id, route]) => [id, route.color]),
   );
@@ -49,12 +65,50 @@ async function boot(): Promise<void> {
   let states: TrainState[] = [];
   let layersReady = false;
 
-  const map = createMap(document.getElementById('map') as HTMLElement, net.bbox);
+  const bounds = () => {
+    const current = net.regions.find((r) => r.id === region.current);
+    return current ? regionBounds(current) : net.bbox;
+  };
+
+  const map = createMap(document.getElementById('map') as HTMLElement, bounds());
   const trainLayer = new TrainLayer(colors);
   const hud = initHud(clock, net);
-  initLinePanel(net.bundle, visible, () => {
-    if (layersReady) setVisibleRoutes(map, visible);
-  });
+
+  function regionRoutes(): RouteId[] {
+    return region.current ? (net.routeIdsByRegion.get(region.current) ?? []) : net.routeIds;
+  }
+
+  function applyRegion(fly: boolean): void {
+    visible.clear();
+    for (const id of regionRoutes()) visible.add(id);
+    panel.refresh();
+    if (layersReady) {
+      setVisibleRoutes(map, visible);
+      setVisibleStationRegions(map, new Set(region.current ? [region.current] : []));
+    }
+    clearSelection();
+    hud.setRegion(net.regions.find((r) => r.id === region.current) ?? null);
+    if (fly) {
+      const b = bounds();
+      map.fitBounds([[b.west, b.south], [b.east, b.north]], { padding: 60, duration: 900 });
+    }
+  }
+
+  const panel = initLinePanel(
+    net,
+    visible,
+    region,
+    (id) => {
+      region.current = id;
+      applyRegion(true);
+    },
+    () => {
+      if (layersReady) setVisibleRoutes(map, visible);
+    },
+  );
+  for (const id of regionRoutes()) visible.add(id);
+  panel.refresh();
+  hud.setRegion(net.regions.find((r) => r.id === region.current) ?? null);
 
   map.on('load', () => {
     tuneBuildings(map);
@@ -63,8 +117,13 @@ async function boot(): Promise<void> {
     map.addLayer(trainLayer);
     enableStationHover(map);
     setVisibleRoutes(map, visible);
+    setVisibleStationRegions(map, new Set(region.current ? [region.current] : []));
     layersReady = true;
     loadingEl.remove();
+    // Fit again now the container has its real size: the constructor fit can land
+    // while the pane is still being laid out.
+    const b = bounds();
+    map.fitBounds([[b.west, b.south], [b.east, b.north]], { padding: 60, duration: 0 });
   });
 
   map.on('error', (event) => {

@@ -4,7 +4,7 @@
  */
 import type { Map as MapLibreMap } from 'maplibre-gl';
 import type { FeatureCollection, Point } from 'geojson';
-import type { Network, StopCode } from '../data/bundle';
+import type { Network, RegionId, StopCode } from '../data/bundle';
 
 export const STATION_SOURCE = 'jtv-stations';
 export const STATION_CIRCLE_LAYER = 'jtv-station-circle';
@@ -13,6 +13,7 @@ export const STATION_LABEL_LAYER = 'jtv-station-label';
 interface StationProps {
   code: StopCode;
   name: string;
+  region: RegionId;
 }
 
 function toGeoJSON(net: Network): FeatureCollection<Point, StationProps> {
@@ -24,7 +25,7 @@ function toGeoJSON(net: Network): FeatureCollection<Point, StationProps> {
       return {
         type: 'Feature' as const,
         geometry: { type: 'Point' as const, coordinates: [at?.lon ?? stop.x, at?.lat ?? stop.y] },
-        properties: { code, name: stop.n },
+        properties: { code, name: stop.n, region: stop.g },
       };
     }),
   };
@@ -65,6 +66,16 @@ export function addStationLayers(map: MapLibreMap, net: Network): void {
       'text-halo-width': 1.6,
     },
   });
+}
+
+/** Show only the given regions' stations; an empty set means show them all. */
+export function setVisibleStationRegions(map: MapLibreMap, regions: Set<RegionId>): void {
+  const filter = regions.size
+    ? (['in', ['get', 'region'], ['literal', [...regions]]] as never)
+    : null;
+  for (const id of [STATION_CIRCLE_LAYER, STATION_LABEL_LAYER]) {
+    if (map.getLayer(id)) map.setFilter(id, filter);
+  }
 }
 
 export function enableStationHover(map: MapLibreMap): void {

@@ -1,0 +1,110 @@
+[
+  {
+    "id": "surabaya",
+    "name": "Surabaya",
+    "subtitle": "KAI Commuter Wilayah 8",
+    "pdf": "Jadwal Commuter Line Wilayah 8 Surabaya.pdf",
+    "bbox": [
+      -8.45,
+      111.2,
+      -6.8,
+      113.2
+    ],
+    "pages": [
+      {
+        "layout": "station_rows",
+        "line": "Dhoho"
+      },
+      {
+        "layout": "station_rows",
+        "line": "Penataran"
+      },
+      {
+        "layout": "train_rows"
+      },
+      {
+        "layout": "train_rows"
+      },
+      {
+        "layout": "train_rows"
+      }
+    ],
+    "gapekaNumbering": true,
+    "hubs": [
+      "SB",
+      "SBI",
+      "SGU"
+    ],
+    "colors": {
+      "Dhoho": "E4572E",
+      "Penataran": "2E9BD6",
+      "Supas": "27A567",
+      "Arjonegoro": "9B6BC9",
+      "Jenggala": "E9A13B",
+      "Blorasura": "C2456E"
+    }
+  },
+  {
+    "id": "bandung",
+    "name": "Bandung",
+    "subtitle": "KAI Commuter Wilayah 2",
+    "pdf": "Jadwal Commuter Line Wilayah 2 Bandung.pdf",
+    "bbox": [
+      -7.6,
+      106.8,
+      -6.0,
+      108.3
+    ],
+    "pages": [
+      {
+        "layout": "train_rows"
+      },
+      {
+        "layout": "train_rows"
+      },
+      {
+        "layout": "station_rows",
+        "line": "Bandung Raya"
+      }
+    ],
+    "gapekaNumbering": true,
+    "hubs": [
+      "BD",
+      "KAC",
+      "PDL"
+    ],
+    "colors": {
+      "Bandung Raya": "1F8FA8",
+      "Garut": "6AA84F",
+      "Walahar": "B4603A",
+      "Jatiluhur": "8E6BB5"
+    }
+  },
+  {
+    "id": "yogyakarta",
+    "name": "Yogyakarta",
+    "subtitle": "KAI Commuter Wilayah 6",
+    "pdf": "Jadwal Commuter Line Yogyakarta.pdf",
+    "bbox": [
+      -8.1,
+      109.6,
+      -7.3,
+      111.0
+    ],
+    "pages": [
+      {
+        "layout": "flat_text"
+      }
+    ],
+    "timetableNote": "Train numbers in this PDF (661-684, 551-558) predate GAPEKA 2025, which numbers the same services 701-733 and 501-512. The routes and stopping patterns still match; the times are from the earlier edition.",
+    "gapekaNumbering": false,
+    "hubs": [
+      "YK",
+      "LPN"
+    ],
+    "colors": {
+      "Yogyakarta": "D14836",
+      "Prameks": "2E8B74"
+    }
+  }
+]

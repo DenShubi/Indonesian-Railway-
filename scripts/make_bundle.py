@@ -1,4 +1,9 @@
-"""Precompute a compact animation bundle for the web visualizer."""
+"""Precompute a compact animation bundle for the web visualizer.
+
+Covers every region in one file: routes and stops carry their region id, and the
+`regions` list gives the app each network's name, bounding box and any caveat
+about the timetable edition it came from.
+"""
 import csv, json, math, pathlib
 from collections import defaultdict
 ROOT=pathlib.Path(__file__).resolve().parents[1]
@@ -11,6 +16,8 @@ def hav(a,b):
 def secs(t):
     h,m,s=map(int,t.split(':')); return h*3600+m*60+s
 
+regions=json.load(open(D/'regions.json',encoding='utf-8'))
+station_region={r['code']:r['region'] for r in csv.DictReader(open(D/'stations.csv',encoding='utf-8'))}
 stops={r['stop_id']:r for r in csv.DictReader(open(G/'stops.txt'))}
 routes={r['route_id']:r for r in csv.DictReader(open(G/'routes.txt'))}
 trips=list(csv.DictReader(open(G/'trips.txt')))
@@ -89,10 +96,14 @@ rep={}
 for t in out_trips:
     sid=t['s']; L=shapes[sid]['d'][-1]
     if t['r'] not in rep or L>rep[t['r']][1]: rep[t['r']]=(sid,L)
-bundle={'routes':{k:{'name':v['route_short_name'],'color':'#'+v['route_color'],
-                     'rep':rep.get(k,(None,0))[0]} for k,v in routes.items()},
+bundle={'regions':[{'id':r['id'],'name':r['name'],'subtitle':r.get('subtitle',''),
+                    'bbox':r['bbox'],'note':r.get('timetableNote','')} for r in regions],
+        'routes':{k:{'name':v['route_short_name'],'color':'#'+v['route_color'],
+                     'rep':rep.get(k,(None,0))[0],'g':v.get('region','')}
+                  for k,v in routes.items()},
         'stops':{k:{'n':v['stop_name'],'y':round(float(v['stop_lat']),5),
-                    'x':round(float(v['stop_lon']),5)} for k,v in stops.items()},
+                    'x':round(float(v['stop_lon']),5),'g':station_region.get(k,'')}
+                 for k,v in stops.items()},
         'shapes':shapes,'trips':out_trips}
 p=D/'bundle.json'; json.dump(bundle,open(p,'w'),separators=(',',':'))
 print("bundle:",p.stat().st_size,"bytes")

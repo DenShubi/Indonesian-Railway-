@@ -40,10 +40,21 @@ const RAIL_HEIGHT = 1.6;
  * A real train is a hairline on screen below about zoom 16 - 3.2 m is well under
  * one pixel at city scale - so the body is never drawn smaller than this, the way
  * Mini Tokyo 3D keeps its vehicles legible when zoomed out.
+ *
+ * The floor itself eases down as the view pulls back: at region scale a 20 px
+ * vehicle is a sensible marker, but with a whole island on screen the same 20 px
+ * swamps the line it is running on.
  */
 const MIN_PIXEL_LENGTH = 20;
 const MIN_PIXEL_WIDTH = 5;
 const MIN_PIXEL_HEIGHT = 3.5;
+/** Fraction of the minimum sizes used at the widest zooms. */
+const FAR_SHRINK = 0.45;
+
+function pixelFloorScale(zoom: number): number {
+  const t = Math.max(0, Math.min(1, (zoom - 7.5) / 3.5));
+  return FAR_SHRINK + (1 - FAR_SHRINK) * t;
+}
 /** Metres per CSS pixel in web mercator at a given zoom and latitude. */
 function metresPerPixel(zoom: number, lat: number): number {
   return (156543.03392 * Math.cos((lat * Math.PI) / 180)) / 2 ** zoom;
@@ -147,7 +158,7 @@ export class TrainLayer implements CustomLayerInterface {
       const state = this.states[i];
       const merc = MercatorCoordinate.fromLngLat([state.lon, state.lat], 0);
       const metre = merc.meterInMercatorCoordinateUnits();
-      const mpp = metresPerPixel(zoom, state.lat);
+      const mpp = metresPerPixel(zoom, state.lat) * pixelFloorScale(zoom);
       const selected = state.trip.id === this.selectedId;
       const bump = selected ? 1.35 : 1;
       const lengthM = Math.max(TRAIN_LENGTH, MIN_PIXEL_LENGTH * mpp) * bump;

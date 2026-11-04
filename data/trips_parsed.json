@@ -1,6 +1,7 @@
 {
  "trips": [
   {
+   "region": "surabaya",
    "line": "Dhoho",
    "number": "412",
    "relasi": "",
@@ -65,6 +66,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Dhoho",
    "number": "414",
    "relasi": "",
@@ -173,6 +175,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Dhoho",
    "number": "401-402",
    "relasi": "",
@@ -381,6 +384,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Dhoho",
    "number": "403-404",
    "relasi": "",
@@ -589,6 +593,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Dhoho",
    "number": "405-406",
    "relasi": "",
@@ -797,6 +802,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Dhoho",
    "number": "407-408",
    "relasi": "",
@@ -953,6 +959,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Dhoho",
    "number": "409-410",
    "relasi": "",
@@ -1065,6 +1072,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Dhoho",
    "number": "411",
    "relasi": "",
@@ -1133,6 +1141,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Penataran",
    "number": "432",
    "relasi": "",
@@ -1201,6 +1210,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Penataran",
    "number": "421-422",
    "relasi": "",
@@ -1313,6 +1323,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Penataran",
    "number": "423-424",
    "relasi": "",
@@ -1469,6 +1480,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Penataran",
    "number": "425-426",
    "relasi": "",
@@ -1677,6 +1689,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Penataran",
    "number": "427-428",
    "relasi": "",
@@ -1885,6 +1898,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Penataran",
    "number": "429-430",
    "relasi": "",
@@ -2093,6 +2107,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Penataran",
    "number": "431",
    "relasi": "",
@@ -2201,6 +2216,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Penataran",
    "number": "433",
    "relasi": "",
@@ -2265,9 +2281,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Supas",
    "number": "453",
-   "relasi": "Surabaya Kota–Pasuruan 02:20",
+   "relasi": "Surabaya Kota–Pasuruan",
    "page": 3,
    "stops": [
     {
@@ -2313,9 +2330,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Supas",
    "number": "455",
-   "relasi": "Surabaya Kota–Pasuruan 07:15",
+   "relasi": "Surabaya Kota–Pasuruan",
    "page": 3,
    "stops": [
     {
@@ -2361,9 +2379,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Supas",
    "number": "457",
-   "relasi": "Surabaya Kota–Pasuruan 12:10",
+   "relasi": "Surabaya Kota–Pasuruan",
    "page": 3,
    "stops": [
     {
@@ -2409,9 +2428,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Supas",
    "number": "459",
-   "relasi": "Surabaya Kota–Pasuruan 18:45",
+   "relasi": "Surabaya Kota–Pasuruan",
    "page": 3,
    "stops": [
     {
@@ -2457,9 +2477,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Supas",
    "number": "454",
-   "relasi": "Pasuruan–Surabaya Kota 04:30",
+   "relasi": "Pasuruan–Surabaya Kota",
    "page": 3,
    "stops": [
     {
@@ -2505,9 +2526,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Supas",
    "number": "456",
-   "relasi": "Pasuruan–Surabaya Kota 09:45",
+   "relasi": "Pasuruan–Surabaya Kota",
    "page": 3,
    "stops": [
     {
@@ -2553,9 +2575,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Supas",
    "number": "458",
-   "relasi": "Pasuruan–Surabaya Kota 14:55",
+   "relasi": "Pasuruan–Surabaya Kota",
    "page": 3,
    "stops": [
     {
@@ -2601,9 +2624,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Supas",
    "number": "460",
-   "relasi": "Pasuruan–Surabaya Kota 21:20",
+   "relasi": "Pasuruan–Surabaya Kota",
    "page": 3,
    "stops": [
     {
@@ -2649,6 +2673,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Jenggala",
    "number": "473",
    "relasi": "Surabaya Pasar Turi-Sidoarjo",
@@ -2681,9 +2706,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Jenggala",
    "number": "462-463",
-   "relasi": "Babat-Surabaya Sepanjang) Pasar Turi-Mojokerto (via 05:12",
+   "relasi": "Babat-Surabaya Sepanjang) Pasar Turi-Mojokerto (via",
    "page": 4,
    "stops": [
     {
@@ -2757,6 +2783,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Jenggala",
    "number": "476-477",
    "relasi": "Indro-Surabaya Pasar Tulangan) Turi-Mojokerto (via",
@@ -2813,6 +2840,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Jenggala",
    "number": "466-467",
    "relasi": "Indro-Surabaya Pasar Sepanjang) Turi-Mojokerto (via",
@@ -2869,6 +2897,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Jenggala",
    "number": "480-481",
    "relasi": "Indro-Surabaya Pasar Tulangan) Turi-Mojokerto (via",
@@ -2925,6 +2954,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Jenggala",
    "number": "470-471",
    "relasi": "Indro-Surabaya Pasar Turi-Sidoarjo",
@@ -2969,9 +2999,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Jenggala",
    "number": "484",
-   "relasi": "Babat-Surabaya Pasar Turi 21:45",
+   "relasi": "Babat-Surabaya Pasar Turi",
    "page": 4,
    "stops": [
     {
@@ -3013,6 +3044,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Jenggala",
    "number": "461",
    "relasi": "Surabaya Pasar Turi-Babat",
@@ -3057,6 +3089,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Jenggala",
    "number": "474-475",
    "relasi": "Sidoarjo-Surabaya Pasar Turi-Indro",
@@ -3101,9 +3134,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Jenggala",
    "number": "464-465",
-   "relasi": "Mojokerto-Surabaya Tulangan) Pasar Turi-Indro (via 08:40",
+   "relasi": "Mojokerto-Surabaya Tulangan) Pasar Turi-Indro (via",
    "page": 4,
    "stops": [
     {
@@ -3157,9 +3191,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Jenggala",
    "number": "478-479",
-   "relasi": "Mojokerto-Surabaya Sepanjang) Pasar Turi-Indro (via 12:20",
+   "relasi": "Mojokerto-Surabaya Sepanjang) Pasar Turi-Indro (via",
    "page": 4,
    "stops": [
     {
@@ -3213,9 +3248,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Jenggala",
    "number": "468-469",
-   "relasi": "Mojokerto-Surabaya Tulangan) Pasar Turi-Indro (via 14:40",
+   "relasi": "Mojokerto-Surabaya Tulangan) Pasar Turi-Indro (via",
    "page": 4,
    "stops": [
     {
@@ -3269,9 +3305,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Jenggala",
    "number": "482-483",
-   "relasi": "Mojokerto-Surabaya Sepanjang) Pasar Turi-Babat (via 18:00",
+   "relasi": "Mojokerto-Surabaya Sepanjang) Pasar Turi-Babat (via",
    "page": 4,
    "stops": [
     {
@@ -3345,6 +3382,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Jenggala",
    "number": "472",
    "relasi": "Sidoarjo-Surabaya Pasar Turi",
@@ -3377,6 +3415,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Arjonegoro",
    "number": "444-445",
    "relasi": "Babat–Surabaya Pasar Turi–Sidoarjo",
@@ -3445,9 +3484,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Arjonegoro",
    "number": "448-449",
-   "relasi": "Bojonegoro–Surabaya Pasar Turi–Sidoarjo 12:10",
+   "relasi": "Bojonegoro–Surabaya Pasar Turi–Sidoarjo",
    "page": 5,
    "stops": [
     {
@@ -3529,6 +3569,7 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Arjonegoro",
    "number": "452",
    "relasi": "Babat–Surabaya Pasar Turi",
@@ -3573,9 +3614,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Arjonegoro",
    "number": "446-447",
-   "relasi": "Sidoarjo–Surabaya Pasar Turi–Bojonegoro 07:20",
+   "relasi": "Sidoarjo–Surabaya Pasar Turi–Bojonegoro",
    "page": 5,
    "stops": [
     {
@@ -3657,9 +3699,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Arjonegoro",
    "number": "450-451",
-   "relasi": "Sidoarjo–Surabaya Pasar Turi–Babat 17:35",
+   "relasi": "Sidoarjo–Surabaya Pasar Turi–Babat",
    "page": 5,
    "stops": [
     {
@@ -3725,9 +3768,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Blorasura",
    "number": "439",
-   "relasi": "Surabaya Pasar Turi–Cepu 08:15",
+   "relasi": "Surabaya Pasar Turi–Cepu",
    "page": 5,
    "stops": [
     {
@@ -3789,9 +3833,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Blorasura",
    "number": "441",
-   "relasi": "Surabaya Pasar Turi–Cepu 19:00",
+   "relasi": "Surabaya Pasar Turi–Cepu",
    "page": 5,
    "stops": [
     {
@@ -3853,9 +3898,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Blorasura",
    "number": "438",
-   "relasi": "Cepu–Surabaya Pasar Turi 04:40",
+   "relasi": "Cepu–Surabaya Pasar Turi",
    "page": 5,
    "stops": [
     {
@@ -3917,9 +3963,10 @@
    ]
   },
   {
+   "region": "surabaya",
    "line": "Blorasura",
    "number": "440",
-   "relasi": "Cepu–Surabaya Pasar Turi 12:00",
+   "relasi": "Cepu–Surabaya Pasar Turi",
    "page": 5,
    "stops": [
     {
@@ -3977,6 +4024,5288 @@
     {
      "code": "SBI",
      "time": "14:46"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Walahar",
+   "number": "326",
+   "relasi": "Cikarang-Purwakarta",
+   "page": 1,
+   "stops": [
+    {
+     "code": "CKR",
+     "time": "06:00"
+    },
+    {
+     "code": "LMB",
+     "time": "06:06"
+    },
+    {
+     "code": "KDH",
+     "time": "06:16"
+    },
+    {
+     "code": "KW",
+     "time": "06:25"
+    },
+    {
+     "code": "KLI",
+     "time": "06:33"
+    },
+    {
+     "code": "KOS",
+     "time": "06:48"
+    },
+    {
+     "code": "DWN",
+     "time": "06:56"
+    },
+    {
+     "code": "CKP",
+     "time": "07:03"
+    },
+    {
+     "code": "CBR",
+     "time": "07:14"
+    },
+    {
+     "code": "PWK",
+     "time": "07:25"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Walahar",
+   "number": "328",
+   "relasi": "Cikarang-Purwakarta",
+   "page": 1,
+   "stops": [
+    {
+     "code": "CKR",
+     "time": "07:48"
+    },
+    {
+     "code": "LMB",
+     "time": "07:54"
+    },
+    {
+     "code": "KDH",
+     "time": "08:10"
+    },
+    {
+     "code": "KW",
+     "time": "08:24"
+    },
+    {
+     "code": "KLI",
+     "time": "08:45"
+    },
+    {
+     "code": "KOS",
+     "time": "08:59"
+    },
+    {
+     "code": "DWN",
+     "time": "09:07"
+    },
+    {
+     "code": "CKP",
+     "time": "09:14"
+    },
+    {
+     "code": "CBR",
+     "time": "09:25"
+    },
+    {
+     "code": "PWK",
+     "time": "09:36"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Walahar",
+   "number": "330",
+   "relasi": "Cikarang-Purwakarta",
+   "page": 1,
+   "stops": [
+    {
+     "code": "CKR",
+     "time": "11:36"
+    },
+    {
+     "code": "LMB",
+     "time": "11:42"
+    },
+    {
+     "code": "KDH",
+     "time": "11:52"
+    },
+    {
+     "code": "KW",
+     "time": "12:07"
+    },
+    {
+     "code": "KLI",
+     "time": "12:15"
+    },
+    {
+     "code": "KOS",
+     "time": "12:31"
+    },
+    {
+     "code": "DWN",
+     "time": "12:39"
+    },
+    {
+     "code": "CKP",
+     "time": "12:46"
+    },
+    {
+     "code": "CBR",
+     "time": "12:57"
+    },
+    {
+     "code": "PWK",
+     "time": "13:08"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Walahar",
+   "number": "332",
+   "relasi": "Cikarang-Purwakarta",
+   "page": 1,
+   "stops": [
+    {
+     "code": "CKR",
+     "time": "13:26"
+    },
+    {
+     "code": "LMB",
+     "time": "13:32"
+    },
+    {
+     "code": "KDH",
+     "time": "13:42"
+    },
+    {
+     "code": "KW",
+     "time": "13:50"
+    },
+    {
+     "code": "KLI",
+     "time": "13:58"
+    },
+    {
+     "code": "KOS",
+     "time": "14:12"
+    },
+    {
+     "code": "DWN",
+     "time": "14:20"
+    },
+    {
+     "code": "CKP",
+     "time": "14:27"
+    },
+    {
+     "code": "CBR",
+     "time": "14:38"
+    },
+    {
+     "code": "PWK",
+     "time": "14:50"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Jatiluhur",
+   "number": "336",
+   "relasi": "Cikarang-Cikampek",
+   "page": 1,
+   "stops": [
+    {
+     "code": "CKR",
+     "time": "15:35"
+    },
+    {
+     "code": "LMB",
+     "time": "15:41"
+    },
+    {
+     "code": "KDH",
+     "time": "15:51"
+    },
+    {
+     "code": "KW",
+     "time": "15:59"
+    },
+    {
+     "code": "KLI",
+     "time": "16:07"
+    },
+    {
+     "code": "KOS",
+     "time": "16:13"
+    },
+    {
+     "code": "DWN",
+     "time": "16:21"
+    },
+    {
+     "code": "CKP",
+     "time": "16:27"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Walahar",
+   "number": "334",
+   "relasi": "Cikarang-Purwakarta",
+   "page": 1,
+   "stops": [
+    {
+     "code": "CKR",
+     "time": "18:35"
+    },
+    {
+     "code": "LMB",
+     "time": "18:41"
+    },
+    {
+     "code": "KDH",
+     "time": "18:51"
+    },
+    {
+     "code": "KW",
+     "time": "19:00"
+    },
+    {
+     "code": "KLI",
+     "time": "19:15"
+    },
+    {
+     "code": "KOS",
+     "time": "19:35"
+    },
+    {
+     "code": "DWN",
+     "time": "19:43"
+    },
+    {
+     "code": "CKP",
+     "time": "19:50"
+    },
+    {
+     "code": "CBR",
+     "time": "20:01"
+    },
+    {
+     "code": "PWK",
+     "time": "20:12"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Jatiluhur",
+   "number": "338",
+   "relasi": "Cikarang-Cikampek",
+   "page": 1,
+   "stops": [
+    {
+     "code": "CKR",
+     "time": "20:14"
+    },
+    {
+     "code": "LMB",
+     "time": "20:20"
+    },
+    {
+     "code": "KDH",
+     "time": "20:30"
+    },
+    {
+     "code": "KW",
+     "time": "20:43"
+    },
+    {
+     "code": "KLI",
+     "time": "20:57"
+    },
+    {
+     "code": "KOS",
+     "time": "21:11"
+    },
+    {
+     "code": "DWN",
+     "time": "21:19"
+    },
+    {
+     "code": "CKP",
+     "time": "21:24"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Jatiluhur",
+   "number": "335",
+   "relasi": "Cikampek-Cikarang",
+   "page": 1,
+   "stops": [
+    {
+     "code": "CKP",
+     "time": "04:48"
+    },
+    {
+     "code": "KW",
+     "time": "05:09"
+    },
+    {
+     "code": "KDH",
+     "time": "05:17"
+    },
+    {
+     "code": "LMB",
+     "time": "05:27"
+    },
+    {
+     "code": "CKR",
+     "time": "05:32"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Walahar",
+   "number": "325",
+   "relasi": "Purwakarta-Cikarang",
+   "page": 1,
+   "stops": [
+    {
+     "code": "PWK",
+     "time": "05:10"
+    },
+    {
+     "code": "CBR",
+     "time": "05:23"
+    },
+    {
+     "code": "CKP",
+     "time": "05:36"
+    },
+    {
+     "code": "DWN",
+     "time": "05:42"
+    },
+    {
+     "code": "KOS",
+     "time": "05:50"
+    },
+    {
+     "code": "KLI",
+     "time": "05:57"
+    },
+    {
+     "code": "KW",
+     "time": "06:06"
+    },
+    {
+     "code": "KDH",
+     "time": "06:14"
+    },
+    {
+     "code": "LMB",
+     "time": "06:24"
+    },
+    {
+     "code": "CKR",
+     "time": "06:29"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Walahar",
+   "number": "327",
+   "relasi": "Purwakarta-Cikarang",
+   "page": 1,
+   "stops": [
+    {
+     "code": "PWK",
+     "time": "09:20"
+    },
+    {
+     "code": "CBR",
+     "time": "09:33"
+    },
+    {
+     "code": "CKP",
+     "time": "09:44"
+    },
+    {
+     "code": "DWN",
+     "time": "09:50"
+    },
+    {
+     "code": "KOS",
+     "time": "10:07"
+    },
+    {
+     "code": "KLI",
+     "time": "10:13"
+    },
+    {
+     "code": "KW",
+     "time": "10:21"
+    },
+    {
+     "code": "KDH",
+     "time": "10:29"
+    },
+    {
+     "code": "LMB",
+     "time": "10:39"
+    },
+    {
+     "code": "CKR",
+     "time": "10:44"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Walahar",
+   "number": "329",
+   "relasi": "Purwakarta-Cikarang",
+   "page": 1,
+   "stops": [
+    {
+     "code": "PWK",
+     "time": "10:45"
+    },
+    {
+     "code": "CBR",
+     "time": "10:58"
+    },
+    {
+     "code": "CKP",
+     "time": "11:08"
+    },
+    {
+     "code": "DWN",
+     "time": "11:14"
+    },
+    {
+     "code": "KOS",
+     "time": "11:22"
+    },
+    {
+     "code": "KLI",
+     "time": "11:28"
+    },
+    {
+     "code": "KW",
+     "time": "11:41"
+    },
+    {
+     "code": "KDH",
+     "time": "11:55"
+    },
+    {
+     "code": "LMB",
+     "time": "12:05"
+    },
+    {
+     "code": "CKR",
+     "time": "12:10"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Walahar",
+   "number": "331",
+   "relasi": "Purwakarta-Cikarang",
+   "page": 1,
+   "stops": [
+    {
+     "code": "PWK",
+     "time": "13:35"
+    },
+    {
+     "code": "CBR",
+     "time": "13:48"
+    },
+    {
+     "code": "CKP",
+     "time": "13:59"
+    },
+    {
+     "code": "DWN",
+     "time": "14:05"
+    },
+    {
+     "code": "KOS",
+     "time": "14:13"
+    },
+    {
+     "code": "KLI",
+     "time": "14:19"
+    },
+    {
+     "code": "KW",
+     "time": "14:27"
+    },
+    {
+     "code": "KDH",
+     "time": "14:44"
+    },
+    {
+     "code": "LMB",
+     "time": "14:54"
+    },
+    {
+     "code": "CKR",
+     "time": "14:59"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Jatiluhur",
+   "number": "337",
+   "relasi": "Cikampek-Cikarang",
+   "page": 1,
+   "stops": [
+    {
+     "code": "CKP",
+     "time": "16:56"
+    },
+    {
+     "code": "DWN",
+     "time": "17:03"
+    },
+    {
+     "code": "KOS",
+     "time": "17:11"
+    },
+    {
+     "code": "KLI",
+     "time": "17:17"
+    },
+    {
+     "code": "KW",
+     "time": "17:26"
+    },
+    {
+     "code": "KDH",
+     "time": "17:41"
+    },
+    {
+     "code": "LMB",
+     "time": "17:51"
+    },
+    {
+     "code": "CKR",
+     "time": "17:56"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Walahar",
+   "number": "333",
+   "relasi": "Purwakarta-Cikarang",
+   "page": 1,
+   "stops": [
+    {
+     "code": "PWK",
+     "time": "18:05"
+    },
+    {
+     "code": "CBR",
+     "time": "18:18"
+    },
+    {
+     "code": "CKP",
+     "time": "18:29"
+    },
+    {
+     "code": "DWN",
+     "time": "18:35"
+    },
+    {
+     "code": "KOS",
+     "time": "18:50"
+    },
+    {
+     "code": "KLI",
+     "time": "19:04"
+    },
+    {
+     "code": "KW",
+     "time": "19:13"
+    },
+    {
+     "code": "KDH",
+     "time": "19:29"
+    },
+    {
+     "code": "LMB",
+     "time": "19:41"
+    },
+    {
+     "code": "CKR",
+     "time": "19:47"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Garut",
+   "number": "348",
+   "relasi": "Purwakarta-Garut",
+   "page": 2,
+   "stops": [
+    {
+     "code": "PWK",
+     "time": "04:25"
+    },
+    {
+     "code": "CA",
+     "time": "04:37"
+    },
+    {
+     "code": "SUT",
+     "time": "04:50"
+    },
+    {
+     "code": "PLD",
+     "time": "04:59"
+    },
+    {
+     "code": "CD",
+     "time": "05:19"
+    },
+    {
+     "code": "RH",
+     "time": "05:27"
+    },
+    {
+     "code": "MSI",
+     "time": "05:43"
+    },
+    {
+     "code": "SKT",
+     "time": "05:53"
+    },
+    {
+     "code": "CLE",
+     "time": "06:05"
+    },
+    {
+     "code": "PDL",
+     "time": "06:17"
+    },
+    {
+     "code": "GK",
+     "time": "06:22"
+    },
+    {
+     "code": "CMI",
+     "time": "06:30"
+    },
+    {
+     "code": "CMD",
+     "time": "06:37"
+    },
+    {
+     "code": "CIR",
+     "time": "06:49"
+    },
+    {
+     "code": "BD",
+     "time": "07:07"
+    },
+    {
+     "code": "CTH",
+     "time": "07:13"
+    },
+    {
+     "code": "KAC",
+     "time": "07:24"
+    },
+    {
+     "code": "GDB",
+     "time": "07:34"
+    },
+    {
+     "code": "CMK",
+     "time": "07:39"
+    },
+    {
+     "code": "RCK",
+     "time": "07:58"
+    },
+    {
+     "code": "HRP",
+     "time": "08:06"
+    },
+    {
+     "code": "CCL",
+     "time": "08:40"
+    },
+    {
+     "code": "NG",
+     "time": "08:57"
+    },
+    {
+     "code": "LL",
+     "time": "09:20"
+    },
+    {
+     "code": "KRAI",
+     "time": "09:30"
+    },
+    {
+     "code": "LO",
+     "time": "09:37"
+    },
+    {
+     "code": "CB",
+     "time": "09:45"
+    },
+    {
+     "code": "PSJ",
+     "time": "09:57"
+    },
+    {
+     "code": "WNR",
+     "time": "10:07"
+    },
+    {
+     "code": "GRT",
+     "time": "10:22"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Garut",
+   "number": "350",
+   "relasi": "Purwakarta-Garut",
+   "page": 2,
+   "stops": [
+    {
+     "code": "PWK",
+     "time": "16:25"
+    },
+    {
+     "code": "CA",
+     "time": "16:39"
+    },
+    {
+     "code": "SUT",
+     "time": "16:52"
+    },
+    {
+     "code": "PLD",
+     "time": "17:01"
+    },
+    {
+     "code": "CD",
+     "time": "17:19"
+    },
+    {
+     "code": "RH",
+     "time": "17:27"
+    },
+    {
+     "code": "MSI",
+     "time": "17:40"
+    },
+    {
+     "code": "SKT",
+     "time": "17:50"
+    },
+    {
+     "code": "CLE",
+     "time": "18:03"
+    },
+    {
+     "code": "PDL",
+     "time": "18:16"
+    },
+    {
+     "code": "GK",
+     "time": "18:21"
+    },
+    {
+     "code": "CMI",
+     "time": "18:29"
+    },
+    {
+     "code": "CMD",
+     "time": "18:36"
+    },
+    {
+     "code": "CIR",
+     "time": "18:48"
+    },
+    {
+     "code": "BD",
+     "time": "19:07"
+    },
+    {
+     "code": "CTH",
+     "time": "19:13"
+    },
+    {
+     "code": "KAC",
+     "time": "19:24"
+    },
+    {
+     "code": "GDB",
+     "time": "19:34"
+    },
+    {
+     "code": "CMK",
+     "time": "19:39"
+    },
+    {
+     "code": "RCK",
+     "time": "19:49"
+    },
+    {
+     "code": "HRP",
+     "time": "19:57"
+    },
+    {
+     "code": "CCL",
+     "time": "20:06"
+    },
+    {
+     "code": "NG",
+     "time": "20:28"
+    },
+    {
+     "code": "LL",
+     "time": "20:50"
+    },
+    {
+     "code": "KRAI",
+     "time": "21:17"
+    },
+    {
+     "code": "LO",
+     "time": "21:24"
+    },
+    {
+     "code": "CB",
+     "time": "21:33"
+    },
+    {
+     "code": "PSJ",
+     "time": "21:46"
+    },
+    {
+     "code": "WNR",
+     "time": "21:57"
+    },
+    {
+     "code": "GRT",
+     "time": "22:12"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Garut",
+   "number": "378",
+   "relasi": "Padalarang-Cibatu",
+   "page": 2,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "20:46"
+    },
+    {
+     "code": "GK",
+     "time": "20:52"
+    },
+    {
+     "code": "CMI",
+     "time": "20:59"
+    },
+    {
+     "code": "CMD",
+     "time": "21:06"
+    },
+    {
+     "code": "CIR",
+     "time": "21:19"
+    },
+    {
+     "code": "BD",
+     "time": "21:28"
+    },
+    {
+     "code": "CTH",
+     "time": "21:34"
+    },
+    {
+     "code": "KAC",
+     "time": "21:42"
+    },
+    {
+     "code": "GDB",
+     "time": "21:52"
+    },
+    {
+     "code": "CMK",
+     "time": "21:58"
+    },
+    {
+     "code": "RCK",
+     "time": "22:06"
+    },
+    {
+     "code": "HRP",
+     "time": "22:14"
+    },
+    {
+     "code": "CCL",
+     "time": "22:22"
+    },
+    {
+     "code": "NG",
+     "time": "22:39"
+    },
+    {
+     "code": "LL",
+     "time": "23:04"
+    },
+    {
+     "code": "KRAI",
+     "time": "23:14"
+    },
+    {
+     "code": "LO",
+     "time": "23:21"
+    },
+    {
+     "code": "CB",
+     "time": "23:28"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Garut",
+   "number": "391",
+   "relasi": "Cibatu-Padalarang",
+   "page": 2,
+   "stops": [
+    {
+     "code": "CB",
+     "time": "05:15"
+    },
+    {
+     "code": "LO",
+     "time": "05:21"
+    },
+    {
+     "code": "KRAI",
+     "time": "05:30"
+    },
+    {
+     "code": "LL",
+     "time": "05:39"
+    },
+    {
+     "code": "NG",
+     "time": "06:01"
+    },
+    {
+     "code": "CCL",
+     "time": "06:18"
+    },
+    {
+     "code": "HRP",
+     "time": "06:25"
+    },
+    {
+     "code": "RCK",
+     "time": "06:35"
+    },
+    {
+     "code": "CMK",
+     "time": "06:43"
+    },
+    {
+     "code": "GDB",
+     "time": "06:49"
+    },
+    {
+     "code": "KAC",
+     "time": "06:59"
+    },
+    {
+     "code": "CTH",
+     "time": "07:05"
+    },
+    {
+     "code": "BD",
+     "time": "07:14"
+    },
+    {
+     "code": "CIR",
+     "time": "07:21"
+    },
+    {
+     "code": "CMD",
+     "time": "07:34"
+    },
+    {
+     "code": "CMI",
+     "time": "07:41"
+    },
+    {
+     "code": "GK",
+     "time": "07:46"
+    },
+    {
+     "code": "PDL",
+     "time": "07:52"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Garut",
+   "number": "351",
+   "relasi": "Garut-Padalarang",
+   "page": 2,
+   "stops": [
+    {
+     "code": "GRT",
+     "time": "05:35"
+    },
+    {
+     "code": "WNR",
+     "time": "05:52"
+    },
+    {
+     "code": "PSJ",
+     "time": "06:02"
+    },
+    {
+     "code": "CB",
+     "time": "06:15"
+    },
+    {
+     "code": "LO",
+     "time": "06:20"
+    },
+    {
+     "code": "KRAI",
+     "time": "06:30"
+    },
+    {
+     "code": "LL",
+     "time": "06:39"
+    },
+    {
+     "code": "NG",
+     "time": "07:34"
+    },
+    {
+     "code": "CCL",
+     "time": "07:51"
+    },
+    {
+     "code": "HRP",
+     "time": "07:57"
+    },
+    {
+     "code": "RCK",
+     "time": "08:08"
+    },
+    {
+     "code": "CMK",
+     "time": "08:14"
+    },
+    {
+     "code": "GDB",
+     "time": "08:22"
+    },
+    {
+     "code": "KAC",
+     "time": "08:36"
+    },
+    {
+     "code": "CTH",
+     "time": "08:42"
+    },
+    {
+     "code": "BD",
+     "time": "08:57"
+    },
+    {
+     "code": "CIR",
+     "time": "09:04"
+    },
+    {
+     "code": "CMD",
+     "time": "09:28"
+    },
+    {
+     "code": "CMI",
+     "time": "09:36"
+    },
+    {
+     "code": "GK",
+     "time": "09:41"
+    },
+    {
+     "code": "PDL",
+     "time": "09:47"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Garut",
+   "number": "349",
+   "relasi": "Garut-Purwakarta",
+   "page": 2,
+   "stops": [
+    {
+     "code": "GRT",
+     "time": "11:50"
+    },
+    {
+     "code": "WNR",
+     "time": "12:07"
+    },
+    {
+     "code": "PSJ",
+     "time": "12:17"
+    },
+    {
+     "code": "CB",
+     "time": "12:35"
+    },
+    {
+     "code": "LO",
+     "time": "12:40"
+    },
+    {
+     "code": "KRAI",
+     "time": "12:49"
+    },
+    {
+     "code": "LL",
+     "time": "13:02"
+    },
+    {
+     "code": "NG",
+     "time": "13:23"
+    },
+    {
+     "code": "CCL",
+     "time": "13:39"
+    },
+    {
+     "code": "HRP",
+     "time": "13:46"
+    },
+    {
+     "code": "RCK",
+     "time": "13:56"
+    },
+    {
+     "code": "CMK",
+     "time": "14:04"
+    },
+    {
+     "code": "GDB",
+     "time": "14:10"
+    },
+    {
+     "code": "KAC",
+     "time": "14:23"
+    },
+    {
+     "code": "CTH",
+     "time": "14:29"
+    },
+    {
+     "code": "BD",
+     "time": "14:51"
+    },
+    {
+     "code": "CIR",
+     "time": "14:58"
+    },
+    {
+     "code": "CMD",
+     "time": "15:10"
+    },
+    {
+     "code": "CMI",
+     "time": "15:17"
+    },
+    {
+     "code": "GK",
+     "time": "15:22"
+    },
+    {
+     "code": "PDL",
+     "time": "15:30"
+    },
+    {
+     "code": "CLE",
+     "time": "15:49"
+    },
+    {
+     "code": "SKT",
+     "time": "16:09"
+    },
+    {
+     "code": "MSI",
+     "time": "16:19"
+    },
+    {
+     "code": "RH",
+     "time": "16:28"
+    },
+    {
+     "code": "CD",
+     "time": "16:36"
+    },
+    {
+     "code": "PLD",
+     "time": "17:03"
+    },
+    {
+     "code": "SUT",
+     "time": "17:12"
+    },
+    {
+     "code": "CA",
+     "time": "17:25"
+    },
+    {
+     "code": "PWK",
+     "time": "17:35"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "367",
+   "relasi": "Raya Cicalengka-Purwakarta",
+   "page": 2,
+   "stops": [
+    {
+     "code": "CCL",
+     "time": "20:45"
+    },
+    {
+     "code": "HRP",
+     "time": "20:52"
+    },
+    {
+     "code": "RCK",
+     "time": "21:12"
+    },
+    {
+     "code": "CMK",
+     "time": "21:19"
+    },
+    {
+     "code": "GDB",
+     "time": "21:26"
+    },
+    {
+     "code": "KAC",
+     "time": "21:36"
+    },
+    {
+     "code": "CTH",
+     "time": "21:42"
+    },
+    {
+     "code": "BD",
+     "time": "22:19"
+    },
+    {
+     "code": "CIR",
+     "time": "22:26"
+    },
+    {
+     "code": "CMD",
+     "time": "22:37"
+    },
+    {
+     "code": "CMI",
+     "time": "22:44"
+    },
+    {
+     "code": "GK",
+     "time": "22:47"
+    },
+    {
+     "code": "PDL",
+     "time": "22:54"
+    },
+    {
+     "code": "CLE",
+     "time": "23:07"
+    },
+    {
+     "code": "SKT",
+     "time": "23:20"
+    },
+    {
+     "code": "MSI",
+     "time": "23:29"
+    },
+    {
+     "code": "RH",
+     "time": "23:38"
+    },
+    {
+     "code": "CD",
+     "time": "23:46"
+    },
+    {
+     "code": "PLD",
+     "time": "00:04"
+    },
+    {
+     "code": "SUT",
+     "time": "00:13"
+    },
+    {
+     "code": "CA",
+     "time": "00:25"
+    },
+    {
+     "code": "PWK",
+     "time": "00:35"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "380",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "04:00"
+    },
+    {
+     "code": "GK",
+     "time": "04:04"
+    },
+    {
+     "code": "CMI",
+     "time": "04:11"
+    },
+    {
+     "code": "CMD",
+     "time": "04:18"
+    },
+    {
+     "code": "CIR",
+     "time": "04:28"
+    },
+    {
+     "code": "BD",
+     "time": "04:36"
+    },
+    {
+     "code": "CTH",
+     "time": "04:42"
+    },
+    {
+     "code": "KAC",
+     "time": "04:50"
+    },
+    {
+     "code": "GDB",
+     "time": "05:00"
+    },
+    {
+     "code": "CMK",
+     "time": "05:06"
+    },
+    {
+     "code": "RCK",
+     "time": "05:15"
+    },
+    {
+     "code": "HRP",
+     "time": "05:23"
+    },
+    {
+     "code": "CCL",
+     "time": "05:30"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "360",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "04:40"
+    },
+    {
+     "code": "GK",
+     "time": "04:45"
+    },
+    {
+     "code": "CMI",
+     "time": "04:53"
+    },
+    {
+     "code": "CMD",
+     "time": "05:00"
+    },
+    {
+     "code": "CIR",
+     "time": "05:11"
+    },
+    {
+     "code": "BD",
+     "time": "05:19"
+    },
+    {
+     "code": "CTH",
+     "time": "05:25"
+    },
+    {
+     "code": "KAC",
+     "time": "05:33"
+    },
+    {
+     "code": "GDB",
+     "time": "05:43"
+    },
+    {
+     "code": "CMK",
+     "time": "05:49"
+    },
+    {
+     "code": "RCK",
+     "time": "05:58"
+    },
+    {
+     "code": "HRP",
+     "time": "06:06"
+    },
+    {
+     "code": "CCL",
+     "time": "06:13"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "372",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "06:57"
+    },
+    {
+     "code": "GK",
+     "time": "07:02"
+    },
+    {
+     "code": "CMI",
+     "time": "07:10"
+    },
+    {
+     "code": "CMD",
+     "time": "07:27"
+    },
+    {
+     "code": "CIR",
+     "time": "07:39"
+    },
+    {
+     "code": "BD",
+     "time": "08:03"
+    },
+    {
+     "code": "CTH",
+     "time": "08:09"
+    },
+    {
+     "code": "KAC",
+     "time": "08:16"
+    },
+    {
+     "code": "GDB",
+     "time": "08:26"
+    },
+    {
+     "code": "CMK",
+     "time": "08:31"
+    },
+    {
+     "code": "RCK",
+     "time": "08:40"
+    },
+    {
+     "code": "HRP",
+     "time": "08:48"
+    },
+    {
+     "code": "CCL",
+     "time": "08:55"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "382",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "07:47"
+    },
+    {
+     "code": "GK",
+     "time": "07:52"
+    },
+    {
+     "code": "CMI",
+     "time": "08:00"
+    },
+    {
+     "code": "CMD",
+     "time": "08:07"
+    },
+    {
+     "code": "CIR",
+     "time": "08:20"
+    },
+    {
+     "code": "BD",
+     "time": "08:35"
+    },
+    {
+     "code": "CTH",
+     "time": "08:41"
+    },
+    {
+     "code": "KAC",
+     "time": "08:49"
+    },
+    {
+     "code": "GDB",
+     "time": "08:59"
+    },
+    {
+     "code": "CMK",
+     "time": "09:04"
+    },
+    {
+     "code": "RCK",
+     "time": "09:14"
+    },
+    {
+     "code": "HRP",
+     "time": "09:22"
+    },
+    {
+     "code": "CCL",
+     "time": "09:29"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "392",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "08:25"
+    },
+    {
+     "code": "GK",
+     "time": "08:30"
+    },
+    {
+     "code": "CMI",
+     "time": "08:38"
+    },
+    {
+     "code": "CMD",
+     "time": "08:45"
+    },
+    {
+     "code": "CIR",
+     "time": "08:56"
+    },
+    {
+     "code": "BD",
+     "time": "09:11"
+    },
+    {
+     "code": "CTH",
+     "time": "09:18"
+    },
+    {
+     "code": "KAC",
+     "time": "09:25"
+    },
+    {
+     "code": "GDB",
+     "time": "09:35"
+    },
+    {
+     "code": "CMK",
+     "time": "09:40"
+    },
+    {
+     "code": "RCK",
+     "time": "10:00"
+    },
+    {
+     "code": "HRP",
+     "time": "10:08"
+    },
+    {
+     "code": "CCL",
+     "time": "10:15"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "362",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "09:27"
+    },
+    {
+     "code": "GK",
+     "time": "09:32"
+    },
+    {
+     "code": "CMI",
+     "time": "09:40"
+    },
+    {
+     "code": "CMD",
+     "time": "09:56"
+    },
+    {
+     "code": "CIR",
+     "time": "10:10"
+    },
+    {
+     "code": "BD",
+     "time": "10:24"
+    },
+    {
+     "code": "CTH",
+     "time": "10:30"
+    },
+    {
+     "code": "KAC",
+     "time": "10:38"
+    },
+    {
+     "code": "GDB",
+     "time": "10:48"
+    },
+    {
+     "code": "CMK",
+     "time": "10:53"
+    },
+    {
+     "code": "RCK",
+     "time": "11:03"
+    },
+    {
+     "code": "HRP",
+     "time": "11:11"
+    },
+    {
+     "code": "CCL",
+     "time": "11:18"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "352",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "10:20"
+    },
+    {
+     "code": "GK",
+     "time": "10:25"
+    },
+    {
+     "code": "CMI",
+     "time": "10:33"
+    },
+    {
+     "code": "CMD",
+     "time": "10:40"
+    },
+    {
+     "code": "CIR",
+     "time": "10:52"
+    },
+    {
+     "code": "BD",
+     "time": "11:03"
+    },
+    {
+     "code": "CTH",
+     "time": "11:09"
+    },
+    {
+     "code": "KAC",
+     "time": "11:21"
+    },
+    {
+     "code": "GDB",
+     "time": "11:31"
+    },
+    {
+     "code": "CMK",
+     "time": "11:37"
+    },
+    {
+     "code": "RCK",
+     "time": "11:46"
+    },
+    {
+     "code": "HRP",
+     "time": "11:54"
+    },
+    {
+     "code": "CCL",
+     "time": "12:01"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "374",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "11:30"
+    },
+    {
+     "code": "GK",
+     "time": "11:35"
+    },
+    {
+     "code": "CMI",
+     "time": "11:54"
+    },
+    {
+     "code": "CMD",
+     "time": "12:02"
+    },
+    {
+     "code": "CIR",
+     "time": "12:14"
+    },
+    {
+     "code": "BD",
+     "time": "12:25"
+    },
+    {
+     "code": "CTH",
+     "time": "12:31"
+    },
+    {
+     "code": "KAC",
+     "time": "12:39"
+    },
+    {
+     "code": "GDB",
+     "time": "12:49"
+    },
+    {
+     "code": "CMK",
+     "time": "12:54"
+    },
+    {
+     "code": "RCK",
+     "time": "13:03"
+    },
+    {
+     "code": "HRP",
+     "time": "13:11"
+    },
+    {
+     "code": "CCL",
+     "time": "13:18"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "384",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "12:15"
+    },
+    {
+     "code": "GK",
+     "time": "12:20"
+    },
+    {
+     "code": "CMI",
+     "time": "12:29"
+    },
+    {
+     "code": "CMD",
+     "time": "12:36"
+    },
+    {
+     "code": "CIR",
+     "time": "12:47"
+    },
+    {
+     "code": "BD",
+     "time": "12:56"
+    },
+    {
+     "code": "CTH",
+     "time": "13:02"
+    },
+    {
+     "code": "KAC",
+     "time": "13:10"
+    },
+    {
+     "code": "GDB",
+     "time": "13:33"
+    },
+    {
+     "code": "CMK",
+     "time": "13:39"
+    },
+    {
+     "code": "RCK",
+     "time": "13:49"
+    },
+    {
+     "code": "HRP",
+     "time": "13:57"
+    },
+    {
+     "code": "CCL",
+     "time": "14:05"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "394",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "13:16"
+    },
+    {
+     "code": "GK",
+     "time": "13:21"
+    },
+    {
+     "code": "CMI",
+     "time": "13:29"
+    },
+    {
+     "code": "CMD",
+     "time": "13:36"
+    },
+    {
+     "code": "CIR",
+     "time": "13:47"
+    },
+    {
+     "code": "BD",
+     "time": "13:56"
+    },
+    {
+     "code": "CTH",
+     "time": "14:02"
+    },
+    {
+     "code": "KAC",
+     "time": "14:10"
+    },
+    {
+     "code": "GDB",
+     "time": "14:20"
+    },
+    {
+     "code": "CMK",
+     "time": "14:26"
+    },
+    {
+     "code": "RCK",
+     "time": "14:35"
+    },
+    {
+     "code": "HRP",
+     "time": "14:43"
+    },
+    {
+     "code": "CCL",
+     "time": "14:50"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "364",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "14:17"
+    },
+    {
+     "code": "GK",
+     "time": "14:22"
+    },
+    {
+     "code": "CMI",
+     "time": "14:30"
+    },
+    {
+     "code": "CMD",
+     "time": "14:37"
+    },
+    {
+     "code": "CIR",
+     "time": "14:49"
+    },
+    {
+     "code": "BD",
+     "time": "15:01"
+    },
+    {
+     "code": "CTH",
+     "time": "15:07"
+    },
+    {
+     "code": "KAC",
+     "time": "15:19"
+    },
+    {
+     "code": "GDB",
+     "time": "15:29"
+    },
+    {
+     "code": "CMK",
+     "time": "15:34"
+    },
+    {
+     "code": "RCK",
+     "time": "15:43"
+    },
+    {
+     "code": "HRP",
+     "time": "15:51"
+    },
+    {
+     "code": "CCL",
+     "time": "15:58"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "354",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "15:24"
+    },
+    {
+     "code": "GK",
+     "time": "15:29"
+    },
+    {
+     "code": "CMI",
+     "time": "15:37"
+    },
+    {
+     "code": "CMD",
+     "time": "15:44"
+    },
+    {
+     "code": "CIR",
+     "time": "15:56"
+    },
+    {
+     "code": "BD",
+     "time": "16:14"
+    },
+    {
+     "code": "CTH",
+     "time": "16:20"
+    },
+    {
+     "code": "KAC",
+     "time": "16:31"
+    },
+    {
+     "code": "GDB",
+     "time": "16:41"
+    },
+    {
+     "code": "CMK",
+     "time": "16:46"
+    },
+    {
+     "code": "RCK",
+     "time": "16:55"
+    },
+    {
+     "code": "HRP",
+     "time": "17:03"
+    },
+    {
+     "code": "CCL",
+     "time": "17:10"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "376",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "16:15"
+    },
+    {
+     "code": "GK",
+     "time": "16:21"
+    },
+    {
+     "code": "CMI",
+     "time": "16:37"
+    },
+    {
+     "code": "CMD",
+     "time": "16:44"
+    },
+    {
+     "code": "CIR",
+     "time": "16:55"
+    },
+    {
+     "code": "BD",
+     "time": "17:14"
+    },
+    {
+     "code": "CTH",
+     "time": "17:20"
+    },
+    {
+     "code": "KAC",
+     "time": "17:29"
+    },
+    {
+     "code": "GDB",
+     "time": "17:39"
+    },
+    {
+     "code": "CMK",
+     "time": "17:45"
+    },
+    {
+     "code": "RCK",
+     "time": "18:03"
+    },
+    {
+     "code": "HRP",
+     "time": "18:11"
+    },
+    {
+     "code": "CCL",
+     "time": "18:18"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "386",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "16:50"
+    },
+    {
+     "code": "GK",
+     "time": "16:55"
+    },
+    {
+     "code": "CMI",
+     "time": "17:03"
+    },
+    {
+     "code": "CMD",
+     "time": "17:10"
+    },
+    {
+     "code": "CIR",
+     "time": "17:21"
+    },
+    {
+     "code": "BD",
+     "time": "17:47"
+    },
+    {
+     "code": "CTH",
+     "time": "17:53"
+    },
+    {
+     "code": "KAC",
+     "time": "18:01"
+    },
+    {
+     "code": "GDB",
+     "time": "18:11"
+    },
+    {
+     "code": "CMK",
+     "time": "18:16"
+    },
+    {
+     "code": "RCK",
+     "time": "18:25"
+    },
+    {
+     "code": "HRP",
+     "time": "18:33"
+    },
+    {
+     "code": "CCL",
+     "time": "18:39"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "396",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "17:20"
+    },
+    {
+     "code": "GK",
+     "time": "17:26"
+    },
+    {
+     "code": "CMI",
+     "time": "17:33"
+    },
+    {
+     "code": "CMD",
+     "time": "17:40"
+    },
+    {
+     "code": "CIR",
+     "time": "17:55"
+    },
+    {
+     "code": "BD",
+     "time": "18:17"
+    },
+    {
+     "code": "CTH",
+     "time": "18:23"
+    },
+    {
+     "code": "KAC",
+     "time": "18:35"
+    },
+    {
+     "code": "GDB",
+     "time": "18:56"
+    },
+    {
+     "code": "CMK",
+     "time": "19:02"
+    },
+    {
+     "code": "RCK",
+     "time": "19:10"
+    },
+    {
+     "code": "HRP",
+     "time": "19:18"
+    },
+    {
+     "code": "CCL",
+     "time": "19:25"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "366",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "18:48"
+    },
+    {
+     "code": "GK",
+     "time": "18:53"
+    },
+    {
+     "code": "CMI",
+     "time": "19:01"
+    },
+    {
+     "code": "CMD",
+     "time": "19:08"
+    },
+    {
+     "code": "CIR",
+     "time": "19:19"
+    },
+    {
+     "code": "BD",
+     "time": "19:28"
+    },
+    {
+     "code": "CTH",
+     "time": "19:34"
+    },
+    {
+     "code": "KAC",
+     "time": "19:42"
+    },
+    {
+     "code": "GDB",
+     "time": "19:52"
+    },
+    {
+     "code": "CMK",
+     "time": "19:57"
+    },
+    {
+     "code": "RCK",
+     "time": "20:06"
+    },
+    {
+     "code": "HRP",
+     "time": "20:14"
+    },
+    {
+     "code": "CCL",
+     "time": "20:20"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "356",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "20:00"
+    },
+    {
+     "code": "GK",
+     "time": "20:06"
+    },
+    {
+     "code": "CMI",
+     "time": "20:35"
+    },
+    {
+     "code": "CMD",
+     "time": "20:43"
+    },
+    {
+     "code": "CIR",
+     "time": "20:56"
+    },
+    {
+     "code": "BD",
+     "time": "21:05"
+    },
+    {
+     "code": "CTH",
+     "time": "21:11"
+    },
+    {
+     "code": "KAC",
+     "time": "21:19"
+    },
+    {
+     "code": "GDB",
+     "time": "21:29"
+    },
+    {
+     "code": "CMK",
+     "time": "21:35"
+    },
+    {
+     "code": "RCK",
+     "time": "21:45"
+    },
+    {
+     "code": "HRP",
+     "time": "21:53"
+    },
+    {
+     "code": "CCL",
+     "time": "22:00"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "388",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "21:17"
+    },
+    {
+     "code": "GK",
+     "time": "21:22"
+    },
+    {
+     "code": "CMI",
+     "time": "21:30"
+    },
+    {
+     "code": "CMD",
+     "time": "21:37"
+    },
+    {
+     "code": "CIR",
+     "time": "21:48"
+    },
+    {
+     "code": "BD",
+     "time": "21:56"
+    },
+    {
+     "code": "CTH",
+     "time": "22:02"
+    },
+    {
+     "code": "KAC",
+     "time": "22:10"
+    },
+    {
+     "code": "GDB",
+     "time": "22:32"
+    },
+    {
+     "code": "CMK",
+     "time": "22:37"
+    },
+    {
+     "code": "RCK",
+     "time": "22:46"
+    },
+    {
+     "code": "HRP",
+     "time": "22:54"
+    },
+    {
+     "code": "CCL",
+     "time": "23:00"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "398",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "PDL",
+     "time": "21:46"
+    },
+    {
+     "code": "GK",
+     "time": "21:51"
+    },
+    {
+     "code": "CMI",
+     "time": "21:59"
+    },
+    {
+     "code": "CMD",
+     "time": "22:06"
+    },
+    {
+     "code": "BD",
+     "time": "22:18"
+    },
+    {
+     "code": "CTH",
+     "time": "22:24"
+    },
+    {
+     "code": "KAC",
+     "time": "22:30"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "371",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "CCL",
+     "time": "04:45"
+    },
+    {
+     "code": "HRP",
+     "time": "04:52"
+    },
+    {
+     "code": "RCK",
+     "time": "05:01"
+    },
+    {
+     "code": "CMK",
+     "time": "05:08"
+    },
+    {
+     "code": "GDB",
+     "time": "05:15"
+    },
+    {
+     "code": "KAC",
+     "time": "05:25"
+    },
+    {
+     "code": "CTH",
+     "time": "05:31"
+    },
+    {
+     "code": "BD",
+     "time": "05:43"
+    },
+    {
+     "code": "CIR",
+     "time": "05:53"
+    },
+    {
+     "code": "CMD",
+     "time": "06:07"
+    },
+    {
+     "code": "CMI",
+     "time": "06:14"
+    },
+    {
+     "code": "GK",
+     "time": "06:19"
+    },
+    {
+     "code": "PDL",
+     "time": "06:25"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "381",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "CCL",
+     "time": "05:55"
+    },
+    {
+     "code": "HRP",
+     "time": "06:01"
+    },
+    {
+     "code": "RCK",
+     "time": "06:11"
+    },
+    {
+     "code": "CMK",
+     "time": "06:17"
+    },
+    {
+     "code": "GDB",
+     "time": "06:25"
+    },
+    {
+     "code": "KAC",
+     "time": "06:35"
+    },
+    {
+     "code": "CTH",
+     "time": "06:40"
+    },
+    {
+     "code": "BD",
+     "time": "06:50"
+    },
+    {
+     "code": "CIR",
+     "time": "06:57"
+    },
+    {
+     "code": "CMD",
+     "time": "07:09"
+    },
+    {
+     "code": "CMI",
+     "time": "07:16"
+    },
+    {
+     "code": "GK",
+     "time": "07:21"
+    },
+    {
+     "code": "PDL",
+     "time": "07:27"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "361",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "CCL",
+     "time": "06:38"
+    },
+    {
+     "code": "HRP",
+     "time": "06:44"
+    },
+    {
+     "code": "RCK",
+     "time": "07:05"
+    },
+    {
+     "code": "CMK",
+     "time": "07:11"
+    },
+    {
+     "code": "GDB",
+     "time": "07:20"
+    },
+    {
+     "code": "KAC",
+     "time": "07:30"
+    },
+    {
+     "code": "CTH",
+     "time": "07:36"
+    },
+    {
+     "code": "BD",
+     "time": "07:47"
+    },
+    {
+     "code": "CIR",
+     "time": "07:54"
+    },
+    {
+     "code": "CMD",
+     "time": "08:06"
+    },
+    {
+     "code": "CMI",
+     "time": "08:32"
+    },
+    {
+     "code": "GK",
+     "time": "08:39"
+    },
+    {
+     "code": "PDL",
+     "time": "08:45"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "373",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "CCL",
+     "time": "09:20"
+    },
+    {
+     "code": "HRP",
+     "time": "09:27"
+    },
+    {
+     "code": "RCK",
+     "time": "09:37"
+    },
+    {
+     "code": "CMK",
+     "time": "09:44"
+    },
+    {
+     "code": "GDB",
+     "time": "09:51"
+    },
+    {
+     "code": "KAC",
+     "time": "10:01"
+    },
+    {
+     "code": "CTH",
+     "time": "10:07"
+    },
+    {
+     "code": "BD",
+     "time": "10:19"
+    },
+    {
+     "code": "CIR",
+     "time": "10:29"
+    },
+    {
+     "code": "CMD",
+     "time": "10:41"
+    },
+    {
+     "code": "CMI",
+     "time": "10:48"
+    },
+    {
+     "code": "GK",
+     "time": "10:53"
+    },
+    {
+     "code": "PDL",
+     "time": "10:59"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "383",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "CCL",
+     "time": "10:06"
+    },
+    {
+     "code": "HRP",
+     "time": "10:12"
+    },
+    {
+     "code": "RCK",
+     "time": "10:25"
+    },
+    {
+     "code": "CMK",
+     "time": "10:31"
+    },
+    {
+     "code": "GDB",
+     "time": "10:40"
+    },
+    {
+     "code": "KAC",
+     "time": "10:56"
+    },
+    {
+     "code": "CTH",
+     "time": "11:02"
+    },
+    {
+     "code": "BD",
+     "time": "11:15"
+    },
+    {
+     "code": "CIR",
+     "time": "11:23"
+    },
+    {
+     "code": "CMD",
+     "time": "11:35"
+    },
+    {
+     "code": "CMI",
+     "time": "11:42"
+    },
+    {
+     "code": "GK",
+     "time": "11:47"
+    },
+    {
+     "code": "PDL",
+     "time": "11:53"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "393",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "CCL",
+     "time": "10:50"
+    },
+    {
+     "code": "HRP",
+     "time": "10:56"
+    },
+    {
+     "code": "RCK",
+     "time": "11:07"
+    },
+    {
+     "code": "CMK",
+     "time": "11:13"
+    },
+    {
+     "code": "GDB",
+     "time": "11:21"
+    },
+    {
+     "code": "KAC",
+     "time": "11:31"
+    },
+    {
+     "code": "CTH",
+     "time": "11:37"
+    },
+    {
+     "code": "BD",
+     "time": "11:47"
+    },
+    {
+     "code": "CIR",
+     "time": "11:54"
+    },
+    {
+     "code": "CMD",
+     "time": "12:08"
+    },
+    {
+     "code": "CMI",
+     "time": "12:15"
+    },
+    {
+     "code": "GK",
+     "time": "12:20"
+    },
+    {
+     "code": "PDL",
+     "time": "12:26"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "363",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "CCL",
+     "time": "11:50"
+    },
+    {
+     "code": "HRP",
+     "time": "11:56"
+    },
+    {
+     "code": "RCK",
+     "time": "12:07"
+    },
+    {
+     "code": "CMK",
+     "time": "12:13"
+    },
+    {
+     "code": "GDB",
+     "time": "12:21"
+    },
+    {
+     "code": "KAC",
+     "time": "12:31"
+    },
+    {
+     "code": "CTH",
+     "time": "12:37"
+    },
+    {
+     "code": "BD",
+     "time": "12:47"
+    },
+    {
+     "code": "CIR",
+     "time": "12:55"
+    },
+    {
+     "code": "CMD",
+     "time": "13:28"
+    },
+    {
+     "code": "CMI",
+     "time": "13:36"
+    },
+    {
+     "code": "GK",
+     "time": "13:41"
+    },
+    {
+     "code": "PDL",
+     "time": "13:47"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "353",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "CCL",
+     "time": "12:40"
+    },
+    {
+     "code": "HRP",
+     "time": "12:46"
+    },
+    {
+     "code": "RCK",
+     "time": "13:08"
+    },
+    {
+     "code": "CMK",
+     "time": "13:14"
+    },
+    {
+     "code": "GDB",
+     "time": "13:22"
+    },
+    {
+     "code": "KAC",
+     "time": "13:32"
+    },
+    {
+     "code": "CTH",
+     "time": "13:38"
+    },
+    {
+     "code": "BD",
+     "time": "13:47"
+    },
+    {
+     "code": "CIR",
+     "time": "13:58"
+    },
+    {
+     "code": "CMD",
+     "time": "14:11"
+    },
+    {
+     "code": "CMI",
+     "time": "14:18"
+    },
+    {
+     "code": "GK",
+     "time": "14:23"
+    },
+    {
+     "code": "PDL",
+     "time": "14:29"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "375",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "CCL",
+     "time": "13:55"
+    },
+    {
+     "code": "HRP",
+     "time": "14:02"
+    },
+    {
+     "code": "RCK",
+     "time": "14:24"
+    },
+    {
+     "code": "CMK",
+     "time": "14:31"
+    },
+    {
+     "code": "GDB",
+     "time": "14:39"
+    },
+    {
+     "code": "KAC",
+     "time": "14:54"
+    },
+    {
+     "code": "CTH",
+     "time": "15:00"
+    },
+    {
+     "code": "BD",
+     "time": "15:14"
+    },
+    {
+     "code": "CIR",
+     "time": "15:23"
+    },
+    {
+     "code": "CMD",
+     "time": "15:35"
+    },
+    {
+     "code": "CMI",
+     "time": "15:42"
+    },
+    {
+     "code": "GK",
+     "time": "15:47"
+    },
+    {
+     "code": "PDL",
+     "time": "15:53"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "385",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "CCL",
+     "time": "14:33"
+    },
+    {
+     "code": "HRP",
+     "time": "14:39"
+    },
+    {
+     "code": "RCK",
+     "time": "14:50"
+    },
+    {
+     "code": "CMK",
+     "time": "14:56"
+    },
+    {
+     "code": "GDB",
+     "time": "15:18"
+    },
+    {
+     "code": "KAC",
+     "time": "15:28"
+    },
+    {
+     "code": "CTH",
+     "time": "15:34"
+    },
+    {
+     "code": "BD",
+     "time": "15:43"
+    },
+    {
+     "code": "CIR",
+     "time": "15:58"
+    },
+    {
+     "code": "CMD",
+     "time": "16:10"
+    },
+    {
+     "code": "CMI",
+     "time": "16:17"
+    },
+    {
+     "code": "GK",
+     "time": "16:22"
+    },
+    {
+     "code": "PDL",
+     "time": "16:28"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "395",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "CCL",
+     "time": "15:15"
+    },
+    {
+     "code": "HRP",
+     "time": "15:21"
+    },
+    {
+     "code": "RCK",
+     "time": "15:32"
+    },
+    {
+     "code": "CMK",
+     "time": "15:38"
+    },
+    {
+     "code": "GDB",
+     "time": "15:47"
+    },
+    {
+     "code": "KAC",
+     "time": "16:00"
+    },
+    {
+     "code": "CTH",
+     "time": "16:06"
+    },
+    {
+     "code": "BD",
+     "time": "16:19"
+    },
+    {
+     "code": "CIR",
+     "time": "16:26"
+    },
+    {
+     "code": "CMD",
+     "time": "16:39"
+    },
+    {
+     "code": "CMI",
+     "time": "16:46"
+    },
+    {
+     "code": "GK",
+     "time": "16:51"
+    },
+    {
+     "code": "PDL",
+     "time": "16:57"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "365",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "CCL",
+     "time": "16:22"
+    },
+    {
+     "code": "HRP",
+     "time": "16:28"
+    },
+    {
+     "code": "RCK",
+     "time": "16:50"
+    },
+    {
+     "code": "CMK",
+     "time": "16:57"
+    },
+    {
+     "code": "GDB",
+     "time": "17:05"
+    },
+    {
+     "code": "KAC",
+     "time": "17:20"
+    },
+    {
+     "code": "CTH",
+     "time": "17:26"
+    },
+    {
+     "code": "BD",
+     "time": "17:42"
+    },
+    {
+     "code": "CIR",
+     "time": "17:53"
+    },
+    {
+     "code": "CMD",
+     "time": "18:04"
+    },
+    {
+     "code": "CMI",
+     "time": "18:11"
+    },
+    {
+     "code": "GK",
+     "time": "18:16"
+    },
+    {
+     "code": "PDL",
+     "time": "18:22"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "355",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "CCL",
+     "time": "17:36"
+    },
+    {
+     "code": "HRP",
+     "time": "17:43"
+    },
+    {
+     "code": "RCK",
+     "time": "18:06"
+    },
+    {
+     "code": "CMK",
+     "time": "18:13"
+    },
+    {
+     "code": "GDB",
+     "time": "18:21"
+    },
+    {
+     "code": "KAC",
+     "time": "18:31"
+    },
+    {
+     "code": "CTH",
+     "time": "18:38"
+    },
+    {
+     "code": "BD",
+     "time": "18:50"
+    },
+    {
+     "code": "CIR",
+     "time": "18:58"
+    },
+    {
+     "code": "CMD",
+     "time": "19:10"
+    },
+    {
+     "code": "CMI",
+     "time": "19:17"
+    },
+    {
+     "code": "GK",
+     "time": "19:22"
+    },
+    {
+     "code": "PDL",
+     "time": "19:28"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "377",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "CCL",
+     "time": "18:50"
+    },
+    {
+     "code": "HRP",
+     "time": "18:56"
+    },
+    {
+     "code": "RCK",
+     "time": "19:08"
+    },
+    {
+     "code": "CMK",
+     "time": "19:14"
+    },
+    {
+     "code": "GDB",
+     "time": "19:23"
+    },
+    {
+     "code": "KAC",
+     "time": "19:33"
+    },
+    {
+     "code": "CTH",
+     "time": "19:39"
+    },
+    {
+     "code": "BD",
+     "time": "19:48"
+    },
+    {
+     "code": "CIR",
+     "time": "19:55"
+    },
+    {
+     "code": "CMD",
+     "time": "20:07"
+    },
+    {
+     "code": "CMI",
+     "time": "20:14"
+    },
+    {
+     "code": "GK",
+     "time": "20:19"
+    },
+    {
+     "code": "PDL",
+     "time": "20:25"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "387",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "CCL",
+     "time": "19:15"
+    },
+    {
+     "code": "HRP",
+     "time": "19:21"
+    },
+    {
+     "code": "RCK",
+     "time": "19:35"
+    },
+    {
+     "code": "CMK",
+     "time": "19:41"
+    },
+    {
+     "code": "GDB",
+     "time": "19:50"
+    },
+    {
+     "code": "KAC",
+     "time": "20:00"
+    },
+    {
+     "code": "CTH",
+     "time": "20:06"
+    },
+    {
+     "code": "BD",
+     "time": "20:15"
+    },
+    {
+     "code": "CIR",
+     "time": "20:22"
+    },
+    {
+     "code": "CMD",
+     "time": "20:34"
+    },
+    {
+     "code": "CMI",
+     "time": "20:41"
+    },
+    {
+     "code": "GK",
+     "time": "20:46"
+    },
+    {
+     "code": "PDL",
+     "time": "20:52"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "397",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "CCL",
+     "time": "19:50"
+    },
+    {
+     "code": "HRP",
+     "time": "19:56"
+    },
+    {
+     "code": "RCK",
+     "time": "20:07"
+    },
+    {
+     "code": "CMK",
+     "time": "20:13"
+    },
+    {
+     "code": "GDB",
+     "time": "20:21"
+    },
+    {
+     "code": "KAC",
+     "time": "20:31"
+    },
+    {
+     "code": "CTH",
+     "time": "20:37"
+    },
+    {
+     "code": "BD",
+     "time": "20:45"
+    },
+    {
+     "code": "CIR",
+     "time": "20:55"
+    },
+    {
+     "code": "CMD",
+     "time": "21:07"
+    },
+    {
+     "code": "CMI",
+     "time": "21:14"
+    },
+    {
+     "code": "GK",
+     "time": "21:19"
+    },
+    {
+     "code": "PDL",
+     "time": "21:25"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "399",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "KAC",
+     "time": "22:50"
+    },
+    {
+     "code": "CTH",
+     "time": "22:56"
+    },
+    {
+     "code": "BD",
+     "time": "23:03"
+    },
+    {
+     "code": "CMD",
+     "time": "23:14"
+    },
+    {
+     "code": "CMI",
+     "time": "23:21"
+    },
+    {
+     "code": "GK",
+     "time": "23:25"
+    },
+    {
+     "code": "PDL",
+     "time": "23:30"
+    }
+   ]
+  },
+  {
+   "region": "bandung",
+   "line": "Bandung Raya",
+   "number": "357",
+   "relasi": "",
+   "page": 3,
+   "stops": [
+    {
+     "code": "CCL",
+     "time": "22:25"
+    },
+    {
+     "code": "HRP",
+     "time": "22:32"
+    },
+    {
+     "code": "RCK",
+     "time": "22:42"
+    },
+    {
+     "code": "CMK",
+     "time": "22:49"
+    },
+    {
+     "code": "GDB",
+     "time": "22:56"
+    },
+    {
+     "code": "KAC",
+     "time": "23:10"
+    },
+    {
+     "code": "CTH",
+     "time": "23:16"
+    },
+    {
+     "code": "BD",
+     "time": "23:31"
+    },
+    {
+     "code": "CMD",
+     "time": "23:43"
+    },
+    {
+     "code": "CMI",
+     "time": "23:50"
+    },
+    {
+     "code": "GK",
+     "time": "23:54"
+    },
+    {
+     "code": "PDL",
+     "time": "23:59"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "661",
+   "relasi": "PL-YK",
+   "page": 1,
+   "stops": [
+    {
+     "code": "PL",
+     "time": "04:55"
+    },
+    {
+     "code": "SK",
+     "time": "05:01"
+    },
+    {
+     "code": "SLO",
+     "time": "05:08"
+    },
+    {
+     "code": "PWS",
+     "time": "05:13"
+    },
+    {
+     "code": "GW",
+     "time": "05:20"
+    },
+    {
+     "code": "DL",
+     "time": "05:26"
+    },
+    {
+     "code": "CE",
+     "time": "05:33"
+    },
+    {
+     "code": "KT",
+     "time": "05:42"
+    },
+    {
+     "code": "SWT",
+     "time": "05:49"
+    },
+    {
+     "code": "BBN",
+     "time": "05:56"
+    },
+    {
+     "code": "MGW",
+     "time": "06:04"
+    },
+    {
+     "code": "LPN",
+     "time": "06:11"
+    },
+    {
+     "code": "YK",
+     "time": "06:15"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "669A",
+   "relasi": "PL-YK",
+   "page": 1,
+   "stops": [
+    {
+     "code": "PL",
+     "time": "06:08"
+    },
+    {
+     "code": "SK",
+     "time": "06:14"
+    },
+    {
+     "code": "SLO",
+     "time": "06:21"
+    },
+    {
+     "code": "PWS",
+     "time": "06:26"
+    },
+    {
+     "code": "GW",
+     "time": "06:33"
+    },
+    {
+     "code": "DL",
+     "time": "06:39"
+    },
+    {
+     "code": "CE",
+     "time": "06:46"
+    },
+    {
+     "code": "KT",
+     "time": "06:55"
+    },
+    {
+     "code": "SWT",
+     "time": "07:02"
+    },
+    {
+     "code": "BBN",
+     "time": "07:09"
+    },
+    {
+     "code": "MGW",
+     "time": "07:17"
+    },
+    {
+     "code": "LPN",
+     "time": "07:24"
+    },
+    {
+     "code": "YK",
+     "time": "07:27"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "677",
+   "relasi": "PL-YK",
+   "page": 1,
+   "stops": [
+    {
+     "code": "PL",
+     "time": "07:15"
+    },
+    {
+     "code": "SK",
+     "time": "07:21"
+    },
+    {
+     "code": "SLO",
+     "time": "07:29"
+    },
+    {
+     "code": "PWS",
+     "time": "07:35"
+    },
+    {
+     "code": "GW",
+     "time": "07:42"
+    },
+    {
+     "code": "DL",
+     "time": "07:48"
+    },
+    {
+     "code": "CE",
+     "time": "07:55"
+    },
+    {
+     "code": "KT",
+     "time": "08:04"
+    },
+    {
+     "code": "SWT",
+     "time": "08:11"
+    },
+    {
+     "code": "BBN",
+     "time": "08:18"
+    },
+    {
+     "code": "MGW",
+     "time": "08:26"
+    },
+    {
+     "code": "LPN",
+     "time": "08:35"
+    },
+    {
+     "code": "YK",
+     "time": "08:39"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "663",
+   "relasi": "PL-YK",
+   "page": 1,
+   "stops": [
+    {
+     "code": "PL",
+     "time": "08:50"
+    },
+    {
+     "code": "SK",
+     "time": "08:56"
+    },
+    {
+     "code": "SLO",
+     "time": "09:04"
+    },
+    {
+     "code": "PWS",
+     "time": "09:10"
+    },
+    {
+     "code": "GW",
+     "time": "09:17"
+    },
+    {
+     "code": "DL",
+     "time": "09:23"
+    },
+    {
+     "code": "CE",
+     "time": "09:30"
+    },
+    {
+     "code": "KT",
+     "time": "09:39"
+    },
+    {
+     "code": "SWT",
+     "time": "09:46"
+    },
+    {
+     "code": "BBN",
+     "time": "09:53"
+    },
+    {
+     "code": "MGW",
+     "time": "10:01"
+    },
+    {
+     "code": "LPN",
+     "time": "10:12"
+    },
+    {
+     "code": "YK",
+     "time": "10:16"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "671A",
+   "relasi": "PL-YK",
+   "page": 1,
+   "stops": [
+    {
+     "code": "PL",
+     "time": "10:26"
+    },
+    {
+     "code": "SK",
+     "time": "10:32"
+    },
+    {
+     "code": "SLO",
+     "time": "10:39"
+    },
+    {
+     "code": "PWS",
+     "time": "10:45"
+    },
+    {
+     "code": "GW",
+     "time": "10:52"
+    },
+    {
+     "code": "DL",
+     "time": "10:58"
+    },
+    {
+     "code": "CE",
+     "time": "11:05"
+    },
+    {
+     "code": "KT",
+     "time": "11:14"
+    },
+    {
+     "code": "SWT",
+     "time": "11:21"
+    },
+    {
+     "code": "BBN",
+     "time": "11:28"
+    },
+    {
+     "code": "MGW",
+     "time": "11:36"
+    },
+    {
+     "code": "LPN",
+     "time": "11:43"
+    },
+    {
+     "code": "YK",
+     "time": "11:47"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "679",
+   "relasi": "PL-YK",
+   "page": 1,
+   "stops": [
+    {
+     "code": "PL",
+     "time": "11:20"
+    },
+    {
+     "code": "SK",
+     "time": "11:26"
+    },
+    {
+     "code": "SLO",
+     "time": "11:33"
+    },
+    {
+     "code": "PWS",
+     "time": "11:39"
+    },
+    {
+     "code": "GW",
+     "time": "11:46"
+    },
+    {
+     "code": "DL",
+     "time": "11:52"
+    },
+    {
+     "code": "CE",
+     "time": "11:59"
+    },
+    {
+     "code": "KT",
+     "time": "12:08"
+    },
+    {
+     "code": "SWT",
+     "time": "12:15"
+    },
+    {
+     "code": "BBN",
+     "time": "12:22"
+    },
+    {
+     "code": "MGW",
+     "time": "12:30"
+    },
+    {
+     "code": "LPN",
+     "time": "12:37"
+    },
+    {
+     "code": "YK",
+     "time": "12:41"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "673",
+   "relasi": "PL-YK",
+   "page": 1,
+   "stops": [
+    {
+     "code": "PL",
+     "time": "13:40"
+    },
+    {
+     "code": "SK",
+     "time": "13:47"
+    },
+    {
+     "code": "SLO",
+     "time": "13:56"
+    },
+    {
+     "code": "PWS",
+     "time": "14:02"
+    },
+    {
+     "code": "GW",
+     "time": "14:09"
+    },
+    {
+     "code": "DL",
+     "time": "14:15"
+    },
+    {
+     "code": "CE",
+     "time": "14:22"
+    },
+    {
+     "code": "KT",
+     "time": "14:32"
+    },
+    {
+     "code": "SWT",
+     "time": "14:39"
+    },
+    {
+     "code": "BBN",
+     "time": "14:46"
+    },
+    {
+     "code": "MGW",
+     "time": "14:54"
+    },
+    {
+     "code": "LPN",
+     "time": "15:01"
+    },
+    {
+     "code": "YK",
+     "time": "15:05"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "681",
+   "relasi": "PL-YK",
+   "page": 1,
+   "stops": [
+    {
+     "code": "PL",
+     "time": "14:50"
+    },
+    {
+     "code": "SK",
+     "time": "14:57"
+    },
+    {
+     "code": "SLO",
+     "time": "15:08"
+    },
+    {
+     "code": "PWS",
+     "time": "15:14"
+    },
+    {
+     "code": "GW",
+     "time": "15:21"
+    },
+    {
+     "code": "DL",
+     "time": "15:27"
+    },
+    {
+     "code": "CE",
+     "time": "15:34"
+    },
+    {
+     "code": "KT",
+     "time": "15:43"
+    },
+    {
+     "code": "SWT",
+     "time": "15:50"
+    },
+    {
+     "code": "BBN",
+     "time": "15:57"
+    },
+    {
+     "code": "MGW",
+     "time": "16:05"
+    },
+    {
+     "code": "LPN",
+     "time": "16:12"
+    },
+    {
+     "code": "YK",
+     "time": "16:16"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "667",
+   "relasi": "PL-YK",
+   "page": 1,
+   "stops": [
+    {
+     "code": "PL",
+     "time": "16:10"
+    },
+    {
+     "code": "SK",
+     "time": "16:16"
+    },
+    {
+     "code": "SLO",
+     "time": "16:24"
+    },
+    {
+     "code": "PWS",
+     "time": "16:30"
+    },
+    {
+     "code": "GW",
+     "time": "16:37"
+    },
+    {
+     "code": "DL",
+     "time": "16:43"
+    },
+    {
+     "code": "CE",
+     "time": "16:50"
+    },
+    {
+     "code": "KT",
+     "time": "16:59"
+    },
+    {
+     "code": "SWT",
+     "time": "17:06"
+    },
+    {
+     "code": "BBN",
+     "time": "17:13"
+    },
+    {
+     "code": "MGW",
+     "time": "17:21"
+    },
+    {
+     "code": "LPN",
+     "time": "17:28"
+    },
+    {
+     "code": "YK",
+     "time": "17:32"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "675",
+   "relasi": "PL-YK",
+   "page": 1,
+   "stops": [
+    {
+     "code": "PL",
+     "time": "17:05"
+    },
+    {
+     "code": "SK",
+     "time": "17:11"
+    },
+    {
+     "code": "SLO",
+     "time": "17:20"
+    },
+    {
+     "code": "PWS",
+     "time": "17:26"
+    },
+    {
+     "code": "GW",
+     "time": "17:33"
+    },
+    {
+     "code": "DL",
+     "time": "17:39"
+    },
+    {
+     "code": "CE",
+     "time": "17:46"
+    },
+    {
+     "code": "KT",
+     "time": "17:55"
+    },
+    {
+     "code": "SWT",
+     "time": "18:02"
+    },
+    {
+     "code": "BBN",
+     "time": "18:09"
+    },
+    {
+     "code": "MGW",
+     "time": "18:17"
+    },
+    {
+     "code": "LPN",
+     "time": "18:24"
+    },
+    {
+     "code": "YK",
+     "time": "18:28"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "683A",
+   "relasi": "PL-YK",
+   "page": 1,
+   "stops": [
+    {
+     "code": "PL",
+     "time": "18:11"
+    },
+    {
+     "code": "SK",
+     "time": "18:17"
+    },
+    {
+     "code": "SLO",
+     "time": "18:25"
+    },
+    {
+     "code": "PWS",
+     "time": "18:32"
+    },
+    {
+     "code": "GW",
+     "time": "18:39"
+    },
+    {
+     "code": "DL",
+     "time": "18:45"
+    },
+    {
+     "code": "CE",
+     "time": "18:52"
+    },
+    {
+     "code": "KT",
+     "time": "19:01"
+    },
+    {
+     "code": "SWT",
+     "time": "19:08"
+    },
+    {
+     "code": "BBN",
+     "time": "19:15"
+    },
+    {
+     "code": "MGW",
+     "time": "19:23"
+    },
+    {
+     "code": "LPN",
+     "time": "19:30"
+    },
+    {
+     "code": "YK",
+     "time": "19:34"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "7101",
+   "relasi": "PL-YK",
+   "page": 1,
+   "stops": [
+    {
+     "code": "PL",
+     "time": "20:53"
+    },
+    {
+     "code": "SK",
+     "time": "20:59"
+    },
+    {
+     "code": "SLO",
+     "time": "21:06"
+    },
+    {
+     "code": "PWS",
+     "time": "21:12"
+    },
+    {
+     "code": "GW",
+     "time": "21:19"
+    },
+    {
+     "code": "DL",
+     "time": "21:25"
+    },
+    {
+     "code": "CE",
+     "time": "21:32"
+    },
+    {
+     "code": "KT",
+     "time": "21:41"
+    },
+    {
+     "code": "SWT",
+     "time": "21:48"
+    },
+    {
+     "code": "BBN",
+     "time": "21:55"
+    },
+    {
+     "code": "MGW",
+     "time": "22:03"
+    },
+    {
+     "code": "LPN",
+     "time": "22:10"
+    },
+    {
+     "code": "YK",
+     "time": "22:14"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "676",
+   "relasi": "YK-PL",
+   "page": 1,
+   "stops": [
+    {
+     "code": "YK",
+     "time": "05:30"
+    },
+    {
+     "code": "LPN",
+     "time": "05:36"
+    },
+    {
+     "code": "MGW",
+     "time": "05:43"
+    },
+    {
+     "code": "BBN",
+     "time": "05:51"
+    },
+    {
+     "code": "SWT",
+     "time": "05:58"
+    },
+    {
+     "code": "KT",
+     "time": "06:05"
+    },
+    {
+     "code": "CE",
+     "time": "06:14"
+    },
+    {
+     "code": "DL",
+     "time": "06:21"
+    },
+    {
+     "code": "GW",
+     "time": "06:27"
+    },
+    {
+     "code": "PWS",
+     "time": "06:34"
+    },
+    {
+     "code": "SLO",
+     "time": "06:40"
+    },
+    {
+     "code": "SK",
+     "time": "06:46"
+    },
+    {
+     "code": "PL",
+     "time": "06:51"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "662",
+   "relasi": "YK-PL",
+   "page": 1,
+   "stops": [
+    {
+     "code": "YK",
+     "time": "06:50"
+    },
+    {
+     "code": "LPN",
+     "time": "06:55"
+    },
+    {
+     "code": "MGW",
+     "time": "07:02"
+    },
+    {
+     "code": "BBN",
+     "time": "07:10"
+    },
+    {
+     "code": "SWT",
+     "time": "07:17"
+    },
+    {
+     "code": "KT",
+     "time": "07:24"
+    },
+    {
+     "code": "CE",
+     "time": "07:33"
+    },
+    {
+     "code": "DL",
+     "time": "07:40"
+    },
+    {
+     "code": "GW",
+     "time": "07:46"
+    },
+    {
+     "code": "PWS",
+     "time": "07:53"
+    },
+    {
+     "code": "SLO",
+     "time": "08:04"
+    },
+    {
+     "code": "SK",
+     "time": "08:10"
+    },
+    {
+     "code": "PL",
+     "time": "08:15"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "670A",
+   "relasi": "YK-PL",
+   "page": 1,
+   "stops": [
+    {
+     "code": "YK",
+     "time": "07:40"
+    },
+    {
+     "code": "LPN",
+     "time": "07:46"
+    },
+    {
+     "code": "MGW",
+     "time": "07:53"
+    },
+    {
+     "code": "BBN",
+     "time": "08:01"
+    },
+    {
+     "code": "SWT",
+     "time": "08:08"
+    },
+    {
+     "code": "KT",
+     "time": "08:16"
+    },
+    {
+     "code": "CE",
+     "time": "08:25"
+    },
+    {
+     "code": "DL",
+     "time": "08:32"
+    },
+    {
+     "code": "GW",
+     "time": "08:38"
+    },
+    {
+     "code": "PWS",
+     "time": "08:45"
+    },
+    {
+     "code": "SLO",
+     "time": "08:53"
+    },
+    {
+     "code": "SK",
+     "time": "08:59"
+    },
+    {
+     "code": "PL",
+     "time": "09:04"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "678",
+   "relasi": "YK-PL",
+   "page": 1,
+   "stops": [
+    {
+     "code": "YK",
+     "time": "08:50"
+    },
+    {
+     "code": "LPN",
+     "time": "08:55"
+    },
+    {
+     "code": "MGW",
+     "time": "09:02"
+    },
+    {
+     "code": "BBN",
+     "time": "09:10"
+    },
+    {
+     "code": "SWT",
+     "time": "09:17"
+    },
+    {
+     "code": "KT",
+     "time": "09:24"
+    },
+    {
+     "code": "CE",
+     "time": "09:33"
+    },
+    {
+     "code": "DL",
+     "time": "09:40"
+    },
+    {
+     "code": "GW",
+     "time": "09:46"
+    },
+    {
+     "code": "PWS",
+     "time": "09:53"
+    },
+    {
+     "code": "SLO",
+     "time": "09:59"
+    },
+    {
+     "code": "SK",
+     "time": "10:05"
+    },
+    {
+     "code": "PL",
+     "time": "10:10"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "664",
+   "relasi": "YK-PL",
+   "page": 1,
+   "stops": [
+    {
+     "code": "YK",
+     "time": "10:25"
+    },
+    {
+     "code": "LPN",
+     "time": "10:31"
+    },
+    {
+     "code": "MGW",
+     "time": "10:38"
+    },
+    {
+     "code": "BBN",
+     "time": "10:46"
+    },
+    {
+     "code": "SWT",
+     "time": "10:53"
+    },
+    {
+     "code": "KT",
+     "time": "11:01"
+    },
+    {
+     "code": "CE",
+     "time": "11:10"
+    },
+    {
+     "code": "DL",
+     "time": "11:17"
+    },
+    {
+     "code": "GW",
+     "time": "11:24"
+    },
+    {
+     "code": "PWS",
+     "time": "11:32"
+    },
+    {
+     "code": "SLO",
+     "time": "11:39"
+    },
+    {
+     "code": "SK",
+     "time": "11:45"
+    },
+    {
+     "code": "PL",
+     "time": "11:50"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "672A",
+   "relasi": "YK-PL",
+   "page": 1,
+   "stops": [
+    {
+     "code": "YK",
+     "time": "11:57"
+    },
+    {
+     "code": "LPN",
+     "time": "12:02"
+    },
+    {
+     "code": "MGW",
+     "time": "12:09"
+    },
+    {
+     "code": "BBN",
+     "time": "12:17"
+    },
+    {
+     "code": "SWT",
+     "time": "12:24"
+    },
+    {
+     "code": "KT",
+     "time": "12:31"
+    },
+    {
+     "code": "CE",
+     "time": "12:40"
+    },
+    {
+     "code": "DL",
+     "time": "12:47"
+    },
+    {
+     "code": "GW",
+     "time": "12:53"
+    },
+    {
+     "code": "PWS",
+     "time": "13:00"
+    },
+    {
+     "code": "SLO",
+     "time": "13:08"
+    },
+    {
+     "code": "SK",
+     "time": "13:13"
+    },
+    {
+     "code": "PL",
+     "time": "13:18"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "680",
+   "relasi": "YK-PL",
+   "page": 1,
+   "stops": [
+    {
+     "code": "YK",
+     "time": "13:05"
+    },
+    {
+     "code": "LPN",
+     "time": "13:11"
+    },
+    {
+     "code": "MGW",
+     "time": "13:18"
+    },
+    {
+     "code": "BBN",
+     "time": "13:26"
+    },
+    {
+     "code": "SWT",
+     "time": "13:33"
+    },
+    {
+     "code": "KT",
+     "time": "13:41"
+    },
+    {
+     "code": "CE",
+     "time": "13:50"
+    },
+    {
+     "code": "DL",
+     "time": "13:57"
+    },
+    {
+     "code": "GW",
+     "time": "14:16"
+    },
+    {
+     "code": "PWS",
+     "time": "14:23"
+    },
+    {
+     "code": "SLO",
+     "time": "14:30"
+    },
+    {
+     "code": "SK",
+     "time": "14:35"
+    },
+    {
+     "code": "PL",
+     "time": "14:40"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "674",
+   "relasi": "YK-PL",
+   "page": 1,
+   "stops": [
+    {
+     "code": "YK",
+     "time": "15:20"
+    },
+    {
+     "code": "LPN",
+     "time": "15:25"
+    },
+    {
+     "code": "MGW",
+     "time": "15:32"
+    },
+    {
+     "code": "BBN",
+     "time": "15:40"
+    },
+    {
+     "code": "SWT",
+     "time": "15:47"
+    },
+    {
+     "code": "KT",
+     "time": "15:54"
+    },
+    {
+     "code": "CE",
+     "time": "16:03"
+    },
+    {
+     "code": "DL",
+     "time": "16:10"
+    },
+    {
+     "code": "GW",
+     "time": "16:16"
+    },
+    {
+     "code": "PWS",
+     "time": "16:23"
+    },
+    {
+     "code": "SLO",
+     "time": "16:30"
+    },
+    {
+     "code": "SK",
+     "time": "16:36"
+    },
+    {
+     "code": "PL",
+     "time": "16:41"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "682A",
+   "relasi": "YK-PL",
+   "page": 1,
+   "stops": [
+    {
+     "code": "YK",
+     "time": "16:30"
+    },
+    {
+     "code": "LPN",
+     "time": "16:35"
+    },
+    {
+     "code": "MGW",
+     "time": "16:42"
+    },
+    {
+     "code": "BBN",
+     "time": "16:59"
+    },
+    {
+     "code": "SWT",
+     "time": "17:06"
+    },
+    {
+     "code": "KT",
+     "time": "17:13"
+    },
+    {
+     "code": "CE",
+     "time": "17:22"
+    },
+    {
+     "code": "DL",
+     "time": "17:29"
+    },
+    {
+     "code": "GW",
+     "time": "17:35"
+    },
+    {
+     "code": "PWS",
+     "time": "17:42"
+    },
+    {
+     "code": "SLO",
+     "time": "17:49"
+    },
+    {
+     "code": "SK",
+     "time": "17:55"
+    },
+    {
+     "code": "PL",
+     "time": "18:00"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "668",
+   "relasi": "YK-PL",
+   "page": 1,
+   "stops": [
+    {
+     "code": "YK",
+     "time": "17:45"
+    },
+    {
+     "code": "LPN",
+     "time": "17:50"
+    },
+    {
+     "code": "MGW",
+     "time": "17:57"
+    },
+    {
+     "code": "BBN",
+     "time": "18:05"
+    },
+    {
+     "code": "SWT",
+     "time": "18:12"
+    },
+    {
+     "code": "KT",
+     "time": "18:19"
+    },
+    {
+     "code": "CE",
+     "time": "18:28"
+    },
+    {
+     "code": "DL",
+     "time": "18:35"
+    },
+    {
+     "code": "GW",
+     "time": "18:41"
+    },
+    {
+     "code": "PWS",
+     "time": "18:48"
+    },
+    {
+     "code": "SLO",
+     "time": "18:56"
+    },
+    {
+     "code": "SK",
+     "time": "19:02"
+    },
+    {
+     "code": "PL",
+     "time": "19:07"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "684",
+   "relasi": "YK-PL",
+   "page": 1,
+   "stops": [
+    {
+     "code": "YK",
+     "time": "20:16"
+    },
+    {
+     "code": "LPN",
+     "time": "20:21"
+    },
+    {
+     "code": "MGW",
+     "time": "20:28"
+    },
+    {
+     "code": "BBN",
+     "time": "20:36"
+    },
+    {
+     "code": "SWT",
+     "time": "20:43"
+    },
+    {
+     "code": "KT",
+     "time": "20:50"
+    },
+    {
+     "code": "CE",
+     "time": "20:59"
+    },
+    {
+     "code": "DL",
+     "time": "21:06"
+    },
+    {
+     "code": "GW",
+     "time": "21:12"
+    },
+    {
+     "code": "PWS",
+     "time": "21:19"
+    },
+    {
+     "code": "SLO",
+     "time": "21:27"
+    },
+    {
+     "code": "SK",
+     "time": "21:33"
+    },
+    {
+     "code": "PL",
+     "time": "21:38"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Yogyakarta",
+   "number": "7102",
+   "relasi": "YK-PL",
+   "page": 1,
+   "stops": [
+    {
+     "code": "YK",
+     "time": "22:35"
+    },
+    {
+     "code": "LPN",
+     "time": "22:42"
+    },
+    {
+     "code": "MGW",
+     "time": "22:49"
+    },
+    {
+     "code": "BBN",
+     "time": "22:57"
+    },
+    {
+     "code": "SWT",
+     "time": "23:04"
+    },
+    {
+     "code": "KT",
+     "time": "23:12"
+    },
+    {
+     "code": "CE",
+     "time": "23:21"
+    },
+    {
+     "code": "DL",
+     "time": "23:28"
+    },
+    {
+     "code": "GW",
+     "time": "23:35"
+    },
+    {
+     "code": "PWS",
+     "time": "23:42"
+    },
+    {
+     "code": "SLO",
+     "time": "23:50"
+    },
+    {
+     "code": "SK",
+     "time": "23:56"
+    },
+    {
+     "code": "PL",
+     "time": "00:01"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Prameks",
+   "number": "551",
+   "relasi": "YK-KTA",
+   "page": 1,
+   "stops": [
+    {
+     "code": "YK",
+     "time": "06:37"
+    },
+    {
+     "code": "WT",
+     "time": "07:05"
+    },
+    {
+     "code": "WJ",
+     "time": "07:20"
+    },
+    {
+     "code": "JN",
+     "time": "07:30"
+    },
+    {
+     "code": "KTA",
+     "time": "07:44"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Prameks",
+   "number": "553",
+   "relasi": "YK-KTA",
+   "page": 1,
+   "stops": [
+    {
+     "code": "YK",
+     "time": "10:26"
+    },
+    {
+     "code": "WT",
+     "time": "11:08"
+    },
+    {
+     "code": "WJ",
+     "time": "11:23"
+    },
+    {
+     "code": "JN",
+     "time": "11:33"
+    },
+    {
+     "code": "KTA",
+     "time": "11:47"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Prameks",
+   "number": "555",
+   "relasi": "YK-KTA",
+   "page": 1,
+   "stops": [
+    {
+     "code": "YK",
+     "time": "13:49"
+    },
+    {
+     "code": "WT",
+     "time": "14:17"
+    },
+    {
+     "code": "WJ",
+     "time": "14:45"
+    },
+    {
+     "code": "JN",
+     "time": "14:56"
+    },
+    {
+     "code": "KTA",
+     "time": "15:10"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Prameks",
+   "number": "557A",
+   "relasi": "YK-KTA",
+   "page": 1,
+   "stops": [
+    {
+     "code": "YK",
+     "time": "17:50"
+    },
+    {
+     "code": "WT",
+     "time": "18:19"
+    },
+    {
+     "code": "WJ",
+     "time": "18:34"
+    },
+    {
+     "code": "JN",
+     "time": "18:44"
+    },
+    {
+     "code": "KTA",
+     "time": "18:58"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Prameks",
+   "number": "558",
+   "relasi": "KTA-YK",
+   "page": 1,
+   "stops": [
+    {
+     "code": "KTA",
+     "time": "05:25"
+    },
+    {
+     "code": "JN",
+     "time": "05:41"
+    },
+    {
+     "code": "WJ",
+     "time": "05:51"
+    },
+    {
+     "code": "WT",
+     "time": "06:07"
+    },
+    {
+     "code": "YK",
+     "time": "06:35"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Prameks",
+   "number": "552",
+   "relasi": "KTA-YK",
+   "page": 1,
+   "stops": [
+    {
+     "code": "KTA",
+     "time": "09:05"
+    },
+    {
+     "code": "JN",
+     "time": "09:21"
+    },
+    {
+     "code": "WJ",
+     "time": "09:32"
+    },
+    {
+     "code": "WT",
+     "time": "09:48"
+    },
+    {
+     "code": "YK",
+     "time": "10:15"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Prameks",
+   "number": "554",
+   "relasi": "KTA-YK",
+   "page": 1,
+   "stops": [
+    {
+     "code": "KTA",
+     "time": "12:20"
+    },
+    {
+     "code": "JN",
+     "time": "12:35"
+    },
+    {
+     "code": "WJ",
+     "time": "12:45"
+    },
+    {
+     "code": "WT",
+     "time": "13:00"
+    },
+    {
+     "code": "YK",
+     "time": "13:27"
+    }
+   ]
+  },
+  {
+   "region": "yogyakarta",
+   "line": "Prameks",
+   "number": "556",
+   "relasi": "KTA-YK",
+   "page": 1,
+   "stops": [
+    {
+     "code": "KTA",
+     "time": "16:05"
+    },
+    {
+     "code": "JN",
+     "time": "16:20"
+    },
+    {
+     "code": "WJ",
+     "time": "16:30"
+    },
+    {
+     "code": "WT",
+     "time": "16:45"
+    },
+    {
+     "code": "YK",
+     "time": "17:12"
     }
    ]
   }
@@ -4043,8 +9372,47 @@
   "TLN": "Tulangan",
   "BJ": "Bojonegoro",
   "KPS": "Kapas",
+  "SRJ": "Sumberejo",
   "BWO": "Bowerno",
-  "SRJ": "Sumberrejo",
-  "CU": "Cepu"
+  "CU": "Cepu",
+  "CKR": "Cikarang",
+  "LMB": "Lemah Abang",
+  "KDH": "Kedunggedeh",
+  "KW": "Karawang",
+  "KLI": "Klari",
+  "KOS": "Kosambi",
+  "DWN": "Dawuan",
+  "CKP": "Cikampek",
+  "CBR": "Cibungur",
+  "PWK": "Purwakarta",
+  "CA": "Ciganea",
+  "SUT": "Sukatani",
+  "PLD": "Plered",
+  "CD": "Cikadongdon G",
+  "RH": "Rendeh",
+  "MSI": "Maswati",
+  "SKT": "Sasaksaat",
+  "CLE": "Cilame",
+  "PDL": "Padalarang",
+  "GK": "Gadobangkon G",
+  "CMI": "Cimahi",
+  "CMD": "Cimindi",
+  "CIR": "Ciroyom",
+  "BD": "Stasiun Bandung",
+  "CTH": "Cikudapateuh",
+  "KAC": "Kiaracondon G",
+  "GDB": "Gedebage",
+  "CMK": "Cimekar",
+  "RCK": "Rancaekek",
+  "HRP": "Haupugur",
+  "CCL": "Cicalengka",
+  "NG": "Nagreg",
+  "LL": "Leles",
+  "KRAI": "Karangsari",
+  "LO": "Leuwigoong",
+  "CB": "Cibatu",
+  "PSJ": "Pasirjengkol",
+  "WNR": "Wanaraja",
+  "GRT": "Garut"
  }
 }

@@ -1,24 +1,21 @@
-"""Fetch the East Java rail network and its stations from OpenStreetMap via Overpass.
+"""Fetch each region's rail network and stations from OpenStreetMap via Overpass.
 
-Writes a local cache under data/osm/ that the rest of the pipeline reads:
+Writes a local cache under data/osm/<region>/ that the rest of the pipeline reads:
   rail.geojson   LineString per rail way, for routing trip shapes
   stations.csv   ref,name,lat,lon,norm - ref is OSM's railway:ref, the KAI station code
 
-The cache is refetched only when missing or when --force is passed; Overpass is a
-donated public service, so do not hammer it.
+Regions and their bounding boxes come from data/regions.json. The cache is
+refetched only when missing or when --force is passed; Overpass is a donated
+public service, so do not hammer it.
 
-Usage:  python scripts/fetch_osm.py [--force]
+Usage:  python scripts/fetch_osm.py [region-id ...] [--force]
 """
 import csv, json, pathlib, re, sys, time, unicodedata
 
 import requests
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-OUT = ROOT / 'data' / 'osm'
-
-# East Java plus Cepu in the west: covers Bojonegoro, Babat, Surabaya, Gresik,
-# Mojokerto, Kertosono, Kediri, Blitar, Malang and Pasuruan.
-BBOX = (-8.45, 111.20, -6.80, 113.20)
+REGIONS = json.load(open(ROOT / 'data' / 'regions.json', encoding='utf-8'))
 
 # Global instances only: regional mirrors answer happily with zero elements for
 # an Indonesian bounding box, which looks like success and is not.
@@ -51,8 +48,8 @@ def norm(s: str) -> str:
     return re.sub(r'[^A-Z0-9]', '', s)
 
 
-def overpass(query: str) -> dict:
-    s, w, n, e = BBOX
+def overpass(query: str, bbox) -> dict:
+    s, w, n, e = bbox
     body = query.format(s=s, w=w, n=n, e=e)
     last = None
     for endpoint in ENDPOINTS:
@@ -74,9 +71,9 @@ def overpass(query: str) -> dict:
     raise SystemExit(f'All Overpass endpoints failed. Last: {last}')
 
 
-def fetch_rail() -> None:
-    print('rail ways...')
-    data = overpass(RAIL_QUERY)
+def fetch_rail(out: pathlib.Path, bbox) -> None:
+    print('  rail ways...')
+    data = overpass(RAIL_QUERY, bbox)
     features = []
     for el in data['elements']:
         geom = el.get('geometry')
@@ -96,16 +93,16 @@ def fetch_rail() -> None:
                 'coordinates': [[round(p['lon'], 7), round(p['lat'], 7)] for p in geom],
             },
         })
-    path = OUT / 'rail.geojson'
+    path = out / 'rail.geojson'
     json.dump({'type': 'FeatureCollection', 'features': features},
               open(path, 'w'), separators=(',', ':'))
-    print(f'  {len(features)} ways -> {path.relative_to(ROOT)} '
+    print(f'    {len(features)} ways -> {path.relative_to(ROOT)} '
           f'({path.stat().st_size / 1e6:.1f} MB)')
 
 
-def fetch_stations() -> None:
-    print('stations...')
-    data = overpass(STATION_QUERY)
+def fetch_stations(out: pathlib.Path, bbox) -> None:
+    print('  stations...')
+    data = overpass(STATION_QUERY, bbox)
     rows = []
     for el in data['elements']:
         tags = el.get('tags', {})
@@ -126,29 +123,39 @@ def fetch_stations() -> None:
             'norm': norm(name),
         })
     rows.sort(key=lambda r: (r['ref'] == '', r['ref'], r['name']))
-    path = OUT / 'stations.csv'
+    path = out / 'stations.csv'
     with open(path, 'w', newline='', encoding='utf-8') as fh:
         writer = csv.DictWriter(fh, fieldnames=['ref', 'name', 'railway', 'lat', 'lon', 'norm'])
         writer.writeheader()
         writer.writerows(rows)
     with_ref = sum(1 for r in rows if r['ref'])
-    print(f'  {len(rows)} stations ({with_ref} with a railway:ref code) '
+    print(f'    {len(rows)} stations ({with_ref} with a railway:ref code) '
           f'-> {path.relative_to(ROOT)}')
 
 
 def main() -> None:
+    args = [a for a in sys.argv[1:] if not a.startswith('-')]
     force = '--force' in sys.argv
-    OUT.mkdir(parents=True, exist_ok=True)
-    rail, stations = OUT / 'rail.geojson', OUT / 'stations.csv'
+    wanted = [r for r in REGIONS if not args or r['id'] in args]
+    if not wanted:
+        raise SystemExit(f'no such region; known ids: {[r["id"] for r in REGIONS]}')
 
-    if force or not rail.exists():
-        fetch_rail()
-    else:
-        print(f'rail.geojson cached ({rail.stat().st_size / 1e6:.1f} MB) - pass --force to refetch')
-    if force or not stations.exists():
-        fetch_stations()
-    else:
-        print('stations.csv cached - pass --force to refetch')
+    for region in wanted:
+        print(f'{region["id"]}:')
+        out = ROOT / 'data' / 'osm' / region['id']
+        out.mkdir(parents=True, exist_ok=True)
+        rail, stations = out / 'rail.geojson', out / 'stations.csv'
+        bbox = region['bbox']
+
+        if force or not rail.exists():
+            fetch_rail(out, bbox)
+        else:
+            print(f'  rail.geojson cached ({rail.stat().st_size / 1e6:.1f} MB)'
+                  ' - pass --force to refetch')
+        if force or not stations.exists():
+            fetch_stations(out, bbox)
+        else:
+            print('  stations.csv cached - pass --force to refetch')
 
 
 if __name__ == '__main__':

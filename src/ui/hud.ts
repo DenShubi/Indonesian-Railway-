@@ -1,12 +1,14 @@
 /**
  * The header: clock, train count, play/pause, speed and the time-of-day scrubber.
  */
-import type { Network } from '../data/bundle';
+import type { BundleRegion, Network } from '../data/bundle';
 import { formatClock, SPEEDS, type Speed, type ServiceClock } from '../sim/clock';
 
 export interface Hud {
   /** Called every frame; cheap enough to run at frame rate. */
   sync(trainCount: number): void;
+  /** Retitle the header for the selected network, or null for all of Java. */
+  setRegion(region: BundleRegion | null): void;
 }
 
 export function initHud(clock: ServiceClock, net: Network): Hud {
@@ -16,6 +18,8 @@ export function initHud(clock: ServiceClock, net: Network): Hud {
   const nowEl = document.getElementById('now') as HTMLButtonElement;
   const speedsEl = document.getElementById('speeds') as HTMLElement;
   const scrubEl = document.getElementById('scrub') as HTMLInputElement;
+  const titleEl = document.querySelector('.hud-title') as HTMLElement;
+  const subEl = document.querySelector('.hud-sub') as HTMLElement;
 
   scrubEl.min = String(net.serviceStart);
   scrubEl.max = String(net.serviceEnd);
@@ -44,6 +48,12 @@ export function initHud(clock: ServiceClock, net: Network): Hud {
 
   let lastText = '';
   return {
+    setRegion(region: BundleRegion | null) {
+      titleEl.textContent = region ? `${region.name} Commuter Line` : 'Java Commuter Lines';
+      subEl.textContent = region
+        ? `${region.subtitle} · scheduled positions, not live GPS`
+        : 'All regions · scheduled positions, not live GPS';
+    },
     sync(trainCount: number) {
       const text = formatClock(clock.time);
       if (text !== lastText) {

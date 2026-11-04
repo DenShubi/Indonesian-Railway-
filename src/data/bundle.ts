@@ -3,9 +3,10 @@
  * scripts/make_bundle.py out of the GTFS feed in gtfs/.
  *
  * The on-disk field names are short on purpose (the bundle is shipped to the browser):
- *   stops  { n: name, y: lat, x: lon }
+ *   stops  { n: name, y: lat, x: lon, g: region id }
  *   shapes { c: [[lon, lat], ...], d: [cumulative_km, ...] }   (c and d are parallel)
  *   trips  { id, n: train number, r: route_id, h: headsign, s: shape_id, k: keyframes }
+ *   routes { name, color, rep: representative shape, g: region id }
  *   keyframe [arrival_s, departure_s, distance_km, stop_code]  (seconds from midnight)
  */
 
@@ -20,12 +21,27 @@ export interface BundleRoute {
   color: string;
   /** Representative shape id, used for the line's own overview geometry. */
   rep: ShapeId;
+  /** Region id. */
+  g: RegionId;
+}
+
+export type RegionId = string;
+
+export interface BundleRegion {
+  id: RegionId;
+  name: string;
+  subtitle: string;
+  /** [south, west, north, east], as the pipeline's Overpass queries use. */
+  bbox: [number, number, number, number];
+  /** Caveat about the timetable edition this region was built from, if any. */
+  note: string;
 }
 
 export interface BundleStop {
   n: string;
   y: number;
   x: number;
+  g: RegionId;
 }
 
 export interface BundleShape {
@@ -46,6 +62,7 @@ export interface BundleTrip {
 }
 
 export interface Bundle {
+  regions: BundleRegion[];
   routes: Record<RouteId, BundleRoute>;
   stops: Record<StopCode, BundleStop>;
   shapes: Record<ShapeId, BundleShape>;
@@ -81,6 +98,8 @@ export interface Network {
   callsByStop: Map<StopCode, StopCall[]>;
   /** Where each station is drawn: on the track, where trains actually stop. */
   stationPositions: Map<StopCode, StationPosition>;
+  regions: BundleRegion[];
+  routeIdsByRegion: Map<RegionId, RouteId[]>;
 }
 
 /**
@@ -108,7 +127,7 @@ export async function loadBundle(url: string): Promise<Bundle> {
 }
 
 function validate(b: Bundle): void {
-  for (const key of ['routes', 'stops', 'shapes', 'trips'] as const) {
+  for (const key of ['regions', 'routes', 'stops', 'shapes', 'trips'] as const) {
     if (!b[key]) throw new Error(`bundle is missing "${key}"`);
   }
   if (!Array.isArray(b.trips) || b.trips.length === 0) throw new Error('bundle has no trips');
@@ -163,8 +182,18 @@ export function buildNetwork(bundle: Bundle): Network {
     }
   }
 
+  const routeIdsByRegion = new Map<RegionId, RouteId[]>();
+  for (const region of bundle.regions) routeIdsByRegion.set(region.id, []);
+  for (const [id, route] of Object.entries(bundle.routes)) {
+    const list = routeIdsByRegion.get(route.g);
+    if (list) list.push(id);
+    else routeIdsByRegion.set(route.g, [id]);
+  }
+
   return {
     bundle,
+    regions: bundle.regions,
+    routeIdsByRegion,
     stationPositions: snapStations(bundle),
     routeIds: Object.keys(bundle.routes),
     serviceStart: Math.floor(serviceStart / 300) * 300,
@@ -219,4 +248,10 @@ function snapStations(bundle: Bundle): Map<StopCode, StationPosition> {
 
 export function stopName(bundle: Bundle, code: StopCode): string {
   return bundle.stops[code]?.n ?? code;
+}
+
+/** Region bbox in the west/south/east/north form MapLibre and the app use. */
+export function regionBounds(region: BundleRegion): Bbox {
+  const [south, west, north, east] = region.bbox;
+  return { west, south, east, north };
 }

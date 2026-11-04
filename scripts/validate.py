@@ -2,7 +2,7 @@
 import csv, io, zipfile, math, sys
 from collections import defaultdict
 import pathlib
-Z=pathlib.Path(__file__).resolve().parents[1]/'data'/'gtfs_wilayah8_surabaya.zip'
+Z=pathlib.Path(__file__).resolve().parents[1]/'data'/'gtfs_java_commuter.zip'
 zf=zipfile.ZipFile(Z)
 def rd(n): return list(csv.DictReader(io.TextIOWrapper(zf.open(n),'utf-8')))
 
