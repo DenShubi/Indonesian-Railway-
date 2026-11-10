@@ -34,6 +34,7 @@ import {
   STATION_CIRCLE_LAYER,
 } from './map/stationLayer';
 import { TrainLayer } from './map/trainLayer';
+import { initCab } from './ui/cab';
 import { initHud } from './ui/hud';
 import { initLinePanel } from './ui/linePanel';
 import { renderTrainPanel } from './ui/trainPanel';
@@ -101,6 +102,7 @@ async function boot(): Promise<void> {
 
   const map = createMap(document.getElementById('map') as HTMLElement, bounds());
   const trainLayer = new TrainLayer(colors);
+  initCab(map);
   const hud = initHud(clock);
 
   function regionRoutes(): RouteId[] {

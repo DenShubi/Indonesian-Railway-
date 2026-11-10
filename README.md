@@ -47,8 +47,23 @@ first, so the Python pipeline's output stays the single source of truth.
 | `src/map/basemap.ts` | MapLibre GL JS on OpenFreeMap's keyless vector tiles, with the style's own 3D buildings |
 | `src/map/trackLayer.ts` | Trip shapes as coloured lines, below the building extrusions |
 | `src/map/trainLayer.ts` | A three.js custom layer: the whole fleet as one `InstancedMesh`, one draw call |
+| `src/ui/cab.ts` | The two headlights: one shows the lines panel, one folds the cab away for fullscreen |
 | `src/ui/linePanel.ts` | Region switcher and the per-line chips for the chosen network |
 | `src/ui/` | Header clock, train detail card, station departures board |
+
+### The shell is a train front
+
+The page is drawn as the front of a commuter train: a lit destination board above a
+windscreen that holds the map, and an apron below carrying the controls between two
+headlights. The left headlight shows and hides the lines panel; the right one asks
+for fullscreen and folds the cab away, so the windscreen becomes the whole display,
+with a small button in the corner to bring it back. Fullscreen can be refused, and
+inside an embedded frame the request may never settle at all, so the cab folds first
+and the browser is asked afterwards - the view gains the space either way.
+
+Colours are KAI's own, read straight out of the 2020 logo artwork rather than
+guessed: indigo `#2D2A70` and orange `#ED6B23`, with the Commuter red `#ED1C24` as a
+third accent.
 
 Trains are positioned by distance along a shape, not by interpolating between station
 coordinates, so they follow the real curve of the line. Between two stops the distance

@@ -5,33 +5,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Indonesian Railway Visualizer — Java Commuter Lines</title>
   <meta name="description" content="A 3D map of KAI Commuter trains across Java, animated from the published timetables." />
+  <meta name="theme-color" content="#2d2a70" />
   <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" />
 </head>
 <body>
-  <div id="map"></div>
+  <!-- The shell is the front of a train: destination board above, windscreen in the
+       middle, and the apron below carrying the controls between two headlights. -->
+  <div id="cab">
+    <header id="board">
+      <div class="board-brand">
+        <span class="hud-title">Java Commuter Lines</span>
+        <span class="hud-sub">scheduled positions, not live GPS</span>
+      </div>
+      <div class="board-clock">
+        <span id="clock">--:--:--</span>
+        <span id="train-count" class="hud-count">0 trains</span>
+      </div>
+    </header>
 
-  <header id="hud" class="panel">
-    <div class="hud-brand">
-      <span class="hud-title">Java Commuter Lines</span>
-      <span class="hud-sub">scheduled positions, not live GPS</span>
-    </div>
-    <div class="hud-clock">
-      <span id="clock">--:--:--</span>
-      <span id="train-count" class="hud-count">0 trains</span>
-    </div>
-    <div class="hud-controls">
-      <button id="play" class="btn" type="button" aria-label="Pause">Pause</button>
-      <div class="speeds" id="speeds" role="group" aria-label="Playback speed"></div>
-      <button id="now" class="btn" type="button">Now</button>
-    </div>
-    <input id="scrub" class="scrub" type="range" min="0" max="86400" step="30" value="0" aria-label="Time of day" />
-  </header>
+    <main id="screen">
+      <div id="map"></div>
 
-  <aside id="lines" class="panel" aria-label="Lines"></aside>
-  <section id="detail" class="panel hidden" aria-label="Details"></section>
+      <aside id="lines" class="panel" aria-label="Lines"></aside>
+      <section id="detail" class="panel hidden" aria-label="Details"></section>
+      <div id="loading" class="loading">Loading timetable&hellip;</div>
 
-  <div id="loading" class="loading">Loading timetable&hellip;</div>
+      <button id="cab-restore" class="cab-restore" type="button" hidden
+              aria-label="Leave fullscreen and show the cab">&#x2715;</button>
+    </main>
+
+    <div id="apron">
+      <button id="lamp-lines" class="lamp" type="button" aria-pressed="true">
+        <span class="lamp-glass"></span>
+        <span class="lamp-label">Lines</span>
+      </button>
+
+      <div class="desk">
+        <div class="desk-row">
+          <button id="play" class="btn" type="button" aria-label="Pause">Pause</button>
+          <div class="speeds" id="speeds" role="group" aria-label="Playback speed"></div>
+          <button id="now" class="btn" type="button">Now</button>
+        </div>
+        <input id="scrub" class="scrub" type="range" min="0" max="86400" step="30" value="0"
+               aria-label="Time of day" />
+      </div>
+
+      <button id="lamp-full" class="lamp" type="button" aria-pressed="false">
+        <span class="lamp-glass"></span>
+        <span class="lamp-label">Full</span>
+      </button>
+    </div>
+  </div>
 
   <script type="module" src="/src/main.ts"></script>
 </body>
