@@ -74,13 +74,21 @@ Pages on for its own repository:
 
 > **Settings → Pages → Build and deployment → Source → GitHub Actions**
 
-Until that is set, `actions/deploy-pages` fails with
-`Failed to create deployment (status: 404) ... Ensure GitHub Pages has been enabled`,
-which is exactly what it means. (`actions/configure-pages` has an `enablement`
-input, but it needs a personal access token rather than the workflow's own
-`GITHUB_TOKEN`, and a long-lived admin token is a worse thing to keep in a repo
-than one click.) Afterwards, re-run the latest workflow and the site goes live at
-`https://<user>.github.io/<repo>/`.
+Two symptoms say the source is wrong. If Pages is off entirely,
+`actions/deploy-pages` fails with
+`Failed to create deployment (status: 404) ... Ensure GitHub Pages has been enabled`.
+If it is set to **Deploy from a branch** instead, something subtler happens: GitHub
+also runs its own "pages build and deployment" workflow, which publishes the
+*repository root* rather than `dist/`. The two deployments then race on every push,
+and the branch one serves the repo's `index.html` - the Vite entry point, which asks
+the browser for `/src/main.ts` and gets a 404. A site that works one minute and is
+blank the next is this, not a bug in the app.
+
+`actions/configure-pages` does have an `enablement` input that would set this from
+CI, but it needs a personal access token rather than the workflow's own
+`GITHUB_TOKEN`, and a long-lived admin token is a worse thing to keep in a
+repository than one click. Once the source is right, re-run the latest workflow and
+the site is live at `https://<user>.github.io/<repo>/`.
 
 The build takes its base path from `actions/configure-pages`, falling back to the
 value in [vite.config.ts](vite.config.ts), so renaming the repository does not
