@@ -1,5 +1,9 @@
 /**
  * The left panel: which network you are looking at, and which of its lines are on.
+ *
+ * Caveats about a region's timetable edition stay out of here. They are a fact
+ * about the data pipeline, they are recorded in the README, and on screen they
+ * only amount to telling a reader the project is unfinished.
  */
 import type { Network, RegionId, RouteId } from '../data/bundle';
 
@@ -67,13 +71,6 @@ export function initLinePanel(
         list.append(chip);
       }
       root.append(list);
-
-      if (r.note) {
-        const note = document.createElement('p');
-        note.className = 'panel-note is-warn';
-        note.textContent = r.note;
-        root.append(note);
-      }
     }
 
     const hint = document.createElement('p');

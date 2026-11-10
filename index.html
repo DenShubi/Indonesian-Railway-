@@ -4,18 +4,19 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Indonesian Railway Visualizer — Java Commuter Lines</title>
-  <meta name="description" content="A 3D map of KAI Commuter trains across Java, animated from the published timetables." />
-  <meta name="theme-color" content="#d8232a" />
+  <meta name="description" content="A 3D map of commuter trains across Java, animated from the published timetables." />
+  <meta name="theme-color" content="#9c3a35" />
   <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" />
 </head>
 <body>
-  <!-- The shell is the front of a train in KAI's red: the destination board across
-       the top with the line name centred on it, the windscreen in the middle, and
-       the apron below carrying the controls between two headlights. -->
+  <!-- The shell is the front of a train: the destination board across the top with
+       the line name centred on it, the windscreen in the middle, and the apron below
+       carrying the controls between two headlights. -->
   <div id="cab">
     <header id="board">
-      <div class="board-mark">KAI Commuter</div>
+      <p class="hud-note">*scheduled positions, not live GPS</p>
 
       <!-- Destination board: the line name sits centre-top, the way a headboard
            carries the name of the service. -->
@@ -27,12 +28,14 @@
         <span id="clock">--:--:--</span>
         <span id="train-count" class="hud-count">0 trains</span>
       </div>
-
-      <p class="hud-sub">scheduled positions, not live GPS</p>
     </header>
 
     <main id="screen">
       <div id="map"></div>
+
+      <!-- Time of day over the map: deep blue through the night, a little warmth at
+           dawn and dusk, nothing at all in the middle of the day. -->
+      <div id="nightfall" class="nightfall" aria-hidden="true"></div>
 
       <aside id="lines" class="panel" aria-label="Lines"></aside>
       <section id="detail" class="panel hidden" aria-label="Details"></section>
@@ -40,7 +43,7 @@
       <div id="loading" class="loading">Loading timetable&hellip;</div>
 
       <button id="cab-restore" class="cab-restore" type="button" hidden
-              aria-label="Leave fullscreen and show the cab">&#x2715;</button>
+              aria-label="Show the cab again">&#x2715;</button>
     </main>
 
     <div id="apron">
@@ -61,7 +64,7 @@
 
       <button id="lamp-full" class="lamp" type="button" aria-pressed="false">
         <span class="lamp-glass"></span>
-        <span class="lamp-label">Full</span>
+        <span class="lamp-label">Map</span>
       </button>
     </div>
   </div>

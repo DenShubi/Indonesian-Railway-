@@ -1,19 +1,18 @@
 /**
- * The two headlights on the cab apron, and the immersive view they lead to.
+ * The two headlights on the cab apron.
  *
- * Left lamp shows and hides the lines panel. Right lamp asks for browser
- * fullscreen and folds the cab away, so the windscreen becomes the whole
- * display; a small button in the corner brings it back. Fullscreen can be
- * refused - an iframe without `allow="fullscreen"`, or iOS Safari on iPhone,
- * where the API does not exist - and the request can simply never settle, so the
- * cab folds away first and the browser is asked afterwards. The view gains the
- * chrome's space either way.
+ * Left lamp shows and hides the lines panel. Right lamp folds the cab away so the
+ * map has the whole window, with a small button in the corner to bring it back.
+ * It deliberately does not ask the browser for fullscreen: the point is to get the
+ * chrome out of the way, and a real fullscreen request can be refused outright, can
+ * hang behind a permission prompt, or - inside an embedded frame - never settle at
+ * all, which left the button looking broken.
  */
 import type { Map as MapLibreMap } from 'maplibre-gl';
 
 export function initCab(map: MapLibreMap): void {
   const linesLamp = document.getElementById('lamp-lines') as HTMLButtonElement;
-  const fullLamp = document.getElementById('lamp-full') as HTMLButtonElement;
+  const mapLamp = document.getElementById('lamp-full') as HTMLButtonElement;
   const restore = document.getElementById('cab-restore') as HTMLButtonElement;
   const lines = document.getElementById('lines') as HTMLElement;
 
@@ -29,45 +28,29 @@ export function initCab(map: MapLibreMap): void {
   setLinesVisible(true);
   linesLamp.addEventListener('click', () => setLinesVisible(lines.classList.contains('hidden')));
 
-  /* ---------- right lamp: immersive ---------- */
+  /* ---------- right lamp: the map takes the window ---------- */
 
-  function setImmersive(on: boolean): void {
+  function setMapOnly(on: boolean): void {
     document.body.classList.toggle('is-immersive', on);
-    fullLamp.classList.toggle('is-on', on);
-    fullLamp.setAttribute('aria-pressed', String(on));
-    fullLamp.setAttribute('aria-label', on ? 'Leave fullscreen' : 'Fill the screen with the map');
+    mapLamp.classList.toggle('is-on', on);
+    mapLamp.setAttribute('aria-pressed', String(on));
+    mapLamp.setAttribute('aria-label', on ? 'Show the cab again' : 'Fill the window with the map');
     restore.hidden = !on;
-    // The windscreen just changed size; MapLibre needs telling, and the border
-    // and padding animate away over a frame or two.
+    // The windscreen just changed size; MapLibre needs telling, and the border and
+    // padding resolve over a frame or two.
     requestAnimationFrame(() => map.resize());
     window.setTimeout(() => map.resize(), 150);
   }
 
-  fullLamp.addEventListener('click', () => {
-    const entering = !document.body.classList.contains('is-immersive');
-    // Fold the cab first and ask the browser afterwards. Awaiting the request
-    // would make the whole button depend on it, and it can hang behind a
-    // permission prompt or never settle at all inside an embedded frame.
-    setImmersive(entering);
-    void (async () => {
-      try {
-        if (entering) await document.documentElement.requestFullscreen?.();
-        else if (document.fullscreenElement) await document.exitFullscreen();
-      } catch {
-        // Refused or unsupported: the view already has the cab's space.
-      }
-    })();
+  mapLamp.addEventListener('click', () => {
+    setMapOnly(!document.body.classList.contains('is-immersive'));
   });
 
-  restore.addEventListener('click', () => {
-    if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
-    setImmersive(false);
-  });
+  restore.addEventListener('click', () => setMapOnly(false));
 
-  // Escape leaves fullscreen without going through our buttons.
-  document.addEventListener('fullscreenchange', () => {
-    if (!document.fullscreenElement && document.body.classList.contains('is-immersive')) {
-      setImmersive(false);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && document.body.classList.contains('is-immersive')) {
+      setMapOnly(false);
     }
   });
 }

@@ -22,7 +22,6 @@ export function initHud(clock: ServiceClock): Hud {
   const speedsEl = document.getElementById('speeds') as HTMLElement;
   const scrubEl = document.getElementById('scrub') as HTMLInputElement;
   const titleEl = document.querySelector('.hud-title') as HTMLElement;
-  const subEl = document.querySelector('.hud-sub') as HTMLElement;
 
   // The whole day, not just the service window: trains that run past midnight are
   // out there in the small hours, and the scrubber has to be able to reach them.
@@ -54,10 +53,9 @@ export function initHud(clock: ServiceClock): Hud {
   let lastText = '';
   return {
     setRegion(region: BundleRegion | null) {
+      // The board carries the name of the service and nothing else; the caveat
+      // about where the positions come from lives in the note beside it.
       titleEl.textContent = region ? `${region.name} Commuter Line` : 'Java Commuter Lines';
-      subEl.textContent = region
-        ? `${region.subtitle} · scheduled positions, not live GPS`
-        : 'All regions · scheduled positions, not live GPS';
     },
     sync(trainCount: number, nextDeparture: number | null) {
       const text = formatClock(clock.time);

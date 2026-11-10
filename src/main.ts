@@ -26,6 +26,7 @@ import {
   type TrainState,
 } from './sim/trains';
 import { createMap, flattenBasemap, tuneBuildings } from './map/basemap';
+import { daylightTint } from './map/daylight';
 import { addTrackLayers, setVisibleRoutes } from './map/trackLayer';
 import {
   addStationLayers,
@@ -50,9 +51,14 @@ const BUNDLE_URL = `${BASE_URL}data/bundle.json`;
 
 type Selection = { kind: 'train'; tripId: string } | { kind: 'station'; code: StopCode } | null;
 
+/** Degrees of bearing per second while the camera circles a followed train. */
+const ORBIT_RATE = 1.5;
+
 async function boot(): Promise<void> {
   const loadingEl = document.getElementById('loading') as HTMLElement;
   const detailEl = document.getElementById('detail') as HTMLElement;
+  const nightfallEl = document.getElementById('nightfall') as HTMLElement;
+  const stillness = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   let net: Network;
   try {
@@ -74,6 +80,8 @@ async function boot(): Promise<void> {
 
   let selection: Selection = null;
   let follow = false;
+  /** True once the camera has arrived at a followed train and may start to circle. */
+  let orbiting = false;
   let states: TrainState[] = [];
   let layersReady = false;
 
@@ -227,12 +235,14 @@ async function boot(): Promise<void> {
   function selectStation(code: StopCode): void {
     selection = { kind: 'station', code };
     follow = false;
+    orbiting = false;
     renderDetail(true);
   }
 
   function clearSelection(): void {
     selection = null;
     follow = false;
+    orbiting = false;
     renderDetail(true);
   }
 
@@ -248,12 +258,20 @@ async function boot(): Promise<void> {
 
     if (action === 'follow') {
       follow = !follow;
+      // The camera is handed over in two stages: a long ease onto the train, then
+      // the frame loop takes it. Circling before it has arrived fights the ease.
+      orbiting = false;
       const state = selectedState();
       if (follow && state) {
         map.easeTo({
           center: [state.lon, state.lat],
-          zoom: Math.max(map.getZoom(), 12.5),
-          duration: 700,
+          zoom: Math.max(map.getZoom(), 13.2),
+          pitch: 62,
+          duration: stillness.matches ? 0 : 1800,
+          essential: true,
+        });
+        map.once('moveend', () => {
+          if (follow) orbiting = true;
         });
       }
       renderDetail(true);
@@ -326,6 +344,11 @@ async function boot(): Promise<void> {
   /* ---------- frame loop ---------- */
 
   function frame(frameTime: number): void {
+    // Seconds of wall clock since the last frame, for anything that moves at a
+    // rate rather than a step. Clamped: a backgrounded tab resumes with a gap.
+    const elapsed = lastFrameTime ? Math.min((frameTime - lastFrameTime) / 1000, 0.1) : 0;
+    lastFrameTime = frameTime;
+
     clock.advance(frameTime);
     states = activeTrains(net, clock.time, visible);
 
@@ -334,9 +357,23 @@ async function boot(): Promise<void> {
       map.triggerRepaint();
     }
 
-    if (follow) {
+    if (follow && orbiting) {
       const state = selectedState();
-      if (state) map.jumpTo({ center: [state.lon, state.lat] });
+      // Hold the train in the middle and drift the bearing around it - about one
+      // turn every four minutes, slow enough to read as the world moving rather
+      // than the camera being swung.
+      if (state) {
+        map.jumpTo({
+          center: [state.lon, state.lat],
+          bearing: stillness.matches ? map.getBearing() : map.getBearing() + ORBIT_RATE * elapsed,
+        });
+      }
+    }
+
+    const tint = daylightTint(clock.time);
+    if (tint !== lastTint) {
+      nightfallEl.style.backgroundColor = tint;
+      lastTint = tint;
     }
 
     // Only worth computing when the map is empty and the viewer needs telling why.
@@ -345,6 +382,9 @@ async function boot(): Promise<void> {
     renderDetail();
     requestAnimationFrame(frame);
   }
+
+  let lastFrameTime = 0;
+  let lastTint = '';
 
   requestAnimationFrame(frame);
   exposeDebug(map, net, clock, trainLayer);

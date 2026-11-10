@@ -1,30 +1,43 @@
-/* The shell is the front of a train in KAI's livery: red body, a pale windscreen,
-   and an apron carrying the controls between two headlights. Everything here is
-   flat - one colour per surface, no gradients, no glows - and the floating panels
-   follow Mini Tokyo 3D: dark, plain, and quiet enough to read the map through. */
+/* The shell is the front of a train: a muted brick-red body, a pale windscreen, and
+   an apron carrying the controls between two headlights.
+
+   Colour is declared in OKLCH so lightness steps read evenly: one hue (28, a red
+   pulled well back from a signal red) carries the body, and every neutral is tinted
+   a few thousandths toward it so the greys sit with the red rather than beside it.
+   Nothing here gradates, blurs or floats: surfaces are flat, depth comes from a
+   lightness step, and separation from a hairline. */
 :root {
-  /* Livery, taken from a KAI locomotive front: red body, off-white face. */
-  --kai-red: #d8232a;
-  --kai-red-dark: #ab161c;
-  --kai-red-deep: #7d1014;
-  --kai-blue: #1c3f94;
+  /* Body: deep and desaturated. A brighter, higher-chroma red turns 30% of the
+     frame into a siren and leaves nothing for the lines to compete with. */
+  --red: oklch(47% 0.125 28);
+  --red-dark: oklch(38% 0.105 28);
+  --red-deep: oklch(29% 0.085 28);
 
-  --face: #eceef1;
-  --face-dim: #c9ccd2;
-  --glass: #b9c0c8;
+  /* Warm off-white for the face, the plate and the headlight glass. */
+  --face: oklch(95% 0.008 60);
+  --face-dim: oklch(86% 0.012 60);
+  --glass: oklch(80% 0.012 60);
+  --lit: oklch(88% 0.11 85);
 
-  /* Panels, Mini Tokyo 3D style: flat near-black, white type, grey seconds. */
-  --panel: rgba(22, 24, 27, 0.9);
-  --panel-head: rgba(255, 255, 255, 0.07);
-  --edge: rgba(255, 255, 255, 0.14);
-  --fg: #f2f3f5;
-  --muted: #a7acb3;
-  --dim: #767c85;
-  --ok: #46c07a;
+  /* Panels: a near-black canvas, lifted a step for headers, hairlines for edges. */
+  --ink: oklch(20% 0.008 50);
+  --ink-lift: oklch(25% 0.008 50);
+  --edge: oklch(100% 0 0 / 0.1);
+  --fg: oklch(96% 0.004 60);
+  --muted: oklch(74% 0.006 60);
+  --dim: oklch(57% 0.006 60);
 
-  --display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  --body: 'IBM Plex Sans', system-ui, sans-serif;
-  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  /* Four radii, nothing in between. */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 18px;
+  --r-pill: 999px;
+
+  /* Rubik for everything that reads as language: rounded corners and open counters
+     make it soft without turning cute. JetBrains Mono for times and distances,
+     where columns have to line up and the figures are monospaced by construction. */
+  --ui: 'Rubik', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
   color-scheme: dark;
 }
 
@@ -36,14 +49,44 @@ html,
 body {
   height: 100%;
   margin: 0;
+  /* The cab is fixed and fills the window; anything that reaches past it is a bug,
+     not something to scroll to. */
+  overflow: hidden;
 }
 
 body {
-  background: var(--kai-red);
+  background: var(--red);
   color: var(--fg);
-  font-family: var(--body);
-  overflow: hidden;
+  font-family: var(--ui);
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  touch-action: manipulation;
+}
+
+/* One scrollbar treatment everywhere: thin, dark, and only where a panel scrolls. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(100% 0 0 / 0.16) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: oklch(100% 0 0 / 0.16);
+  border-radius: var(--r-pill);
+}
+
+:focus-visible {
+  outline: 2px solid var(--face);
+  outline-offset: 2px;
 }
 
 /* ---------- the cab ---------- */
@@ -55,47 +98,54 @@ body {
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 10px;
   padding: 12px;
-  background: var(--kai-red);
+  background: var(--red);
 }
 
-/* Destination board: line name centred, clock to the right, both on the red. */
+/* Destination board: the note sits left, the line name centre, the clock right. */
 #board {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  column-gap: 14px;
-  padding: 2px 8px 0;
+  column-gap: 16px;
+  padding: 0 6px;
 }
 
-.board-mark {
-  color: rgba(255, 255, 255, 0.8);
-  font-family: var(--display);
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+/* Grid items default to min-width:auto, which lets a nowrap plate shove the
+   clock off the board rather than shrink. */
+#board > * {
+  min-width: 0;
+}
+
+.hud-note {
+  margin: 0;
+  color: var(--face);
+  opacity: 0.86;
+  font-size: 11.5px;
+  font-weight: 300;
+  line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* The headboard itself: a plain white plate with the line name on it. */
+/* The headboard itself: a plain plate with the line name on it. */
 .board-plate {
   justify-self: center;
   max-width: 100%;
-  padding: 5px 22px;
+  padding: 7px 24px;
   background: var(--face);
-  border-radius: 3px;
+  border-radius: var(--r-md);
 }
 
 .hud-title {
   display: block;
-  color: var(--kai-red-deep);
-  font-family: var(--display);
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  line-height: 1.1;
+  color: var(--red-deep);
+  font-size: 23px;
+  font-weight: 500;
+  /* Uppercase at display size needs a little air between letters to read as a
+     board rather than a word; this is the one positive tracking in the file. */
+  letter-spacing: 0.035em;
+  line-height: 1.15;
   text-align: center;
   text-transform: uppercase;
   white-space: nowrap;
@@ -112,18 +162,19 @@ body {
 }
 
 #clock {
-  color: #fff;
+  color: var(--face);
   font-family: var(--mono);
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 1.1;
+  font-size: 23px;
+  font-weight: 400;
+  line-height: 1.25;
   font-variant-numeric: tabular-nums;
 }
 
 .hud-count {
-  color: rgba(255, 255, 255, 0.78);
-  font-size: 11px;
-  letter-spacing: 0.03em;
+  color: var(--face);
+  opacity: 0.8;
+  font-size: 11.5px;
+  font-weight: 300;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -133,32 +184,21 @@ body {
 .hud-count.is-live::before {
   content: '';
   display: inline-block;
-  width: 6px;
-  height: 6px;
-  margin-right: 5px;
+  width: 5px;
+  height: 5px;
+  margin-right: 6px;
   border-radius: 50%;
-  background: #fff;
-  vertical-align: 1px;
+  background: var(--face);
+  vertical-align: 2px;
 }
 
-.hud-sub {
-  grid-column: 1 / -1;
-  margin: 2px 0 0;
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 11px;
-  letter-spacing: 0.03em;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Windscreen: the map, clipped into the cab window. */
+/* Windscreen: the map, clipped into the cab window. The outer radius is the inner
+   one plus the frame, so the corners stay concentric. */
 #screen {
   position: relative;
   min-height: 0;
   border: 5px solid var(--face);
-  border-radius: 20px;
+  border-radius: var(--r-lg);
   overflow: hidden;
   background: var(--glass);
 }
@@ -168,19 +208,29 @@ body {
   inset: 0;
 }
 
+/* Time of day, laid over the whole view so the trains dim with the map. */
+.nightfall {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: transparent;
+  transition: background-color 600ms linear;
+}
+
 /* Apron: the front panel, a headlight at each corner. */
 #apron {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  padding: 6px 10px 4px;
+  gap: 16px;
+  padding: 2px 8px 4px;
 }
 
 .desk {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   flex: 1 1 auto;
   min-width: 0;
 }
@@ -194,68 +244,73 @@ body {
 
 /* ---------- headlights ---------- */
 
+/* Glass and label both sit in flow: when the label was absolutely positioned it
+   hung past the cab, which both clipped it against the desktop edge and gave the
+   window a pair of scrollbars. */
 .lamp {
-  position: relative;
+  display: flex;
   flex: none;
-  width: 60px;
-  height: 60px;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
   padding: 0;
   border: 0;
-  border-radius: 50%;
-  background: var(--kai-red-dark);
+  background: none;
   cursor: pointer;
+  font: inherit;
 }
 
 .lamp-glass {
-  position: absolute;
-  inset: 5px;
+  width: 52px;
+  height: 52px;
+  border: 4px solid var(--red-dark);
   border-radius: 50%;
   background: var(--face-dim);
+  transition: background-color 140ms ease-out;
 }
 
-.lamp:hover .lamp-glass {
-  background: var(--face);
+@media (hover: hover) {
+  .lamp:hover .lamp-glass {
+    background: var(--face);
+  }
 }
 
 .lamp.is-on .lamp-glass {
-  background: #ffd45c;
+  background: var(--lit);
 }
 
 .lamp-label {
-  position: absolute;
-  left: 50%;
-  bottom: -3px;
-  transform: translate(-50%, 100%);
-  color: rgba(255, 255, 255, 0.85);
-  font-family: var(--display);
+  color: var(--face);
+  opacity: 0.88;
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-weight: 400;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-/* Small button that brings the cab back while immersed. */
+/* Small button that brings the cab back while the map has the window. */
 .cab-restore {
   position: absolute;
   z-index: 9;
   top: 10px;
   right: 10px;
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border: 0;
-  border-radius: 4px;
-  background: var(--panel);
-  color: #fff;
+  border-radius: var(--r-sm);
+  background: var(--ink);
+  color: var(--fg);
   cursor: pointer;
   font-size: 14px;
   line-height: 1;
+  transition: background-color 140ms ease-out;
 }
 
 .cab-restore:hover {
-  background: var(--kai-red);
+  background: var(--red);
 }
 
-/* ---------- immersive: windscreen only ---------- */
+/* ---------- map only: the cab folds away ---------- */
 
 body.is-immersive #board,
 body.is-immersive #apron {
@@ -275,14 +330,14 @@ body.is-immersive #screen {
   border-radius: 0;
 }
 
-/* ---------- floating panels ---------- */
+/* ---------- panels ---------- */
 
 .panel {
   position: absolute;
   z-index: 5;
-  background: var(--panel);
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  background: oklch(20% 0.008 50 / 0.95);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-md);
 }
 
 .hidden {
@@ -290,96 +345,104 @@ body.is-immersive #screen {
 }
 
 #lines {
-  left: 10px;
-  top: 10px;
-  width: 206px;
-  max-height: calc(100% - 20px);
+  left: 12px;
+  top: 12px;
+  width: 210px;
+  max-height: calc(100% - 24px);
   overflow-y: auto;
-  padding: 10px;
-  scrollbar-width: thin;
+  padding: 12px;
 }
 
 .regions {
   display: flex;
   flex-wrap: wrap;
-  gap: 3px;
-  margin-bottom: 10px;
+  gap: 4px;
+  margin-bottom: 12px;
 }
 
 .btn-region {
   flex: 1 1 auto;
-  padding: 4px 7px;
-  font-size: 11px;
+  padding: 5px 8px;
+  font-size: 11.5px;
   white-space: nowrap;
 }
 
 #lines .panel-head + .chips {
-  margin-bottom: 8px;
-}
-
-.panel-note.is-warn {
-  color: #f0b86a;
-  border-left: 2px solid #f0b86a;
-  padding-left: 7px;
-  margin: 2px 0 10px;
+  margin-bottom: 10px;
 }
 
 #detail {
-  right: 10px;
-  top: 10px;
-  bottom: 10px;
-  width: 318px;
+  right: 12px;
+  top: 12px;
+  bottom: 12px;
+  width: 320px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
 .panel-head {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 12px;
-  background: var(--panel-head);
-  font-family: var(--display);
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  padding: 11px 12px 12px;
+  background: var(--ink-lift);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
-/* The line's own colour as a bar down the left of its header, as on a route map. */
-.panel-head.has-bar {
-  border-left: 4px solid var(--chip, var(--dim));
-  padding-left: 10px;
+/* The line's colour as a band under its header, the way a platform sign carries
+   the route it serves. */
+.panel-head.has-bar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--chip, var(--dim));
 }
 
 #lines .panel-head {
-  padding: 0 0 6px;
+  padding: 0 0 7px;
   background: none;
-  font-size: 12px;
   color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .panel-head .x {
-  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin: -6px -4px -6px auto;
   background: none;
   border: 0;
+  border-radius: var(--r-sm);
   color: var(--dim);
   cursor: pointer;
-  font-size: 19px;
+  font-size: 17px;
   line-height: 1;
-  padding: 0 2px;
+  transition: color 140ms ease-out, background-color 140ms ease-out;
 }
 
 .panel-head .x:hover {
+  background: oklch(100% 0 0 / 0.08);
   color: var(--fg);
 }
 
 .panel-note {
   color: var(--dim);
-  font-size: 11px;
-  line-height: 1.4;
-  margin: 10px 0 0;
+  font-size: 11.5px;
+  font-weight: 300;
+  line-height: 1.45;
+  margin: 12px 0 0;
 }
 
 /* ---------- buttons ---------- */
@@ -387,90 +450,110 @@ body.is-immersive #screen {
 .btn {
   appearance: none;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  border-radius: 3px;
-  color: #fff;
+  border: 1px solid oklch(95% 0.008 60 / 0.5);
+  border-radius: var(--r-sm);
+  color: var(--face);
   cursor: pointer;
   font: inherit;
-  font-size: 12px;
-  font-weight: 500;
-  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 400;
+  padding: 7px 14px;
+  transition: background-color 140ms ease-out, color 140ms ease-out;
 }
 
-.btn:hover {
-  background: rgba(255, 255, 255, 0.16);
+@media (hover: hover) {
+  .btn:hover {
+    background: oklch(95% 0.008 60 / 0.16);
+  }
 }
 
 .btn.is-active {
-  background: #fff;
-  border-color: #fff;
-  color: var(--kai-red);
-  font-weight: 600;
+  background: var(--face);
+  border-color: var(--face);
+  color: var(--red-deep);
+  font-weight: 500;
 }
 
 .speeds {
   display: flex;
   gap: 2px;
   padding: 2px;
-  background: rgba(255, 255, 255, 0.14);
-  border-radius: 3px;
+  background: oklch(95% 0.008 60 / 0.14);
+  border-radius: var(--r-sm);
 }
 
 .btn-speed {
   border-color: transparent;
   font-family: var(--mono);
+  font-size: 12px;
   padding: 5px 9px;
 }
 
-/* Inside the dark panels the buttons take the panel's own contrast. */
+/* Inside the panels the buttons take the panel's own contrast. */
 .panel .btn {
-  background: rgba(255, 255, 255, 0.08);
+  background: oklch(100% 0 0 / 0.07);
   border-color: var(--edge);
   color: var(--fg);
 }
 
-.panel .btn:hover {
-  background: rgba(255, 255, 255, 0.16);
+@media (hover: hover) {
+  .panel .btn:hover {
+    background: oklch(100% 0 0 / 0.14);
+  }
 }
 
 .panel .btn.is-active {
   background: var(--fg);
   border-color: var(--fg);
-  color: #16181b;
+  color: var(--ink);
 }
 
 .btn-wide {
   display: block;
   width: 100%;
-  margin: 12px 0 2px;
+  margin: 14px 0 2px;
   text-align: center;
 }
 
+/* The track is drawn on the pseudo-element rather than the input, so the box is
+   tall enough to hold the thumb and to be hit with a thumb on a phone. */
 .scrub {
   appearance: none;
   width: 100%;
-  height: 4px;
+  height: 16px;
   margin: 0;
-  background: rgba(255, 255, 255, 0.35);
-  border-radius: 0;
+  background: transparent;
   cursor: pointer;
+}
+
+.scrub::-webkit-slider-runnable-track {
+  height: 4px;
+  background: oklch(95% 0.008 60 / 0.32);
+  border-radius: var(--r-pill);
 }
 
 .scrub::-webkit-slider-thumb {
   appearance: none;
-  width: 14px;
-  height: 14px;
+  width: 15px;
+  height: 15px;
+  margin-top: -5.5px;
   border: 0;
   border-radius: 50%;
-  background: #fff;
+  background: var(--face);
+}
+
+.scrub::-moz-range-track {
+  height: 4px;
+  background: oklch(95% 0.008 60 / 0.32);
+  border-radius: var(--r-pill);
 }
 
 .scrub::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
+  width: 15px;
+  height: 15px;
   border: 0;
   border-radius: 50%;
-  background: #fff;
+  background: var(--face);
 }
 
 /* ---------- line chips ---------- */
@@ -478,39 +561,42 @@ body.is-immersive #screen {
 .chips {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .chip {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   width: 100%;
-  padding: 6px 8px;
+  padding: 7px 8px;
   background: transparent;
   border: 0;
-  border-radius: 3px;
+  border-radius: var(--r-sm);
   color: var(--dim);
   cursor: pointer;
   font: inherit;
   font-size: 13px;
   text-align: left;
+  transition: background-color 140ms ease-out, color 140ms ease-out;
 }
 
-.chip:hover {
-  background: rgba(255, 255, 255, 0.08);
+@media (hover: hover) {
+  .chip:hover {
+    background: oklch(100% 0 0 / 0.07);
+  }
 }
 
 .chip.is-on {
   color: var(--fg);
 }
 
-/* A short bar in the line colour, the way a transit map keys its lines. */
+/* A short rule in the line colour, the way a transit map keys its lines. */
 .chip-dot {
-  width: 4px;
-  height: 14px;
+  width: 14px;
+  height: 4px;
   flex: none;
-  border-radius: 1px;
+  border-radius: var(--r-pill);
   background: var(--chip, var(--dim));
   opacity: 0.3;
 }
@@ -536,60 +622,65 @@ body.is-immersive #screen {
 
 .detail-body {
   overflow-y: auto;
-  padding: 12px;
-  scrollbar-width: thin;
+  padding: 14px 12px;
 }
 
 .headsign {
   color: var(--muted);
   font-size: 13px;
-  margin: 0 0 6px;
+  margin: 0 0 8px;
 }
 
 .status {
   font-size: 14px;
-  line-height: 1.45;
-  margin: 0 0 10px;
+  font-weight: 300;
+  line-height: 1.5;
+  margin: 0 0 12px;
+}
+
+.status strong {
+  font-weight: 500;
 }
 
 .muted {
   color: var(--muted);
-  font-weight: 400;
+  font-weight: 300;
 }
 
 .small {
-  font-size: 11px;
+  font-size: 11.5px;
 }
 
-/* Service badge, as on a Mini Tokyo 3D card. */
+/* Service badge. */
 .badge {
   display: inline-block;
-  padding: 1px 6px;
-  background: var(--fg);
-  border-radius: 2px;
-  color: #16181b;
+  padding: 2px 8px;
+  background: oklch(100% 0 0 / 0.1);
+  border-radius: var(--r-pill);
+  color: var(--fg);
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  font-weight: 500;
   vertical-align: 1px;
 }
 
 .progress {
   height: 3px;
-  background: rgba(255, 255, 255, 0.14);
+  background: oklch(100% 0 0 / 0.12);
+  border-radius: var(--r-pill);
   overflow: hidden;
 }
 
 .progress span {
   display: block;
   height: 100%;
+  border-radius: var(--r-pill);
 }
 
 /* ---------- call list as a route diagram ---------- */
 
 .timeline {
   list-style: none;
-  margin: 14px 0 0;
+  margin: 16px 0 0;
   padding: 0;
 }
 
@@ -598,8 +689,8 @@ body.is-immersive #screen {
   display: grid;
   grid-template-columns: 18px 1fr auto;
   align-items: center;
-  column-gap: 8px;
-  min-height: 30px;
+  column-gap: 10px;
+  min-height: 32px;
   color: var(--fg);
   font-size: 13px;
 }
@@ -630,7 +721,7 @@ body.is-immersive #screen {
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: #16181b;
+  background: var(--ink);
   box-shadow: 0 0 0 2px var(--chip, var(--dim));
 }
 
@@ -646,9 +737,9 @@ body.is-immersive #screen {
   align-items: flex-end;
   color: var(--muted);
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 11.5px;
   font-variant-numeric: tabular-nums;
-  line-height: 1.25;
+  line-height: 1.35;
 }
 
 .tl.is-done {
@@ -664,18 +755,18 @@ body.is-immersive #screen {
 }
 
 .tl.is-current {
-  color: #fff;
-  font-weight: 600;
+  color: var(--face);
+  font-weight: 500;
 }
 
 .tl.is-current .tl-times {
-  color: #fff;
+  color: var(--face);
 }
 
 .tl.is-current .tl-dot {
   width: 13px;
   height: 13px;
-  background: #fff;
+  background: var(--face);
   box-shadow: 0 0 0 3px var(--chip, var(--dim));
 }
 
@@ -683,25 +774,25 @@ body.is-immersive #screen {
 
 .calls {
   width: 100%;
-  margin-top: 12px;
+  margin-top: 14px;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 12.5px;
 }
 
 .calls th {
   color: var(--dim);
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 10.5px;
+  font-weight: 500;
   letter-spacing: 0.06em;
   text-align: left;
   text-transform: uppercase;
-  padding: 0 6px 5px 0;
+  padding: 0 8px 6px 0;
   border-bottom: 1px solid var(--edge);
 }
 
 .calls td {
-  padding: 5px 6px 5px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 7px 8px 7px 0;
+  border-bottom: 1px solid oklch(100% 0 0 / 0.05);
   vertical-align: middle;
 }
 
@@ -709,6 +800,7 @@ body.is-immersive #screen {
 .calls .km,
 .calls .num {
   font-family: var(--mono);
+  font-size: 11.5px;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -724,7 +816,7 @@ body.is-immersive #screen {
 }
 
 .calls tr[data-action]:hover td {
-  color: #fff;
+  color: var(--face);
 }
 
 .calls .route {
@@ -733,8 +825,8 @@ body.is-immersive #screen {
 
 .calls .route .chip-dot {
   display: inline-block;
-  margin-right: 6px;
-  vertical-align: -3px;
+  margin-right: 8px;
+  vertical-align: 3px;
   opacity: 1;
 }
 
@@ -743,16 +835,28 @@ body.is-immersive #screen {
 .tooltip {
   position: absolute;
   z-index: 7;
-  max-width: 260px;
-  padding: 8px 10px;
-  background: rgba(22, 24, 27, 0.88);
-  border-left: 4px solid var(--chip, var(--dim));
-  border-radius: 3px;
+  max-width: 264px;
+  padding: 11px 12px 10px;
+  background: oklch(20% 0.008 50 / 0.95);
+  border-radius: var(--r-md);
   color: var(--fg);
   font-size: 12px;
-  line-height: 1.5;
+  font-weight: 300;
+  line-height: 1.55;
+  overflow: hidden;
   pointer-events: none;
   transform: translate(-50%, -100%);
+}
+
+/* The line's colour as a band across the top, matching the panel header. */
+.tooltip::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  background: var(--chip, var(--dim));
 }
 
 .tooltip[hidden] {
@@ -760,8 +864,8 @@ body.is-immersive #screen {
 }
 
 .tip-line {
-  font-weight: 600;
   font-size: 13px;
+  font-weight: 500;
 }
 
 .tip-row .muted {
@@ -776,25 +880,26 @@ body.is-immersive #screen {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  padding: 10px 18px;
-  background: var(--panel);
-  border-radius: 3px;
+  padding: 11px 18px;
+  background: var(--ink);
+  border-radius: var(--r-md);
   color: var(--muted);
   font-size: 13px;
+  font-weight: 300;
 }
 
 .loading.is-error {
-  color: #ff9c8a;
+  color: oklch(78% 0.13 30);
   max-width: 420px;
   text-align: center;
 }
 
-/* MapLibre chrome, flattened to match the panels */
+/* MapLibre's own chrome, matched to the panels */
 .maplibregl-ctrl-group {
-  background: var(--panel) !important;
-  border: 0 !important;
-  border-radius: 3px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  background: oklch(20% 0.008 50 / 0.95) !important;
+  border: 1px solid var(--edge) !important;
+  border-radius: var(--r-sm) !important;
+  box-shadow: none !important;
 }
 
 .maplibregl-ctrl-group button + button {
@@ -802,23 +907,25 @@ body.is-immersive #screen {
 }
 
 .maplibregl-ctrl-group button .maplibregl-ctrl-icon {
-  filter: invert(1) brightness(1.4);
+  filter: invert(1) brightness(1.3);
 }
 
 .maplibregl-ctrl-attrib {
-  background: rgba(255, 255, 255, 0.7) !important;
+  background: oklch(95% 0.008 60 / 0.72) !important;
+  border-radius: var(--r-sm) 0 0 0 !important;
 }
 
 .maplibregl-ctrl-attrib,
 .maplibregl-ctrl-attrib a {
-  color: #2a3338;
+  color: oklch(38% 0.008 50);
 }
 
 .maplibregl-ctrl-scale {
-  background: var(--panel) !important;
+  background: oklch(20% 0.008 50 / 0.95) !important;
   border-color: var(--edge) !important;
-  border-radius: 0 !important;
+  border-radius: 0 var(--r-sm) 0 0 !important;
   color: var(--fg) !important;
+  font-family: var(--mono);
 }
 
 /* ---------- narrow screens ---------- */
@@ -829,31 +936,45 @@ body.is-immersive #screen {
     padding: 8px;
   }
 
+  /* 375px cannot hold the plate and the clock on one line, and a headboard that
+     ellipsises is not a headboard: give it the width and drop the clock under it. */
   #board {
     grid-template-columns: 1fr auto;
-    row-gap: 2px;
+    row-gap: 4px;
     padding: 0 2px;
   }
 
-  .board-mark {
-    display: none;
+  .board-plate {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    padding: 5px 14px;
   }
 
-  .board-plate {
-    justify-self: start;
-    padding: 4px 12px;
+  .hud-note {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 10.5px;
+    /* Let it wrap rather than tail off into an ellipsis: beside the clock there
+       is not room for the whole line on one. */
+    white-space: normal;
+    text-overflow: clip;
+    line-height: 1.25;
+  }
+
+  .board-clock {
+    grid-column: 2;
+    grid-row: 2;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 8px;
   }
 
   .hud-title {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   #clock {
     font-size: 19px;
-  }
-
-  .hud-sub {
-    text-align: left;
   }
 
   #screen {
@@ -862,17 +983,18 @@ body.is-immersive #screen {
   }
 
   #apron {
-    gap: 8px;
-    padding: 4px 2px;
+    gap: 10px;
+    padding: 0 2px 2px;
   }
 
-  .lamp {
-    width: 46px;
-    height: 46px;
+  .lamp-glass {
+    width: 42px;
+    height: 42px;
+    border-width: 3px;
   }
 
   .lamp-label {
-    display: none;
+    font-size: 10px;
   }
 
   .desk-row {
@@ -886,15 +1008,16 @@ body.is-immersive #screen {
     top: auto;
     bottom: 8px;
     width: auto;
-    /* Three regions, twelve chips and a caveat would otherwise swallow the map. */
+    /* Three regions and twelve chips would otherwise swallow the map. */
     max-height: 45%;
     overflow-y: auto;
-    padding: 8px 10px;
+    padding: 10px;
   }
 
   #lines .chips {
     flex-direction: row;
     flex-wrap: wrap;
+    gap: 2px;
   }
 
   #lines .chip {
@@ -902,15 +1025,8 @@ body.is-immersive #screen {
     flex: none;
   }
 
-  /* The generic hint is expendable on a phone; the timetable caveat is not - it is
-     what tells a reader those times are from a superseded edition. */
-  #lines .panel-note:not(.is-warn) {
+  #lines .panel-note {
     display: none;
-  }
-
-  .panel-note.is-warn {
-    font-size: 10px;
-    line-height: 1.35;
   }
 
   #detail {
@@ -924,5 +1040,11 @@ body.is-immersive #screen {
 
   .tooltip {
     display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
   }
 }

@@ -47,7 +47,8 @@ first, so the Python pipeline's output stays the single source of truth.
 | `src/map/basemap.ts` | MapLibre GL JS on OpenFreeMap's keyless vector tiles, flattened to greys so the railway is the only colour |
 | `src/map/trackLayer.ts` | Trip shapes as coloured lines, below the building extrusions |
 | `src/map/trainLayer.ts` | A three.js custom layer: the whole fleet as one `InstancedMesh`, one draw call |
-| `src/ui/cab.ts` | The two headlights: one shows the lines panel, one folds the cab away for fullscreen |
+| `src/map/daylight.ts` | Time of day as a single wash over the view: blue at night, warm at either end of the day |
+| `src/ui/cab.ts` | The two headlights: one shows the lines panel, one folds the cab away so the map has the window |
 | `src/ui/linePanel.ts` | Region switcher and the per-line chips for the chosen network |
 | `src/ui/tooltip.ts` | The hover card over a train: line, service, last stop and next |
 | `src/ui/` | Header clock, train detail card, station departures board |
@@ -57,20 +58,31 @@ first, so the Python pipeline's output stays the single source of truth.
 The page is drawn as the front of a commuter train: a destination board across the
 top with the line name centred on it like a headboard, a windscreen that holds the
 map, and an apron below carrying the controls between two headlights. The left
-headlight shows and hides the lines panel; the right one asks for fullscreen and
-folds the cab away, so the windscreen becomes the whole display, with a small button
-in the corner to bring it back. Fullscreen can be refused, and inside an embedded
-frame the request may never settle at all, so the cab folds first and the browser is
-asked afterwards - the view gains the space either way.
+headlight shows and hides the lines panel; the right one folds the cab away so the
+map has the whole window, with a small button in the corner to bring it back. It
+does not ask the browser for fullscreen: the point is to get the chrome out of the
+way, and a real fullscreen request can be refused, can hang behind a prompt, or -
+inside an embedded frame - never settle at all.
 
-The body is KAI red `#D8232A` against an off-white face, after the livery on the
-front of a KAI locomotive. Every surface is a single flat colour: no gradients, no
-glows, no lit glass. The map and its floating panels follow Mini Tokyo 3D - a
-near-monochrome basemap so the only saturated colour on screen belongs to the
-railway, line colours carried through from the track to the trains to the panel
-headers, a plain dark card for anything that floats over the map, a hover card over
-each train, and a selected train's whole run drawn as a route diagram rather than a
-table.
+The body is a deep brick red, `oklch(47% 0.125 28)`, against a warm off-white face.
+Colour is declared in OKLCH so the lightness steps read evenly, and every neutral is
+tinted a few thousandths toward that same hue so the greys sit with the red rather
+than beside it. Every surface is one flat colour: no gradients, no glows, no blur,
+no drop shadows. Depth is a step in lightness and separation is a hairline, which is
+what keeps the panels sitting on the map rather than hovering over it.
+
+Type is Rubik throughout, whose rounded corners and open counters read soft without
+turning cute, with JetBrains Mono for times and distances, where columns have to
+line up. Four radii (6, 10, 18, pill) cover every corner in the app.
+
+The map follows Mini Tokyo 3D: a near-monochrome basemap so the only saturated
+colour on screen belongs to the railway, line colours carried from the track to the
+trains to the panel headers, a hover card over each train, and a selected train's
+whole run drawn as a route diagram rather than a table. Time of day washes over the
+whole view - deep blue through the night, a little warmth at dawn and dusk, nothing
+at midday - so a 03:00 run reads differently from a midday one. Following a train
+eases the camera onto it and then circles it at about one turn every four minutes;
+both the ease and the circling are dropped under `prefers-reduced-motion`.
 
 Trains are positioned by distance along a shape, not by interpolating between station
 coordinates, so they follow the real curve of the line. Between two stops the distance
@@ -204,9 +216,9 @@ partial.
    551-558; the register numbers the same services 701-733 and 501-512, and lists
    43 trains where the PDF has 32. The routes match - our longest Yogyakarta run
    measures 65.8 km against the register's 65.5, and Prameks 63.7 against 63.6 -
-   but the times are from the earlier edition. The app says so in the region
-   panel, and `verify:gapeka` checks that region by route length instead of by
-   train number.
+   but the times are from the earlier edition. That caveat is recorded here
+   rather than on screen, and `verify:gapeka` checks that region by route length
+   instead of by train number.
 2. **Paired train numbers are one trip.** The timetable presents runs like
    `462-463` as a single through service, and the feed follows that, so a trip id
    can carry two train numbers. The register sometimes splits the same run into
