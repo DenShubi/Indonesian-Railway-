@@ -89,9 +89,6 @@ export interface Bbox {
 export interface Network {
   bundle: Bundle;
   routeIds: RouteId[];
-  /** First departure and last arrival across all trips, in seconds from midnight. */
-  serviceStart: number;
-  serviceEnd: number;
   bbox: Bbox;
   tripsByRoute: Map<RouteId, BundleTrip[]>;
   /** Calls at each station, sorted by departure time. */
@@ -142,17 +139,10 @@ function validate(b: Bundle): void {
 }
 
 export function buildNetwork(bundle: Bundle): Network {
-  let serviceStart = Infinity;
-  let serviceEnd = -Infinity;
   const tripsByRoute = new Map<RouteId, BundleTrip[]>();
   const callsByStop = new Map<StopCode, StopCall[]>();
 
   for (const trip of bundle.trips) {
-    const first = trip.k[0];
-    const last = trip.k[trip.k.length - 1];
-    serviceStart = Math.min(serviceStart, first[0]);
-    serviceEnd = Math.max(serviceEnd, last[1]);
-
     const list = tripsByRoute.get(trip.r);
     if (list) list.push(trip);
     else tripsByRoute.set(trip.r, [trip]);
@@ -196,8 +186,6 @@ export function buildNetwork(bundle: Bundle): Network {
     routeIdsByRegion,
     stationPositions: snapStations(bundle),
     routeIds: Object.keys(bundle.routes),
-    serviceStart: Math.floor(serviceStart / 300) * 300,
-    serviceEnd: Math.ceil(serviceEnd / 300) * 300,
     bbox: { west, south, east, north },
     tripsByRoute,
     callsByStop,

@@ -39,7 +39,12 @@ import { initLinePanel } from './ui/linePanel';
 import { renderTrainPanel } from './ui/trainPanel';
 import { renderStationPanel } from './ui/stationPanel';
 
-const BUNDLE_URL = `${import.meta.env.BASE_URL}data/bundle.json`;
+// Guard the join as well as normalising `base` in vite.config.ts: a base without
+// a trailing slash silently produces a URL one directory too high.
+const BASE_URL = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const BUNDLE_URL = `${BASE_URL}data/bundle.json`;
 
 type Selection = { kind: 'train'; tripId: string } | { kind: 'station'; code: StopCode } | null;
 
