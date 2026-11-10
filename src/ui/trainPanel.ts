@@ -1,5 +1,7 @@
 /**
- * Detail card for one selected train: where it is now and its whole call list.
+ * Detail card for one selected train: where it is now, and its whole run drawn as
+ * a route diagram - a line in the service's own colour with a dot at every call,
+ * the way Mini Tokyo 3D lists a train's stops.
  */
 import { stopName, type Network } from '../data/bundle';
 import { formatClock } from '../sim/clock';
@@ -27,33 +29,33 @@ export function renderTrainPanel(net: Network, state: TrainState, time: number, 
     : `Next stop <strong>${stopName(bundle, state.toStop)}</strong> ` +
       `<span class="muted">${formatClock(state.toArrival, false)} &middot; ${relative(state.toArrival - time)}</span>`;
 
-  const rows = frames
+  const calls = frames
     .map((frame, index) => {
       const [arrival, departure, distance, code] = frame;
       const done = index < state.nextIndex || (index === state.nextIndex && state.dwelling);
       const current = index === state.nextIndex;
+      // Both times only where the train actually waits; one line otherwise.
       const times =
         arrival === departure
-          ? formatClock(arrival, false)
-          : `${formatClock(arrival, false)} &ndash; ${formatClock(departure, false)}`;
+          ? `<span>${formatClock(arrival, false)}</span>`
+          : `<span>${formatClock(arrival, false)}</span><span>${formatClock(departure, false)}</span>`;
       return (
-        `<tr class="${done ? 'is-done' : ''}${current ? ' is-current' : ''}">` +
-        `<td class="stop">${stopName(bundle, code)}</td>` +
-        `<td class="time">${times}</td>` +
-        `<td class="km">${distance.toFixed(1)}</td>` +
-        `</tr>`
+        `<li class="tl${done ? ' is-done' : ''}${current ? ' is-current' : ''}">` +
+        `<span class="tl-dot"></span>` +
+        `<span class="tl-name">${stopName(bundle, code)}</span>` +
+        `<span class="tl-times">${times}<span class="small muted">${distance.toFixed(1)} km</span></span>` +
+        `</li>`
       );
     })
     .join('');
 
   return `
-    <div class="panel-head" style="--chip:${route.color}">
-      <span class="chip-dot"></span>
+    <div class="panel-head has-bar" style="--chip:${route.color}">
       <span>${route.name} &middot; Train ${state.trip.n}</span>
       <button class="x" type="button" data-action="close" aria-label="Close">&times;</button>
     </div>
-    <div class="detail-body">
-      <p class="headsign">for ${state.trip.h}</p>
+    <div class="detail-body" style="--chip:${route.color}">
+      <p class="headsign"><span class="badge">Commuter</span> for ${state.trip.h}</p>
       <p class="status">${status}</p>
       <div class="progress"><span style="width:${progress.toFixed(1)}%;background:${route.color}"></span></div>
       <p class="muted small">${state.distance.toFixed(1)} of ${last[2].toFixed(1)} km &middot;
@@ -61,9 +63,6 @@ export function renderTrainPanel(net: Network, state: TrainState, time: number, 
       <button class="btn btn-wide${follow ? ' is-active' : ''}" type="button" data-action="follow">
         ${follow ? 'Stop following' : 'Follow this train'}
       </button>
-      <table class="calls">
-        <thead><tr><th>Stop</th><th>Time</th><th>km</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
+      <ol class="timeline">${calls}</ol>
     </div>`;
 }

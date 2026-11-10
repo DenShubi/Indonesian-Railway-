@@ -38,11 +38,14 @@ export function addStationLayers(map: MapLibreMap, net: Network): void {
     id: STATION_CIRCLE_LAYER,
     type: 'circle',
     source: STATION_SOURCE,
+    // Held back to the zoom its labels appear at: at island scale a dot per stop
+    // turns every line into a dashed chain and hides the colour underneath.
+    minzoom: 9,
     paint: {
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 7, 2.6, 11, 4.5, 15, 7],
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 7, 2.4, 11, 4.2, 15, 6.5],
       'circle-color': '#ffffff',
-      'circle-stroke-color': '#24303a',
-      'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 7, 1, 13, 2],
+      'circle-stroke-color': '#2b3238',
+      'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 7, 1, 13, 1.8],
       'circle-pitch-alignment': 'map',
     },
   });
@@ -61,9 +64,9 @@ export function addStationLayers(map: MapLibreMap, net: Network): void {
       'text-padding': 4,
     },
     paint: {
-      'text-color': '#16222b',
-      'text-halo-color': 'rgba(255,255,255,0.92)',
-      'text-halo-width': 1.6,
+      'text-color': '#23282e',
+      'text-halo-color': '#ffffff',
+      'text-halo-width': 1.4,
     },
   });
 }

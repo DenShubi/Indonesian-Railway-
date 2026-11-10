@@ -53,9 +53,14 @@ export function addTrackLayers(map: MapLibreMap, bundle: Bundle): void {
       source: TRACK_SOURCE,
       layout: { 'line-join': 'round', 'line-cap': 'round' },
       paint: {
-        'line-color': '#1b2024',
-        'line-opacity': 0.55,
-        'line-width': ['interpolate', ['linear'], ['zoom'], 7, 3.5, 11, 7, 15, 13],
+        // A white casing rather than a dark one: over the flattened basemap the
+        // lines read as a transit map's ribbons, which is how Mini Tokyo 3D draws
+        // its railways. A dark halo only muddies the colour.
+        'line-color': '#ffffff',
+        // Faded out at region scale: there the casing is wider than the line it
+        // wraps, and a whole network of them washes the colours out.
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0, 11, 0.9],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 7, 3.2, 11, 6, 15, 11],
       },
     },
     before,
@@ -69,7 +74,7 @@ export function addTrackLayers(map: MapLibreMap, bundle: Bundle): void {
       layout: { 'line-join': 'round', 'line-cap': 'round' },
       paint: {
         'line-color': ['get', 'color'],
-        'line-width': ['interpolate', ['linear'], ['zoom'], 7, 1.6, 11, 3.4, 15, 6.5],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 7, 1.6, 11, 3.2, 15, 6],
       },
     },
     before,

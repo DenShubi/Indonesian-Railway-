@@ -30,6 +30,9 @@ import type { TrainState } from '../sim/trains';
 /** Room for far more trains than Wilayah 8 runs, so expansion needs no change here. */
 const CAPACITY = 512;
 
+/** Allocated once: lerping towards it happens for every train, every frame. */
+const WHITE = new Color('#ffffff');
+
 /** True-to-life proportions in metres: a short commuter set. */
 const TRAIN_LENGTH = 80;
 const TRAIN_WIDTH = 3.2;
@@ -97,8 +100,15 @@ export class TrainLayer implements CustomLayerInterface {
     this.camera = new Camera();
     this.scene = new Scene();
 
-    this.scene.add(new AmbientLight(0xffffff, 1.9));
-    const sun = new DirectionalLight(0xffffff, 1.4);
+    // Nearly flat shading: a body reads as its line's own colour, with just
+    // enough sun to tell the roof from the flanks.
+    //
+    // three.js divides diffuse irradiance by PI, so an ambient intensity of PI
+    // renders a surface at exactly its own colour; these two put the roof on
+    // 1.0 and the flanks on about 0.85 of it. Anything much under PI comes out
+    // muddy - which is what made the fleet look dark red rather than orange.
+    this.scene.add(new AmbientLight(0xffffff, 2.67));
+    const sun = new DirectionalLight(0xffffff, 0.55);
     sun.position.set(-0.4, -0.9, 1.6);
     this.scene.add(sun);
 
@@ -177,8 +187,10 @@ export class TrainLayer implements CustomLayerInterface {
 
       const base = this.colors.get(state.trip.r) ?? new Color('#cccccc');
       this.tint.copy(base);
-      if (selected) this.tint.lerp(new Color('#ffffff'), 0.45);
-      else if (state.dwelling) this.tint.lerp(new Color('#ffffff'), 0.22);
+      // The selected train is already the bigger one; a light touch of white is
+      // all it needs on top of that.
+      if (selected) this.tint.lerp(WHITE, 0.15);
+      else if (state.dwelling) this.tint.lerp(WHITE, 0.1);
       this.mesh.setColorAt(i, this.tint);
     }
 

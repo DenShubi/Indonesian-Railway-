@@ -44,26 +44,33 @@ first, so the Python pipeline's output stays the single source of truth.
 | `src/data/bundle.ts` | Loads `bundle.json`, indexes trips by route and calls by station, and snaps every station onto the track |
 | `src/sim/clock.ts` | Time-of-day cursor in Asia/Jakarta: play/pause, 1x–300x, scrub, back to live |
 | `src/sim/trains.ts` | Which trains are running and where, with eased acceleration between stops |
-| `src/map/basemap.ts` | MapLibre GL JS on OpenFreeMap's keyless vector tiles, with the style's own 3D buildings |
+| `src/map/basemap.ts` | MapLibre GL JS on OpenFreeMap's keyless vector tiles, flattened to greys so the railway is the only colour |
 | `src/map/trackLayer.ts` | Trip shapes as coloured lines, below the building extrusions |
 | `src/map/trainLayer.ts` | A three.js custom layer: the whole fleet as one `InstancedMesh`, one draw call |
 | `src/ui/cab.ts` | The two headlights: one shows the lines panel, one folds the cab away for fullscreen |
 | `src/ui/linePanel.ts` | Region switcher and the per-line chips for the chosen network |
+| `src/ui/tooltip.ts` | The hover card over a train: line, service, last stop and next |
 | `src/ui/` | Header clock, train detail card, station departures board |
 
 ### The shell is a train front
 
-The page is drawn as the front of a commuter train: a lit destination board above a
-windscreen that holds the map, and an apron below carrying the controls between two
-headlights. The left headlight shows and hides the lines panel; the right one asks
-for fullscreen and folds the cab away, so the windscreen becomes the whole display,
-with a small button in the corner to bring it back. Fullscreen can be refused, and
-inside an embedded frame the request may never settle at all, so the cab folds first
-and the browser is asked afterwards - the view gains the space either way.
+The page is drawn as the front of a commuter train: a destination board across the
+top with the line name centred on it like a headboard, a windscreen that holds the
+map, and an apron below carrying the controls between two headlights. The left
+headlight shows and hides the lines panel; the right one asks for fullscreen and
+folds the cab away, so the windscreen becomes the whole display, with a small button
+in the corner to bring it back. Fullscreen can be refused, and inside an embedded
+frame the request may never settle at all, so the cab folds first and the browser is
+asked afterwards - the view gains the space either way.
 
-Colours are KAI's own, read straight out of the 2020 logo artwork rather than
-guessed: indigo `#2D2A70` and orange `#ED6B23`, with the Commuter red `#ED1C24` as a
-third accent.
+The body is KAI red `#D8232A` against an off-white face, after the livery on the
+front of a KAI locomotive. Every surface is a single flat colour: no gradients, no
+glows, no lit glass. The map and its floating panels follow Mini Tokyo 3D - a
+near-monochrome basemap so the only saturated colour on screen belongs to the
+railway, line colours carried through from the track to the trains to the panel
+headers, a plain dark card for anything that floats over the map, a hover card over
+each train, and a selected train's whole run drawn as a route diagram rather than a
+table.
 
 Trains are positioned by distance along a shape, not by interpolating between station
 coordinates, so they follow the real curve of the line. Between two stops the distance

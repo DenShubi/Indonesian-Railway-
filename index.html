@@ -5,23 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Indonesian Railway Visualizer — Java Commuter Lines</title>
   <meta name="description" content="A 3D map of KAI Commuter trains across Java, animated from the published timetables." />
-  <meta name="theme-color" content="#2d2a70" />
+  <meta name="theme-color" content="#d8232a" />
   <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" />
 </head>
 <body>
-  <!-- The shell is the front of a train: destination board above, windscreen in the
-       middle, and the apron below carrying the controls between two headlights. -->
+  <!-- The shell is the front of a train in KAI's red: the destination board across
+       the top with the line name centred on it, the windscreen in the middle, and
+       the apron below carrying the controls between two headlights. -->
   <div id="cab">
     <header id="board">
-      <div class="board-brand">
+      <div class="board-mark">KAI Commuter</div>
+
+      <!-- Destination board: the line name sits centre-top, the way a headboard
+           carries the name of the service. -->
+      <div class="board-plate">
         <span class="hud-title">Java Commuter Lines</span>
-        <span class="hud-sub">scheduled positions, not live GPS</span>
       </div>
+
       <div class="board-clock">
         <span id="clock">--:--:--</span>
         <span id="train-count" class="hud-count">0 trains</span>
       </div>
+
+      <p class="hud-sub">scheduled positions, not live GPS</p>
     </header>
 
     <main id="screen">
@@ -29,6 +36,7 @@
 
       <aside id="lines" class="panel" aria-label="Lines"></aside>
       <section id="detail" class="panel hidden" aria-label="Details"></section>
+      <div id="tooltip" class="tooltip" hidden aria-hidden="true"></div>
       <div id="loading" class="loading">Loading timetable&hellip;</div>
 
       <button id="cab-restore" class="cab-restore" type="button" hidden

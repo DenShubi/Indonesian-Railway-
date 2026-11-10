@@ -25,7 +25,7 @@ import {
   trainAt,
   type TrainState,
 } from './sim/trains';
-import { createMap, tuneBuildings } from './map/basemap';
+import { createMap, flattenBasemap, tuneBuildings } from './map/basemap';
 import { addTrackLayers, setVisibleRoutes } from './map/trackLayer';
 import {
   addStationLayers,
@@ -39,6 +39,7 @@ import { initHud } from './ui/hud';
 import { initLinePanel } from './ui/linePanel';
 import { renderTrainPanel } from './ui/trainPanel';
 import { renderStationPanel } from './ui/stationPanel';
+import { initTooltip } from './ui/tooltip';
 
 // Guard the join as well as normalising `base` in vite.config.ts: a base without
 // a trailing slash silently produces a URL one directory too high.
@@ -104,6 +105,7 @@ async function boot(): Promise<void> {
   const trainLayer = new TrainLayer(colors);
   initCab(map);
   const hud = initHud(clock);
+  const tooltip = initTooltip(net);
 
   function regionRoutes(): RouteId[] {
     return region.current ? (net.routeIdsByRegion.get(region.current) ?? []) : net.routeIds;
@@ -139,6 +141,7 @@ async function boot(): Promise<void> {
   hud.setRegion(net.regions.find((r) => r.id === region.current) ?? null);
 
   map.on('load', () => {
+    flattenBasemap(map);
     tuneBuildings(map);
     addTrackLayers(map, net.bundle);
     addStationLayers(map, net);
@@ -291,13 +294,23 @@ async function boot(): Promise<void> {
 
   let hoverCursor = '';
   map.on('mousemove', (event) => {
-    const wanted = trainLayer.pick(event.point) ? 'pointer' : '';
+    const train = trainLayer.pick(event.point);
+    if (train) tooltip.show(train, event.point.x, event.point.y);
+    else tooltip.hide();
+
+    const wanted = train ? 'pointer' : '';
     if (wanted === hoverCursor) return;
     hoverCursor = wanted;
     const canvas = map.getCanvas();
     // Leave the station layer's own cursor alone.
     if (wanted || canvas.style.cursor === 'pointer') canvas.style.cursor = wanted;
   });
+
+  // The card is pinned to a pixel, and the fleet moves under it: anything that
+  // moves the camera, or the pointer leaving the map, takes it away.
+  for (const event of ['mouseout', 'dragstart', 'zoomstart', 'rotatestart'] as const) {
+    map.on(event, () => tooltip.hide());
+  }
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
