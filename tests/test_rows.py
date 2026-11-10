@@ -30,6 +30,7 @@ def test_parses_a_via_relasi(register_rows):
     assert row['relasi'] == ('GMR', 'JR')
     assert row['via'] == ('SBI',)
     assert row['no'] == '32-33'                           # a paired through run
+    assert row['ident'] == '2'                            # not the urut column, which is 1
     assert row['dep'] == '19:55' and row['arr'] == '09:00'  # crosses midnight as-is
 
 
@@ -46,6 +47,11 @@ def test_parses_a_freight_row(register_rows):
     assert row['service'] == 'KENLIMAS CARGO'
     assert row['relasi'] == ('KLM', 'KEN') and row['via'] == ('KPB',)
     assert row['km'] == 887.449
+    # The register's only run over 24 h, and the only row where subtracting the
+    # clock times (which gives 2 h 50) disagrees with the duration column.
+    # HH.MM, so this is 26 h 50 min -- float('26.50') would be 26 h 30.
+    assert row['duration'] == '26.50'
+    assert row['dep'] == '23:25' and row['arr'] == '02:15'
 
 
 def test_keeps_the_commuter_line_prefix_in_the_service_name(register_rows):

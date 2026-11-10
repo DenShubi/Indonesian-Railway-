@@ -18,12 +18,24 @@ Two things the layout does that a reader's eye fixes silently:
     cell ("CP - SLO -GBN - SBI"). So the split is on a dash with optional space
     either side, not on " - ".
 
-Distances are Indonesian-formatted: "." groups thousands, "," is the decimal
-point, so "720,109" is 720.109 km.
+Distances are Indonesian-formatted: "," is the decimal point, so "720,109" is
+720.109 km. A "." would group thousands, and the code strips it, but no row in
+this edition needs it -- the longest run prints "1030,306", not "1.030,306".
 
-Times are left as the register prints them, HH:MM truncated from HH:MM:SS. An
-arrival earlier than its departure means the run crosses midnight; that is the
-GTFS layer's problem, not this one's.
+Times are left as the register prints them, HH:MM truncated from HH:MM:SS; every
+time cell in the register ends ":00", so nothing is lost. `duration` is the
+authoritative elapsed time, and it is HH.MM, NOT a decimal: "26.50" is 26 h
+50 min, not 26.5 h. Reach for it rather than subtracting the two clock times,
+because one row needs it -- Kenlimas Cargo 2501-2504-2505-2508 runs 23:25 to
+02:15 over 26 h 50 min, so the obvious "arrival before departure means add a
+day" rule puts it 24 h short. It is the only run over 24 h in this edition, and
+the only row where that rule and `duration` disagree.
+
+A relasi is identified by `relasi` AND `via`, never `relasi` alone: there are
+316 distinct (relasi, via) combinations but only 304 distinct origin-destination
+pairs, so twelve differ by via point only. 32 rows are circular, with
+origin == destination -- the Dhoho and Penataran runs out of Surabaya, the
+circular Cikarang workings, and Joglosemarkerto.
 """
 import re
 
@@ -40,12 +52,14 @@ DASH = re.compile(r'\s*-\s*')
 # section carries. The seven freight sections on pages 29-31 collapse to one
 # category; the spec treats freight as a single class.
 #
-# Four pages hold the end of one section and the start of the next, so a page is
-# not a clean category boundary: the section that starts highest on the page wins
-# the page, which is the order the contents page reads them in. The two sections
-# that never win one are Eksekutif (it starts halfway down page 4, under Argo)
-# and Ekonomi Lokal (Feeder) (under Bandara SMO on page 11); their trains are
-# tagged with the sibling that owns the page.
+# SUPERSEDED by scan_categories(), which switches category at each section's
+# "KELAS KERETA API" banner instead. Do not wire category_for_page() into
+# anything: a page is not a clean category boundary, because a page can hold the
+# end of one section and the start of the next, and measured against the banners
+# 232 of the 1,775 rows -- 13%, across twelve section pairs -- come out in a
+# sibling's category. Category drives the line panel's groups and the track
+# colour priority, so that is not a rounding error. Kept, unused, only so the
+# task that introduced it stays closed.
 SECTIONS = [
     (4, 'Argo'),
     (4, 'Eksekutif'),
