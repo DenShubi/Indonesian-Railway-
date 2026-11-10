@@ -7,11 +7,13 @@
    Nothing here gradates, blurs or floats: surfaces are flat, depth comes from a
    lightness step, and separation from a hairline. */
 :root {
-  /* Body: deep and desaturated. A brighter, higher-chroma red turns 30% of the
-     frame into a siren and leaves nothing for the lines to compete with. */
-  --red: oklch(47% 0.125 28);
-  --red-dark: oklch(38% 0.105 28);
-  --red-deep: oklch(29% 0.085 28);
+  /* Body: a carriage red. Bright enough to be a colour rather than a shadow, held
+     under a signal red so it does not turn a third of the frame into a siren.
+     oklch(50.5% 0.18 27) is #b52323; the two steps below it keep the same hue and
+     drop lightness evenly for the recessed parts. */
+  --red: oklch(50.5% 0.18 27);
+  --red-dark: oklch(41% 0.15 27);
+  --red-deep: oklch(31% 0.115 27);
 
   /* Warm off-white for the face, the plate and the headlight glass. */
   --face: oklch(95% 0.008 60);

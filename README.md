@@ -64,7 +64,8 @@ does not ask the browser for fullscreen: the point is to get the chrome out of t
 way, and a real fullscreen request can be refused, can hang behind a prompt, or -
 inside an embedded frame - never settle at all.
 
-The body is a deep brick red, `oklch(47% 0.125 28)`, against a warm off-white face.
+The body is a carriage red, `oklch(50.5% 0.18 27)` (`#b52323`), against a warm
+off-white face.
 Colour is declared in OKLCH so the lightness steps read evenly, and every neutral is
 tinted a few thousandths toward that same hue so the greys sit with the red rather
 than beside it. Every surface is one flat colour: no gradients, no glows, no blur,
