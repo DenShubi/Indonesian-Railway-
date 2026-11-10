@@ -26,12 +26,26 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      # Pages has to be enabled by hand once, under
+      # Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
+      # This action's `enablement` input cannot do it for us: it needs a PAT or
+      # GitHub App token, which is a worse thing to keep around than one click.
+      - id: pages
+        uses: actions/configure-pages@v6
+        # Until Pages is enabled this step cannot read the site, and a red build
+        # would hide whether the data checks below still pass. The build falls
+        # back to the base path in vite.config.ts when the output is empty.
+        continue-on-error: true
       - run: pip install -r requirements.txt
       - run: npm ci
       - run: npm run verify:geometry
       - run: npm run verify:gapeka
+      # Build against the site's real base path, so the bundle keeps working if
+      # the repository is ever renamed.
       - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
+        env:
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
@@ -43,4 +57,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

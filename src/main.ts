@@ -19,7 +19,12 @@ import {
   type StopCode,
 } from './data/bundle';
 import { ServiceClock } from './sim/clock';
-import { activeTrains, trainAt, type TrainState } from './sim/trains';
+import {
+  activeTrains,
+  secondsToNextDeparture,
+  trainAt,
+  type TrainState,
+} from './sim/trains';
 import { createMap, tuneBuildings } from './map/basemap';
 import { addTrackLayers, setVisibleRoutes } from './map/trackLayer';
 import {
@@ -91,7 +96,7 @@ async function boot(): Promise<void> {
 
   const map = createMap(document.getElementById('map') as HTMLElement, bounds());
   const trainLayer = new TrainLayer(colors);
-  const hud = initHud(clock, net);
+  const hud = initHud(clock);
 
   function regionRoutes(): RouteId[] {
     return region.current ? (net.routeIdsByRegion.get(region.current) ?? []) : net.routeIds;
@@ -314,7 +319,9 @@ async function boot(): Promise<void> {
       if (state) map.jumpTo({ center: [state.lon, state.lat] });
     }
 
-    hud.sync(states.length);
+    // Only worth computing when the map is empty and the viewer needs telling why.
+    const next = states.length === 0 ? secondsToNextDeparture(net, clock.time, visible) : null;
+    hud.sync(states.length, next?.at ?? null);
     renderDetail();
     requestAnimationFrame(frame);
   }

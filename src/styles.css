@@ -541,12 +541,15 @@ body {
     top: auto;
     bottom: 12px;
     width: auto;
+    /* Three regions, twelve chips and a caveat would otherwise swallow the map. */
+    max-height: 45vh;
+    overflow-y: auto;
     padding: 8px 10px;
   }
 
   #lines .chips {
     flex-direction: row;
-    overflow-x: auto;
+    flex-wrap: wrap;
   }
 
   #lines .chip {
@@ -554,8 +557,15 @@ body {
     flex: none;
   }
 
-  #lines .panel-note {
+  /* The generic hint is expendable on a phone; the timetable caveat is not - it is
+     what tells a reader those times are from a superseded edition. */
+  #lines .panel-note:not(.is-warn) {
     display: none;
+  }
+
+  .panel-note.is-warn {
+    font-size: 10px;
+    line-height: 1.35;
   }
 
   #detail {

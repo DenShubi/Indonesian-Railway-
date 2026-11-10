@@ -64,6 +64,33 @@ one while still hitting every published time exactly.
 
 There is no account to create and no key to rotate anywhere in this project.
 
+## Deploying
+
+The site builds and publishes itself from `.github/workflows/deploy.yml` on every
+push to `main`: install, run both data verifications, build, upload, deploy.
+
+**One setting has to be made by hand, once** - GitHub will not let a workflow turn
+Pages on for its own repository:
+
+> **Settings → Pages → Build and deployment → Source → GitHub Actions**
+
+Until that is set, `actions/deploy-pages` fails with
+`Failed to create deployment (status: 404) ... Ensure GitHub Pages has been enabled`,
+which is exactly what it means. (`actions/configure-pages` has an `enablement`
+input, but it needs a personal access token rather than the workflow's own
+`GITHUB_TOKEN`, and a long-lived admin token is a worse thing to keep in a repo
+than one click.) Afterwards, re-run the latest workflow and the site goes live at
+`https://<user>.github.io/<repo>/`.
+
+The build takes its base path from `actions/configure-pages`, falling back to the
+value in [vite.config.ts](vite.config.ts), so renaming the repository does not
+break the published asset URLs.
+
+While you are in Settings, the repository has no description, website or topics.
+Suggested: *"3D map of Indonesian commuter trains, animated from the published
+timetables"*, the Pages URL as the website, and topics `openstreetmap`, `maplibre`,
+`threejs`, `gtfs`, `indonesia`, `transit`, `dataviz`.
+
 ## Data
 
 | Source | Used for | Licence |
