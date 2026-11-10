@@ -13,6 +13,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "check": "tsc --noEmit",
+    "test:py": "python -m pytest -q",
     "verify:geometry": "node scripts/check-geometry.mjs",
     "verify:gapeka": "python scripts/validate_gapeka.py"
   },

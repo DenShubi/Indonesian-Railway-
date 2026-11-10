@@ -1,0 +1,27 @@
+# Train rows lifted verbatim from "Train Timetables/GAPEKA Jadwal Kereta.pdf",
+# exactly as pdfplumber's extract_text() yields them. The PDF takes ~9 minutes to
+# extract, so no test may open it; these lines are the register as far as the row
+# parser is concerned.
+#
+# Blank lines and lines starting with '#' are stripped by tests/conftest.py. No
+# register row starts with '#', so nothing verbatim is lost that way.
+
+# page 4, Argo: the plainest row in the register. One A-B relasi, no via point.
+1 1 REGULER ARGO BROMO ANGGREK ARGO BROMO ANGGREK 1 SBI-GMR PT. KAI 720,109 720 09:10:00 16:55:00 07.45
+
+# page 13, Commuter Line Daop 6 YK: the Yogyakarta rows the bundle later
+# suppresses in favour of the published timetable. Service name carries its
+# "COMMUTER LINE" prefix and must keep it.
+8 708 REGULER COMMUTER LINE YOGYAKARTA COMMUTER LINE YOGYAKARTA 8 YK-PL PT. KCI 65,458 65 18:08:00 19:28:00 01.20
+
+# page 4, Eksekutif: a via relasi, printed with spaces around the dashes where a
+# plain one has none. Also a paired number and a run over midnight.
+1 32-33 REGULER PANDALUNGAN PANDALUNGAN 2 GMR - SBI - JR PT. KAI 919,485 919 19:55:00 09:00:00 13.05
+
+# page 29, Barang Petikemas: freight, four numbers in one cell, two via points.
+1 2501-2504-2505-2508 REGULER KENLIMAS CARGO KENLIMAS CARGO 1 KLM - KPB - KEN PT. KAI 887,449 887 23:25:00 02:15:00 26.50
+
+# page 7, Eksekutif Campuran: the one relasi in the register whose dashes are
+# spaced inconsistently ("SLO -GBN"), which is why the split is on a pattern
+# rather than on " - ".
+140 236F-237F-238F FAKULTATIF SANCAKA UTARA SANCAKA UTARA 2 CP - SLO -GBN - SBI PT. KAI 503,968 504 17:10:00 02:58:00 09.48
