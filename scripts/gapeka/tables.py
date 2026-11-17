@@ -85,6 +85,15 @@ CODE = re.compile(r'[A-Z][A-Z0-9]{0,4}\Z')
 INDEX = re.compile(r'\d{1,2}\Z')
 # How far apart two readings of one matrix cell may be and still be that cell.
 SAME_CELL = 0.01
+# A cached word is (x0, top, text). Two words are on one printed line when
+# their tops are within SAME_LINE, and in one header column when their x0 are
+# within SAME_COLUMN -- the header column pitch is 16-22 pt on these pages and
+# the interleaved words of one column sit at most 4 pt apart. SAME_ROW is
+# tighter than SAME_LINE because a row label and its index are set on exactly
+# the same baseline, and the vertical-text wreckage beside them is not.
+SAME_LINE = 4.0
+SAME_COLUMN = 10.0
+SAME_ROW = 2.0
 # A corridor's route in station codes, as the line above each block prints it.
 # A full-name title line can match too -- page 58's "BANJAR - MAOS - KROYA"
 # yields "MAOS - KROYA" -- so a route is only taken as a corridor's name when
@@ -229,7 +238,149 @@ def parse_inline_pairs(line: str) -> list[tuple[str, str, float]]:
     return [(m.group(1), m.group(2), _km(m.group(3))) for m in PAIR.finditer(line)]
 
 
-def parse_corridor_block(lines: list[str]) -> list[Corridor]:
+def _near(words: list, top: float, gap: float) -> list:
+    """Every word whose baseline is within `gap` of `top`."""
+    return [word for word in words if abs(word[1] - top) <= gap]
+
+
+def _column_codes(run: list) -> dict[int, str] | None:
+    """One header's index -> code, or None when this run is not a header.
+
+    Where a column is too narrow for the code, the register sets the index
+    digit inside it, and extract_text() reads the two as one word -- page 55
+    gives "P 1DL TA 2U" for PDL 1 and TAU 2. The glyphs are still in x order
+    within each word and the words are still in x order within the column, so
+    concatenating the column and reading the digits and the letters off
+    separately recovers both sequences. The indexes then have to come out as
+    1..n, which is what tells a header apart from anything else to the right of
+    an O/D and rejects a header this reading got wrong.
+    """
+    columns, out = [], {}
+    for word in run:
+        if columns and word[0] - columns[-1][-1][0] <= SAME_COLUMN:
+            columns[-1].append(word)
+        else:
+            columns.append([word])
+    for column in columns:
+        text = ''.join(word[2] for word in column)
+        digits = ''.join(c for c in text if c.isdigit())
+        letters = ''.join(c for c in text if c.isalpha())
+        if not digits or not CODE.match(letters):
+            return None
+        out[int(digits)] = letters
+    return out if sorted(out) == list(range(1, len(out) + 1)) else None
+
+
+def _header_codes(words: list) -> list[dict[int, str]]:
+    """Every interleaved header on the page, one index -> code map each.
+
+    The register marks the top-left cell of each matrix "O/D", so a header is
+    the run of words to the right of an O/D, on its line, up to the next O/D.
+    A header the page had room to print plainly puts its codes, its O/D and its
+    index row on three separate lines, so nothing lands in the run and it is
+    not returned -- which is right, because a header that prints plainly needs
+    no recovering.
+    """
+    out = []
+    for mark in (word for word in words if word[2] == 'O/D'):
+        line = _near(words, mark[1], SAME_LINE)
+        after = [word[0] for word in line
+                 if word[2] == 'O/D' and word[0] > mark[0]]
+        end = min(after) if after else float('inf')
+        run = sorted((word for word in line if mark[0] < word[0] < end),
+                     key=lambda word: word[0])
+        codes = _column_codes(run)
+        if codes:
+            out.append(codes)
+    return out
+
+
+def _row_codes(words: list) -> set[tuple[str, int]]:
+    """Every (code, index) the page prints as a matrix row label.
+
+    Only the word that actually comes next counts, not every pair on the line:
+    the vertical-text wreckage sets its loose digits a few points off the rows
+    beside it, so a line read loosely puts "SM KYA KH KA P 10 11 13 21" in x
+    order and no row label survives it.
+    """
+    out = set()
+    for word in words:
+        if not CODE.match(word[2]):
+            continue
+        after = [other for other in _near(words, word[1], SAME_ROW)
+                 if other[0] > word[0]]
+        if not after:
+            continue
+        nearest = min(after, key=lambda other: other[0])[2]
+        if INDEX.match(nearest):
+            out.add((word[2], int(nearest)))
+    return out
+
+
+def recover_vertical_codes(words: list, page: int) -> dict[int, str]:
+    """Index -> code for the corridor whose matrix this page wrecked.
+
+    Pages 55 and 58 print a stretch of one matrix as vertical text, which
+    extract_text() returns as loose digits ("LJ BR GL 98 76 25 ,, ..."), taking
+    rows 7 and 8 of Padalarang - Sukabumi and rows 8, 9, 11 and 12 of
+    Banjar - Kroya with them. The km of those rows survive -- row 1 of the same
+    matrix prints d(1,j) for every j -- so only the four station codes are
+    lost, and they are still legible in the garbled header. What the page text
+    cannot give is where one header column ends and the next begins; the per
+    word x0 the cache carries alongside it can, which is why this takes words
+    and the rest of this module takes text.
+
+    The page prints up to five matrices, so the question is which header
+    belongs to the wrecked matrix. The page answers it: a station whose row
+    printed is a row label, and the wrecked matrix is the one whose header
+    holds codes that no row label on the page claims at that index. On pages
+    52-63 at most one matrix per page is wrecked, so a page where two are would
+    be a layout this has not seen rather than a choice to make quietly, and it
+    says so.
+
+    Returns {} for a page with nothing to recover, which is every page but 55
+    and 58.
+    """
+    printed = _row_codes(words)
+    wrecked = [codes for codes in _header_codes(words)
+               if any((code, index) not in printed
+                      for index, code in codes.items())]
+    if len(wrecked) > 1:
+        raise ValueError(f'page {page} prints {len(wrecked)} wrecked matrices; '
+                         'pages 52-63 print at most one')
+    return wrecked[0] if wrecked else {}
+
+
+def _chain(group: list[Row], codes: dict[int, str]) -> tuple[tuple[str, float], ...]:
+    """A corridor's stations in index order, with any wrecked rows filled in.
+
+    A corridor that lost rows to vertical text has a hole in its indexes. The
+    km are still in row 1, and recover_vertical_codes() supplies the codes, so
+    the hole closes -- but only when every code the header and the matrix both
+    name agrees at its index. A header read off the wrong matrix cannot pass
+    that, so a good chain is never rewritten by one.
+
+    Row 1 is also what bounds the chain: a code the header offers past the end
+    of row 1's values has no km to be placed at, so it is left out rather than
+    stretched onto the end.
+    """
+    printed = {row.index: row for row in group}
+    if all(index in printed for index in range(1, max(printed) + 1)):
+        return tuple((row.code, row.km) for row in group)
+    shared = [index for index in codes if index in printed]
+    if not shared or any(codes[index] != printed[index].code for index in shared):
+        return tuple((row.code, row.km) for row in group)
+    head = printed[1]
+    filled = [index for index in codes if index - 2 < len(head.values)]
+    return tuple(
+        (printed[index].code, printed[index].km) if index in printed
+        else (codes[index], head.values[index - 2])
+        for index in range(1, max(max(printed), max(filled)) + 1)
+        if index in printed or index in filled)
+
+
+def parse_corridor_block(lines: list[str],
+                         codes: dict[int, str] | None = None) -> list[Corridor]:
     """The corridors on these lines, which may be one block or a whole page.
 
     Each corridor is named for the code route printed above its block, matched
@@ -244,6 +395,11 @@ def parse_corridor_block(lines: list[str]) -> list[Corridor]:
 
     A group of rows that does not start at index 1 has no head to measure from,
     so there is nothing to anchor its cumulative km to and it is dropped.
+
+    `codes` is this page's index -> code map from recover_vertical_codes(). Pass
+    it and a corridor the page wrecked comes back whole; leave it out and that
+    corridor comes back with its hole, which is what every caller that has only
+    the page text gets.
     """
     rows = [row for line in lines for row in parse_matrix_rows(line)]
     routes = _routes(lines)
@@ -252,7 +408,7 @@ def parse_corridor_block(lines: list[str]) -> list[Corridor]:
     for group in split_side_by_side(rows):
         if len(group) < 2 or group[0].index != 1:
             continue
-        stations = tuple((row.code, row.km) for row in group)
+        stations = _chain(group, codes or {})
         out.append(Corridor(_name(stations, routes, spent), stations))
     return out
 

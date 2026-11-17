@@ -8,9 +8,10 @@ carries.
 import pytest
 
 from scripts.gapeka.tables import (Row, parse_corridor_block, parse_inline_pairs,
-                                   parse_matrix_rows, split_side_by_side)
+                                   parse_matrix_rows, recover_vertical_codes,
+                                   split_side_by_side)
 
-MATRIX_PAGES = (52, 53, 54, 55, 62, 63)  # 58 is in the fixture for its wreckage
+MATRIX_PAGES = (52, 53, 54, 55, 58, 62, 63)
 
 
 def test_station_order_comes_from_row_labels_not_the_header(register_tables):
@@ -31,7 +32,10 @@ def test_vertical_text_wreckage_yields_no_rows(register_tables):
     # comma a real distance carries keeps that out of the matrix -- make the
     # comma optional and "GL 98 76" becomes a station GL at km 76, and the
     # second line gives a station P at km 21 the same way.
-    rows = [row for ln in register_tables[58] for row in parse_matrix_rows(ln)]
+    wreckage = [ln for ln in register_tables[58]
+                if ln.startswith(('LJ BR GL', 'SM KA P'))]
+    assert len(wreckage) == 2
+    rows = [row for ln in wreckage for row in parse_matrix_rows(ln)]
     # The only real row on these two lines is the one the register squeezed on
     # to the end of the second, out of the Kutoarjo - Purworejo pair beside it.
     assert [(r.code, r.index, r.values) for r in rows] == [('PWR', 2, (11.688,))]
@@ -217,3 +221,112 @@ def test_a_junction_station_keeps_each_corridors_own_km(register_tables):
     bd_kms = [km for c in corridors for code, km in c.stations if code == 'BD']
     assert len(bd_kms) > 1
     assert len(set(bd_kms)) > 1     # different origins, deliberately not merged here
+
+
+# Task 3, step 1: reading the four codes the register's vertical text lost.
+# These exercise tables.py, so they live here rather than in test_topology.py,
+# and they need the word coordinates in tests/fixtures/register_words.txt
+# because what the page text cannot say is where one header column ends.
+
+def test_the_wrecked_header_de_interleaves_on_its_x_coordinates(register_words):
+    # Page 55's Padalarang - Sukabumi header reads "O/D P 1DL TA 2U C 3PT ..."
+    # as text, with each index digit set inside its own column's code. Nothing
+    # in that string says whether column 7 is C, CB or CBB.
+    assert recover_vertical_codes(register_words[55], 55) == {
+        1: 'PDL', 2: 'TAU', 3: 'CPT', 4: 'CPY', 5: 'CRJ', 6: 'CJ',
+        7: 'CBB', 8: 'LP', 9: 'CRG', 10: 'GDS', 11: 'SI'}
+    assert recover_vertical_codes(register_words[58], 58) == {
+        1: 'BJR', 2: 'LN', 3: 'MLW', 4: 'CPI', 5: 'SDR', 6: 'GDM', 7: 'KWG',
+        8: 'JRL', 9: 'LBG', 10: 'KH', 11: 'MA', 12: 'SKP', 13: 'KYA'}
+
+
+def test_the_recovered_codes_agree_with_the_rows_that_did_print(register_words,
+                                                                register_tables):
+    # The read is only trustworthy if it agrees where it can be checked. Nine
+    # of page 55's eleven columns printed a row of their own, and nine of page
+    # 58's thirteen did, so a misread column boundary would show up there.
+    for page, head in ((55, 'PDL'), (58, 'BJR')):
+        codes = recover_vertical_codes(register_words[page], page)
+        chain = next(c for c in parse_corridor_block(register_tables[page])
+                     if c.stations[0][0] == head)
+        printed = {code for code, _ in chain.stations}
+        checked = [index for index, code in codes.items() if code in printed]
+        assert len(checked) == len(chain.stations)
+        for index in checked:
+            assert codes[index] in printed
+
+
+def test_a_recovered_code_is_confirmed_by_the_corridor_beside_it(register_words,
+                                                                 register_tables):
+    # Page 58 prints Cilacap - Maos beside Banjar - Kroya, and Krenceng - Maos
+    # below it. Both call at Maos and Sikampuh, so MA at index 11 and SKP at
+    # index 12 are attested by a corridor this header had no part in.
+    codes = recover_vertical_codes(register_words[58], 58)
+    assert (codes[11], codes[12]) == ('MA', 'SKP')
+    elsewhere = {code for c in parse_corridor_block(register_tables[58])
+                 if c.stations[0][0] != 'BJR' for code, _ in c.stations}
+    assert {'MA', 'SKP'} <= elsewhere
+    # The two that are not attested anywhere else are the two the chain's own
+    # spacing has to vouch for.
+    assert {codes[8], codes[9]} == {'JRL', 'LBG'}
+    assert {'JRL', 'LBG'} & elsewhere == set()
+
+
+def test_a_page_with_nothing_wrecked_recovers_nothing(register_words):
+    assert recover_vertical_codes(register_words[52], 52) == {}
+
+
+def test_the_hole_closes_on_the_km_row_one_already_printed(register_words,
+                                                           register_tables):
+    codes = recover_vertical_codes(register_words[55], 55)
+    pdl = next(c for c in parse_corridor_block(register_tables[55], codes)
+               if c.stations[0][0] == 'PDL')
+    assert [c for c, _ in pdl.stations] == \
+        ['PDL', 'TAU', 'CPT', 'CPY', 'CRJ', 'CJ', 'CBB', 'LP', 'CRG', 'GDS', 'SI']
+    assert pdl.stations[6] == ('CBB', 58.062)
+    assert pdl.stations[7] == ('LP', 67.220)
+    kms = [km for _, km in pdl.stations]
+    assert kms == sorted(kms) and len(set(kms)) == len(kms)
+
+
+def test_the_filled_km_are_the_ones_the_surviving_rows_measure_to(register_tables):
+    # Row 1 is where the filled km come from, but it is not the only row that
+    # prints them: Cireungas, which did print, gives 12,268 to column 7 and
+    # 3,110 to column 8 off its own km of 70,330. That is the spacing check
+    # standing behind CBB and LP, neither of which appears anywhere else in the
+    # register's tables.
+    rows = [row for ln in register_tables[55] for row in parse_matrix_rows(ln)]
+    crg = next(row for row in rows if row.code == 'CRG')
+    assert (crg.code, crg.index, crg.km) == ('CRG', 9, 70.330)
+    # Row 9 skips its own diagonal, so column j sits at j - 1 for j below 9.
+    assert crg.km - crg.values[7 - 1] == pytest.approx(58.062, abs=0.001)
+    assert crg.km - crg.values[8 - 1] == pytest.approx(67.220, abs=0.001)
+
+
+def test_a_header_from_the_wrong_matrix_leaves_the_chain_alone(register_words,
+                                                               register_tables):
+    # Page 58's header read against page 55's matrix: its index 1 says BJR
+    # where the matrix says PDL, so the chain keeps its hole rather than taking
+    # thirteen stations off a corridor two hundred kilometres away.
+    wrong = recover_vertical_codes(register_words[58], 58)
+    pdl = next(c for c in parse_corridor_block(register_tables[55], wrong)
+               if c.stations[0][0] == 'PDL')
+    assert [c for c, _ in pdl.stations] == \
+        ['PDL', 'TAU', 'CPT', 'CPY', 'CRJ', 'CJ', 'CRG', 'GDS', 'SI']
+
+
+def test_the_corridors_that_print_whole_are_untouched_by_a_codes_map(register_words,
+                                                                    register_tables):
+    codes = recover_vertical_codes(register_words[55], 55)
+    assert parse_corridor_block(register_tables[53], codes) == \
+        parse_corridor_block(register_tables[53])
+
+
+def test_a_code_past_the_end_of_row_one_has_no_km_to_be_placed_at():
+    # Nothing on pages 52-63 reaches this: both wrecked headers have exactly as
+    # many columns as row 1 has values, plus itself. If one ever had more, the
+    # extra code would have no distance anywhere in the matrix, and a chain
+    # that ends one station early is better than one with an invented km.
+    corridor, = parse_corridor_block(['A 1 5,000 9,000', 'C 3 9,000 4,000'],
+                                     {1: 'A', 2: 'B', 3: 'C', 4: 'D'})
+    assert corridor.stations == (('A', 0.0), ('B', 5.0), ('C', 9.0))

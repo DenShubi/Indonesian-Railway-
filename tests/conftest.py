@@ -39,6 +39,26 @@ def load_pages(name: str) -> dict[int, list[str]]:
     return pages
 
 
+def load_words(name: str) -> dict[int, list]:
+    """Word coordinates of a fixture file, grouped by page.
+
+    Each line is "x0 top text", as pdfplumber's extract_words() gives it, under
+    the same "# page N" markers load_pages() uses. A word comes back as the
+    (x0, top, text) triple the cached extraction carries, which is what
+    tables.recover_vertical_codes() reads.
+    """
+    pages: dict[int, list] = {}
+    page: list | None = None
+    for line in (FIXTURES / name).read_text(encoding='utf-8').split('\n'):
+        marker = PAGE.match(line)
+        if marker:
+            page = pages.setdefault(int(marker.group(1)), [])
+        elif line.strip() and not line.startswith('#') and page is not None:
+            x0, top, text = line.split(' ', 2)
+            page.append((float(x0), float(top), text))
+    return pages
+
+
 @pytest.fixture(scope='session')
 def register_rows() -> list[str]:
     return load_lines('register_rows.txt')
@@ -47,3 +67,8 @@ def register_rows() -> list[str]:
 @pytest.fixture(scope='session')
 def register_tables() -> dict[int, list[str]]:
     return load_pages('register_tables.txt')
+
+
+@pytest.fixture(scope='session')
+def register_words() -> dict[int, list]:
+    return load_words('register_words.txt')
