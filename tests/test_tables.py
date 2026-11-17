@@ -240,20 +240,40 @@ def test_the_wrecked_header_de_interleaves_on_its_x_coordinates(register_words):
         8: 'JRL', 9: 'LBG', 10: 'KH', 11: 'MA', 12: 'SKP', 13: 'KYA'}
 
 
+def test_the_codes_come_from_the_coordinates_and_not_from_the_page_number():
+    # Every caller hands the page its own words, so a reader that ignored the
+    # words and answered from the page number would look right. The page number
+    # only names the page in the one error this can raise, so a wrong one
+    # changes nothing, and no words means nothing to read.
+    assert recover_vertical_codes([], 55) == {}
+    assert recover_vertical_codes([], 58) == {}
+
+
+def test_the_page_number_does_not_pick_the_answer(register_words):
+    assert recover_vertical_codes(register_words[55], 99) == \
+        recover_vertical_codes(register_words[55], 55)
+    assert recover_vertical_codes(register_words[58], 0)[8] == 'JRL'
+
+
 def test_the_recovered_codes_agree_with_the_rows_that_did_print(register_words,
                                                                 register_tables):
-    # The read is only trustworthy if it agrees where it can be checked. Nine
-    # of page 55's eleven columns printed a row of their own, and nine of page
-    # 58's thirteen did, so a misread column boundary would show up there.
+    # The read is only trustworthy where it can be checked, and it can be
+    # checked index by index: nine of page 55's eleven columns printed a row of
+    # their own, and nine of page 58's thirteen did, each carrying its own
+    # index. A column boundary read one letter out shifts a letter between two
+    # neighbouring codes, so it lands on an index that printed and shows here.
     for page, head in ((55, 'PDL'), (58, 'BJR')):
         codes = recover_vertical_codes(register_words[page], page)
-        chain = next(c for c in parse_corridor_block(register_tables[page])
-                     if c.stations[0][0] == head)
-        printed = {code for code, _ in chain.stations}
-        checked = [index for index, code in codes.items() if code in printed]
-        assert len(checked) == len(chain.stations)
-        for index in checked:
-            assert codes[index] in printed
+        rows = [row for ln in register_tables[page]
+                for row in parse_matrix_rows(ln)]
+        group = next(g for g in split_side_by_side(rows) if g[0].code == head)
+        assert len(group) == 9
+        assert {row.index: row.code for row in group} == \
+            {index: codes[index] for row in group for index in [row.index]}
+        # And the four indexes with no row of their own are the four the
+        # register wrecked, which is what there was to recover.
+        assert sorted(set(codes) - {row.index for row in group}) == \
+            ([7, 8] if page == 55 else [8, 9, 11, 12])
 
 
 def test_a_recovered_code_is_confirmed_by_the_corridor_beside_it(register_words,
@@ -327,6 +347,64 @@ def test_a_code_past_the_end_of_row_one_has_no_km_to_be_placed_at():
     # many columns as row 1 has values, plus itself. If one ever had more, the
     # extra code would have no distance anywhere in the matrix, and a chain
     # that ends one station early is better than one with an invented km.
-    corridor, = parse_corridor_block(['A 1 5,000 9,000', 'C 3 9,000 4,000'],
-                                     {1: 'A', 2: 'B', 3: 'C', 4: 'D'})
-    assert corridor.stations == (('A', 0.0), ('B', 5.0), ('C', 9.0))
+    corridor, = parse_corridor_block(['AA 1 5,000 9,000', 'CC 3 9,000 4,000'],
+                                     {1: 'AA', 2: 'BB', 3: 'CC', 4: 'DD'})
+    assert corridor.stations == (('AA', 0.0), ('BB', 5.0), ('CC', 9.0))
+
+
+def test_a_header_whose_indexes_are_not_1_to_n_is_not_a_header():
+    # The run to the right of an O/D is only a header if its columns come out
+    # numbered 1..n. That is the check that rejects a column boundary this
+    # reading got wrong, rather than returning codes assembled out of one.
+    header = [(10.0, 100.0, 'O/D'), (30.0, 100.0, 'A'), (32.0, 100.0, '1A'),
+              (60.0, 100.0, 'B'), (62.0, 100.0, '2B')]
+    assert recover_vertical_codes(header, 1) == {1: 'AA', 2: 'BB'}
+    shifted = [w if w[2] not in ('1A', '2B') else
+               (w[0], w[1], {'1A': '2A', '2B': '3B'}[w[2]]) for w in header]
+    assert recover_vertical_codes(shifted, 1) == {}
+
+
+def test_two_wrecked_matrices_on_one_page_is_said_rather_than_chosen_between():
+    # Pages 52-63 wreck at most one matrix each, so a page with two is a layout
+    # this has not seen. Picking one quietly would hand a corridor a header off
+    # another; the page number is in the message because that is what a caller
+    # printing the failure has to name.
+    two = [(10.0, 100.0, 'O/D'), (30.0, 100.0, 'A'), (32.0, 100.0, '1A'),
+           (200.0, 100.0, 'O/D'), (230.0, 100.0, 'C'), (232.0, 100.0, '1C')]
+    with pytest.raises(ValueError, match='page 7'):
+        recover_vertical_codes(two, 7)
+
+
+def test_the_closest_agreement_wins_when_two_heads_are_both_in_range():
+    # Two corridors printed side by side whose heads measure almost the same
+    # distance to their second station. The stray row belongs to the one it
+    # agrees with most closely, not to whichever was read first -- 4 m against
+    # 1 m here, both inside the 10 m the register's own roundings need.
+    first = Row('AAA', 1, (10.000, 20.0))
+    second = Row('BBB', 1, (10.005, 20.0))
+    stray = Row('ZZZ', 2, (10.004,))
+    assert split_side_by_side([first, second, stray]) == \
+        [[first], [second, stray]]
+
+
+def test_a_code_route_followed_by_a_distance_does_not_name_a_corridor():
+    # "AA-CC 12,300" is an inline pair, a two-station corridor with no matrix
+    # of its own, and it shares both ends with the matrix below it. Counted as
+    # a route it would win the name on print order and leave the corridor
+    # claiming two stations where it has three.
+    lines = ['AA-CC 12,300', 'AA - BB - CC',
+             'AA 1 5,000 9,000', 'BB 2 5,000 4,000', 'CC 3 9,000 4,000']
+    assert parse_inline_pairs(lines[0]) == [('AA', 'CC', 12.300)]
+    corridor, = parse_corridor_block(lines)
+    assert corridor.name == 'AA - BB - CC'
+    assert [c for c, _ in corridor.stations] == ['AA', 'BB', 'CC']
+
+
+def test_a_station_code_is_two_to_four_characters():
+    # All 396 codes in the section are, and the pattern is held to it because
+    # the vertical-text wreckage is mostly loose single letters: let one count
+    # as a code and "G 1 5,000" is a station at 5 km.
+    assert parse_matrix_rows('AA 1 5,000')[0].code == 'AA'
+    assert parse_matrix_rows('TOJB 1 5,000')[0].code == 'TOJB'
+    assert parse_matrix_rows('G 1 5,000') == []
+    assert parse_matrix_rows('ABCDE 1 5,000') == []

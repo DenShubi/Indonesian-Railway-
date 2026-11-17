@@ -53,6 +53,21 @@ def test_a_junction_is_one_node_across_corridors():
     assert route_relasi(g, 'A', 'B') == [('A', 0.0), ('J', 10.0), ('B', 15.0)]
 
 
+def test_the_shortest_route_is_the_shortest_in_km_not_in_stops():
+    # Every other topology in this file is small enough that fewest stops and
+    # fewest kilometres agree, so dropping weight='weight' from the routing
+    # leaves them all green. Over the real register it moves 15 of the 316
+    # chains, the worst of them by 73 km, and Task 4 picks a route by comparing
+    # its length against the register's km -- so a hop count here poisons that.
+    g = build_topology([
+        corridor('fewest stops', ('A', 0.0), ('B', 40.0)),
+        corridor('fewest km', ('A', 0.0), ('M1', 10.0), ('M2', 20.0), ('B', 30.0)),
+    ], [])
+    chain = route_relasi(g, 'A', 'B')
+    assert [c for c, _ in chain] == ['A', 'M1', 'M2', 'B']
+    assert chain[-1][1] == 30.0
+
+
 def test_via_forces_the_longer_path():
     chain = route_relasi(TWO_WAYS, 'A', 'B', via=('V',))
     assert [c for c, _ in chain] == ['A', 'V', 'B']
@@ -109,6 +124,10 @@ def test_check_length_reports_the_fractional_gap():
         pytest.approx(-100 / 110 + 1, abs=0.01)
     assert check_length([('A', 0.0), ('B', 110.0)], 100.0) == pytest.approx(-0.1)
     assert check_length([('A', 0.0), ('B', 100.0)], 100.0) == 0.0
+    # No row in this edition prints km 0, so this is the guard the docstring
+    # says it is -- but a relasi with nothing to disagree with reads as
+    # agreeing, not as 100% wrong.
+    assert check_length([('A', 0.0), ('B', 100.0)], 0.0) == 0.0
 
 
 def test_a_conflicting_edge_weight_is_recorded_and_the_shorter_one_kept():
@@ -125,15 +144,27 @@ def test_a_conflicting_edge_weight_is_recorded_and_the_shorter_one_kept():
     assert conflict.kept == 5.976
     assert conflict.readings == ((6.856, 'TG - SMT - BBG - GBN - CU'),
                                  (5.976, 'TG - BBG - GD'))
+    reversed_order = build_topology([
+        corridor('TG - BBG - GD', ('ATA', 156.966), ('BBG', 162.942)),
+        corridor('TG - SMT - BBG - GBN - CU', ('ATA', 156.966), ('BBG', 163.822)),
+    ], [])
+    other, = reversed_order.graph['conflicts']
+    assert (other.a, other.b, other.kept) == ('ATA', 'BBG', 5.976)
 
 
 def test_the_kept_weight_does_not_depend_on_which_corridor_is_read_last():
-    first = corridor('first', ('A', 0.0), ('B', 1.606))
-    second = corridor('second', ('A', 0.0), ('B', 1.600))
+    first = corridor('first', ('AA', 0.0), ('BB', 1.606))
+    second = corridor('second', ('AA', 0.0), ('BB', 1.600))
     forwards = build_topology([first, second], [])
     backwards = build_topology([second, first], [])
-    assert forwards['A']['B']['weight'] == backwards['A']['B']['weight'] == 1.600
+    assert forwards['AA']['BB']['weight'] == backwards['AA']['BB']['weight'] == 1.600
     assert len(forwards.graph['conflicts']) == len(backwards.graph['conflicts']) == 1
+    # The pair is named in sorted order, not in whatever order a frozenset of
+    # two strings happens to iterate in -- which depends on PYTHONHASHSEED, so
+    # a report would otherwise name the same edge differently between runs.
+    for graph in (forwards, backwards):
+        conflict, = graph.graph['conflicts']
+        assert (conflict.a, conflict.b) == ('AA', 'BB')
 
 
 def test_two_corridors_agreeing_on_an_edge_are_not_a_conflict():

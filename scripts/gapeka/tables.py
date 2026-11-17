@@ -80,8 +80,11 @@ from dataclasses import dataclass
 # decimals after the ",". The "," is required, because the only tokens that
 # reach here without one are the loose digits of a vertical-text column.
 NUMBER = re.compile(r'\d{1,3}(?:\.\d{3})*,\d{1,3}')
-# A station code: the register's are 2-4 characters, all of them upper case.
-CODE = re.compile(r'[A-Z][A-Z0-9]{0,4}\Z')
+# A station code. Measured over the whole section: all 396 are 2-4 characters,
+# 294 of them three, none with a digit in it. The pattern is held to that
+# because the loose single letters of a vertical-text column -- "LJ BR GL",
+# "SM KA P" -- are exactly what a looser one would start reading as stations.
+CODE = re.compile(r'[A-Z][A-Z0-9]{1,3}\Z')
 INDEX = re.compile(r'\d{1,2}\Z')
 # How far apart two readings of one matrix cell may be and still be that cell.
 SAME_CELL = 0.01
@@ -91,6 +94,13 @@ SAME_CELL = 0.01
 # the interleaved words of one column sit at most 4 pt apart. SAME_ROW is
 # tighter than SAME_LINE because a row label and its index are set on exactly
 # the same baseline, and the vertical-text wreckage beside them is not.
+#
+# All three are MEASURED off pages 52-63 of this edition, not derived, so they
+# have to be re-measured if the register is ever re-typeset. The suite catches
+# any value outside the window each one works over -- SAME_LINE 3.0 to 7.5,
+# SAME_COLUMN 4.5 to 18.0, SAME_ROW 0.5 to 4.0 -- and note how little room
+# SAME_LINE has below its default: the row pitch is 4.7 pt on page 55, so one
+# more point of slack starts merging consecutive matrix rows into one line.
 SAME_LINE = 4.0
 SAME_COLUMN = 10.0
 SAME_ROW = 2.0
@@ -363,6 +373,14 @@ def _chain(group: list[Row], codes: dict[int, str]) -> tuple[tuple[str, float], 
     Row 1 is also what bounds the chain: a code the header offers past the end
     of row 1's values has no km to be placed at, so it is left out rather than
     stretched onto the end.
+
+    The hole has to be an interior one, which both of the register's are. A
+    corridor that lost its LAST rows prints 1..n contiguously and so looks
+    whole from here, and nothing would repair it: the matrix never says how
+    many stations it should have had. _name() would then match a code route
+    against the wrong tail and the corridor would be named for a station it has
+    no distance to -- which is the failure page 54 shows for a different
+    reason, and why _name() insists on both ends.
     """
     printed = {row.index: row for row in group}
     if all(index in printed for index in range(1, max(printed) + 1)):
@@ -394,7 +412,10 @@ def parse_corridor_block(lines: list[str],
     named for its own two ends.
 
     A group of rows that does not start at index 1 has no head to measure from,
-    so there is nothing to anchor its cumulative km to and it is dropped.
+    so there is nothing to anchor its cumulative km to and it is dropped. One
+    row is enough to drop it on: split_side_by_side() only ever adds a row to a
+    column that already has a head, so a group without index 1 cannot have
+    grown past the single row that opened it.
 
     `codes` is this page's index -> code map from recover_vertical_codes(). Pass
     it and a corridor the page wrecked comes back whole; leave it out and that
@@ -406,7 +427,7 @@ def parse_corridor_block(lines: list[str],
     spent: set[int] = set()
     out = []
     for group in split_side_by_side(rows):
-        if len(group) < 2 or group[0].index != 1:
+        if len(group) < 2:
             continue
         stations = _chain(group, codes or {})
         out.append(Corridor(_name(stations, routes, spent), stations))

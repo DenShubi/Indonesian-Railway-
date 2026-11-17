@@ -83,20 +83,26 @@ def build_topology(corridors: list[Corridor],
     some corridor, or that the register prints as a short branch of their own
     ("KEN-CGD 6,439"), and carries that gap as `weight` in km.
     graph.graph['conflicts'] holds a Conflict for every edge measured two ways.
+
+    An edge is keyed on its two codes SORTED, not on a frozenset of them: the
+    key has to identify an undirected pair, which either does, but iteration
+    over a two-element frozenset of strings follows the hash seed, so a
+    Conflict built from one would name the same edge A-B on one run and B-A on
+    the next and a printed report would not be reproducible.
     """
-    readings: dict[frozenset, list[tuple[float, str]]] = collections.defaultdict(list)
+    readings: dict[tuple[str, str],
+                   list[tuple[float, str]]] = collections.defaultdict(list)
     for corridor in corridors:
         for (a, ka), (b, kb) in zip(corridor.stations, corridor.stations[1:]):
             if a != b:
-                readings[frozenset((a, b))].append(
+                readings[tuple(sorted((a, b)))].append(
                     (round(kb - ka, PLACES), corridor.name))
     for a, b, km in pairs:
         if a != b:
-            readings[frozenset((a, b))].append((round(km, PLACES), INLINE))
+            readings[tuple(sorted((a, b)))].append((round(km, PLACES), INLINE))
 
     graph, conflicts = nx.Graph(), []
-    for edge, found in readings.items():
-        a, b = sorted(edge)
+    for (a, b), found in readings.items():
         kept = min(km for km, _ in found)
         if len({km for km, _ in found}) > 1:
             conflicts.append(Conflict(a, b, kept, tuple(found)))
@@ -133,7 +139,9 @@ def check_length(chain: list[tuple[str, float]], register_km: float) -> float:
 
     Positive when the route is shorter than the register says, negative when it
     is longer, as a fraction of the register's figure: 100 km routed against
-    110 km printed is +0.091. A relasi with no printed km cannot disagree.
+    110 km printed is +0.091. A relasi with no printed km cannot disagree, and
+    0.0 rather than a division by zero is what says so; no row in this edition
+    prints km 0, so that is a guard rather than a case.
     """
     if not register_km:
         return 0.0
