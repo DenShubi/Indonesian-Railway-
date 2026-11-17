@@ -10,7 +10,7 @@ import json
 
 import pytest
 
-from scripts.fetch_osm import (RAIL_QUERY, merge_rail, merge_stations,
+from scripts.fetch_osm import (RAIL_QUERY, gather, merge_rail, merge_stations,
                                overpass, tiles)
 
 JAVA = (-9.0, 105.0, -5.8, 114.7)
@@ -116,3 +116,12 @@ def test_stations_repeated_across_tiles_are_deduplicated_by_type_and_id():
     area = {'type': 'way', 'id': 1, 'center': {'lat': -7.0, 'lon': 110.0}}
     merged = merge_stations([{'elements': [node, area]}, {'elements': [node]}])
     assert [(el['type'], el['id']) for el in merged] == [('node', 1), ('way', 1)]
+
+
+def test_a_region_exactly_at_the_threshold_is_not_tiled(post):
+    calls, answers = post
+    answers.append(Answer({'elements': [WAY_7]}))
+    # Surabaya's bbox is 2.0 degrees of longitude to the digit, and the
+    # subtraction that measures it is not exact in binary.
+    assert merge_rail(gather(RAIL_QUERY, LAND_BBOX))['features']
+    assert len(calls) == 1

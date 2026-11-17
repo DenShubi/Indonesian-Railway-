@@ -137,7 +137,10 @@ def gather(query: str, bbox) -> list[dict]:
     the single-query rule guards against, so it is caught here instead.
     """
     s, w, n, e = bbox
-    if max(n - s, e - w) <= WIDE:
+    # Rounded, because Surabaya's bbox is exactly two degrees wide and
+    # 113.2 - 111.2 is the kind of subtraction that comes out at 2.0000000000001
+    # and tiles a region that has a perfectly good single-query cache already.
+    if max(round(n - s, 6), round(e - w, 6)) <= WIDE:
         return [overpass(query, bbox)]
     boxes = tiles(bbox)
     print(f'    {len(boxes)} tiles of {TILE} degree')

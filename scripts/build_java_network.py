@@ -26,22 +26,26 @@ Two changes get there from the 254, and both are needed:
     register corroborates it -- Duri - Manggarai is printed at 9.663, which is
     the tables' Duri - Tanah Abang 3.637 plus exactly 6.026. add_missing_edges()
     checks that before trusting it.
-  * **Selection by length.** 314 of 316 relasi then land within tolerance, the
-    worst remaining gap 2.9%, and the two that do not are one relasi printed
-    both ways; see RESIDUAL below. Routes recovered this way are not obscure:
-    `SGU - PSE` matches as the 69th simple path and `KPB - ML` as the 191st, so
-    no amount of shortest-path tie-breaking could have found either.
+  * **Selection by length.** 314 of 316 relasi then land within tolerance --
+    314, not all 316; the two that remain are the one relasi RESIDUAL below is
+    about, and nothing here closes them. Of the 314, the worst is 2.9% out.
+    Routes recovered this way are not obscure: `SGU - PSE` matches exactly, at
+    the 819.682 km the register prints, as the 90th simple path, and `KPB - ML`
+    as the 191st, so no amount of shortest-path tie-breaking could have found
+    either.
 
-RESIDUAL. `YK - YIA` and `YIA - YK`, 50 trains, stay 16.8% out and no path in
-the graph fixes them, because the register contradicts itself there. Its train
-rows print 40.237 km; its own distance tables put Kedundang at km 35.637 of the
-Kutoarjo corridor and Yogyakarta at km 63.643, so Yogyakarta to Kedundang is
-28.006, and the two-station table for the airport branch prints
-Kedundang - YIA as 5.465. 28.006 + 5.465 = 33.471, and 40.237 - 33.471 is
-6.766, which is exactly the tables' Wates - Kedundang. The airport trains do
-call at Wates, so the register's distance is measured along a route its own
-tables cannot express. Nothing here invents an edge to close it: the tolerance
-stays where the repo set it and the gap is reported.
+RESIDUAL. `YK - YIA` and `YIA - YK`, 50 trains, stay 16.8% out, and raising the
+cap cannot help: the route is not a simple path, so shortest_simple_paths()
+never offers it at any cap. The register prints 40.237 km. Its own tables put
+Kedundang at km 35.637 of the Kutoarjo corridor and Yogyakarta at km 63.643, so
+Yogyakarta to Kedundang is 28.006, and the two-station table for the airport
+branch prints Kedundang - YIA as 5.465: 33.471 in all. The shortfall, 6.766 km,
+is exactly the tables' Wates - Kedundang, and the airport trains do call at
+Wates -- so the official distance includes an out-and-back over that stretch,
+which revisits Kedundang and is therefore not a simple path. This is a
+limitation of enumerating simple paths, not a tuning problem. Nothing here
+invents an edge or widens anything to close it; the plan records the two as an
+explicit exception under Task 9, and the gap is reported on every run.
 
 Usage:  python scripts/build_java_network.py [--cap N]
 """
