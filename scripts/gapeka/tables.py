@@ -26,11 +26,15 @@ Four things the layout does that make the obvious reading wrong:
     extract_text() has already thrown away. So the ordered station list comes
     from the matrix ROW LABELS, the first token of each row, which print
     cleanly on every page.
-  * The page truncates the right-hand columns, never the left. Row 1 of the
-    42-station Cikampek - Banjar matrix runs off the page mid-number, ending in
-    a bare "177" that is the head of "177,378". Cumulative km therefore come
-    from each row's own first value, and a numeric token that is not a whole
-    Indonesian-formatted number is discarded.
+  * That header is the only line extract_text() truncates; the matrix rows
+    themselves are complete. Every row on pages 52-63 carries all n-1 of its
+    values, the 42-station Cikampek - Banjar row 1 included. So each row's own
+    first value -- d(i,1), its distance to the head -- is the one anchor every
+    row carries whatever the header did to itself, and that is where cumulative
+    km come from. A numeric token with no comma in it is not a distance and is
+    rejected, which is the only thing standing between the vertical-text
+    wreckage on page 58 ("LJ BR GL 98 76 25 ,, 15 90 ...") and a station
+    called GL at km 76.
   * Two tables are often printed side by side, so one text line holds a row
     from each: "SBE 1 5,740 7,786 9,246 10,176 TRK 1 14,593 22,147". Rows are
     read left to right off the line and handed to their own column, because a
@@ -41,16 +45,21 @@ Four things the layout does that make the obvious reading wrong:
 
 Numbers are Indonesian-formatted: "." groups thousands, "," is the decimal
 point, so "9,241" is 9.241 km and "141,190" is 141.190 km. Most print three
-decimals, but page 63 prints some with one or two ("102,1" where row 1 of the
-same matrix says "102,098"), which costs a few metres and nothing more.
+decimals, but page 63 prints some with one or two -- its KTK row says "102,1"
+where row 1 of the same matrix says "102,098" for the same cell. So a cell is
+matched at the precision the register printed it, within SAME_CELL: page 63's
+roundings are at most 5 m wide, and the nearest pair of genuinely different
+cells on these pages is 15 m apart, so 10 m of slack separates the two.
 
 Two corridors lose rows to the register's own typesetting: pages 55 and 58 each
-print a stretch of one matrix as wrecked vertical text, which takes rows 7-8 of
-Padalarang - Sukabumi and rows 8-12 of Banjar - Kroya with it. Because every km
-is measured from the head rather than from the row above, the stations that do
-print keep their true distances and the corridor simply has a hole in it; four
-station codes -- CBB, LP, JRL, LBG -- are lost with those rows and have to come
-from somewhere else.
+print a stretch of one matrix as wrecked vertical text, which takes rows 7 and
+8 of Padalarang - Sukabumi and rows 8, 9, 11 and 12 of Banjar - Kroya with it
+(row 10, KH at km 77.386, survives in the middle of that hole). Because every
+km is measured from the head rather than from the row above, the stations that
+do print keep their true distances and the corridor simply has a hole in it;
+four station codes -- CBB, LP, JRL, LBG -- are lost with those rows and have to
+come from somewhere else. Their km are not lost: they are still in row 1 of
+their own matrix, which is why nothing here throws a short chain away.
 
 The short branches are not printed as matrices at all but as inline pairs, two
 codes and a distance tucked onto whatever line had room -- "KEN-CGD 6,439" at
@@ -67,15 +76,19 @@ numbers to do it.
 import re
 from dataclasses import dataclass
 
-# An Indonesian-formatted distance, whole: thousands grouped with ".", three
-# decimals at most after the ",". Anything else the page edge chopped in half.
+# An Indonesian-formatted distance: thousands grouped with ".", one to three
+# decimals after the ",". The "," is required, because the only tokens that
+# reach here without one are the loose digits of a vertical-text column.
 NUMBER = re.compile(r'\d{1,3}(?:\.\d{3})*,\d{1,3}')
 # A station code: the register's are 2-4 characters, all of them upper case.
 CODE = re.compile(r'[A-Z][A-Z0-9]{0,4}\Z')
 INDEX = re.compile(r'\d{1,2}\Z')
+# How far apart two readings of one matrix cell may be and still be that cell.
+SAME_CELL = 0.01
 # A corridor's route in station codes, as the line above each block prints it.
-# Full-name title lines never match: every code is five characters at most, and
-# a route needs two of them, so "DURI - TANGERANG" cannot qualify.
+# A full-name title line can match too -- page 58's "BANJAR - MAOS - KROYA"
+# yields "MAOS - KROYA" -- so a route is only taken as a corridor's name when
+# both its ends are that corridor's own, which no such accident survives.
 ROUTE = re.compile(r'(?<![A-Z0-9])[A-Z][A-Z0-9]{0,4}(?:\s*-\s*[A-Z][A-Z0-9]{0,4})+'
                    r'(?![A-Z0-9])')
 # One short branch printed inline, "KEN-CGD 6,439". The distance has to follow
@@ -100,7 +113,7 @@ class Row:
 @dataclass(frozen=True)
 class Corridor:
     name: str
-    stations: list[tuple[str, float]]
+    stations: tuple[tuple[str, float], ...]
 
 
 def _km(text: str) -> float:
@@ -109,10 +122,10 @@ def _km(text: str) -> float:
 
 
 def _numbers(token: str) -> list[float]:
-    """Every whole distance in a token, which may hold several run together.
+    """Every distance in a token, which may hold several run together.
 
-    Stops at the first thing that is not one, so a number the page edge cut in
-    half is dropped rather than read as a smaller distance.
+    Stops at the first thing that is not one, so the loose digits of a
+    vertical-text column end the row rather than joining it.
     """
     out, at = [], 0
     while at < len(token):
@@ -160,17 +173,19 @@ def split_side_by_side(rows: list[Row]) -> list[list[Row]]:
 
     An index of 1 opens a corridor. Any other row joins the corridor whose
     first row says where it belongs: row *i*'s first value is d(i,1), which row
-    1 also prints as its (i-1)th value, so the matrix checks itself. Where row
-    1 ran off the page before reaching that column the check is unavailable,
-    and the row falls back to the open corridor it extends -- the one with the
-    highest index below its own and a smaller cumulative km.
+    1 also prints as its (i-1)th value, so the matrix checks itself and the
+    closest agreement wins. Splitting on the index alone would not do, because
+    two corridors printed side by side interleave as 1, 1, 2, 2, 3, 3 and a cut
+    at every index that fails to increase would cut after every row.
+
+    A row that agrees with no corridor's head is not guessed at -- it opens a
+    column of its own, which parse_corridor_block() then drops for having no
+    head to measure from. Nothing on pages 52-63 lands there: all 450 rows are
+    placed by the cross-check.
     """
     columns: list[dict[int, Row]] = []
     for row in rows:
-        if row.index == 1:
-            columns.append({1: row})
-            continue
-        column = _column_for(columns, row)
+        column = None if row.index == 1 else _column_for(columns, row)
         if column is None:
             columns.append({row.index: row})
         else:
@@ -179,15 +194,17 @@ def split_side_by_side(rows: list[Row]) -> list[list[Row]]:
 
 
 def _column_for(columns: list[dict[int, Row]], row: Row) -> dict[int, Row] | None:
-    free = [column for column in columns if row.index not in column]
-    for column in free:
+    gaps = {}
+    for at, column in enumerate(columns):
         head = column.get(1)
-        if head and row.index - 2 < len(head.values) \
-                and abs(head.values[row.index - 2] - row.values[0]) < 1e-9:
-            return column
-    extends = [column for column in free
-               if max(column) < row.index and column[max(column)].km < row.values[0]]
-    return max(extends, key=max) if extends else None
+        if row.index in column or not head or row.index - 2 >= len(head.values):
+            continue
+        gap = abs(head.values[row.index - 2] - row.values[0])
+        if gap < SAME_CELL:
+            gaps[at] = gap
+    if not gaps:
+        return None
+    return columns[min(gaps, key=gaps.get)]
 
 
 def _routes(lines: list[str]) -> list[str]:
@@ -195,7 +212,9 @@ def _routes(lines: list[str]) -> list[str]:
 
     A route followed by a distance is an inline pair instead -- a corridor of
     two stations with no matrix of its own -- and belongs to
-    parse_inline_pairs(), so it is left out here.
+    parse_inline_pairs(), so it is left out here. What keeps a corridor from
+    taking a name that is not its own is _name() matching both ends; this is
+    only so that what comes back is a list of routes and nothing else.
     """
     out = []
     for line in lines:
@@ -214,27 +233,36 @@ def parse_corridor_block(lines: list[str]) -> list[Corridor]:
     """The corridors on these lines, which may be one block or a whole page.
 
     Each corridor is named for the code route printed above its block, matched
-    on the head station because the full-name title lines are not printed in
-    the same order as the routes and are in the wrong alphabet to check. A
-    corridor with no route of its own is named for its own two ends.
+    on both of its ends rather than on the full-name title lines, which are not
+    printed in the same order as the routes and are in the wrong alphabet to
+    check. Page 53 prints two corridors that share both ends, JAKK to CKP by
+    Pasar Senen and by Manggarai, and only print order tells those apart, so a
+    route is claimed once and then spent. A corridor with no route of its own
+    -- the Gambringan - Gundih spur on page 57, and Kampung Bandan - Manggarai
+    on page 54, whose route runs one station further than its matrix does -- is
+    named for its own two ends.
 
     A group of rows that does not start at index 1 has no head to measure from,
     so there is nothing to anchor its cumulative km to and it is dropped.
     """
     rows = [row for line in lines for row in parse_matrix_rows(line)]
     routes = _routes(lines)
+    spent: set[int] = set()
     out = []
     for group in split_side_by_side(rows):
         if len(group) < 2 or group[0].index != 1:
             continue
-        stations = [(row.code, row.km) for row in group]
-        out.append(Corridor(_name(stations, routes), stations))
+        stations = tuple((row.code, row.km) for row in group)
+        out.append(Corridor(_name(stations, routes, spent), stations))
     return out
 
 
-def _name(stations: list[tuple[str, float]], routes: list[str]) -> str:
+def _name(stations: tuple[tuple[str, float], ...], routes: list[str],
+          spent: set[int]) -> str:
     head, tail = stations[0][0], stations[-1][0]
     for at, route in enumerate(routes):
-        if route.split(' - ')[0] == head:
-            return routes.pop(at)
+        ends = route.split(' - ')
+        if at not in spent and ends[0] == head and ends[-1] == tail:
+            spent.add(at)
+            return route
     return f'{head} - {tail}'
