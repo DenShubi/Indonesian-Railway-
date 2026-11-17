@@ -106,5 +106,30 @@
       "Yogyakarta": "D14836",
       "Prameks": "2E8B74"
     }
+  },
+  {
+    "id": "java",
+    "name": "All Java",
+    "subtitle": "GAPEKA 2025 register",
+    "pdf": null,
+    "pages": [],
+    "bbox": [
+      -9.0,
+      105.0,
+      -5.8,
+      114.7
+    ],
+    "gapekaNumbering": true,
+    "hubs": [
+      "GMR",
+      "PSE",
+      "BD",
+      "CN",
+      "SMT",
+      "YK",
+      "SLO",
+      "SBI",
+      "ML"
+    ]
   }
 ]

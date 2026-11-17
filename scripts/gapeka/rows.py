@@ -36,8 +36,13 @@ A relasi is identified by `relasi` AND `via`, never `relasi` alone: there are
 pairs, so twelve differ by via point only. 32 rows are circular, with
 origin == destination -- the Dhoho and Penataran runs out of Surabaya, the
 circular Cikarang workings, and Joglosemarkerto.
+
+A train's CATEGORY comes from the section banner above its row, which
+scan_sections() walks to. See the note on SECTIONS below for why a page map
+cannot do it.
 """
 import re
+from dataclasses import dataclass
 
 # urut, no, jenis, nama(+identitas), ident, lintas, operator, km, km_int, dep, arr, duration
 # Proven against the whole register: this matches all 1,775 rows and nothing else.
@@ -128,3 +133,135 @@ def parse_train_row(line: str) -> dict | None:
         'arr': arr[:5],
         'duration': duration,
     }
+
+
+# The banner the register prints above every section: the section's own name,
+# and how many REGULER and FAKULTATIF trains it contains. Both counts are a
+# free end-to-end check -- the rows walked between one banner and the next have
+# to tally with what the banner claims, and over this edition all eighteen
+# train sections do, 1,775 rows in total.
+BANNER = re.compile(r'KELAS KERETA API\s*:\s*(.+?)'
+                    r'\s+REGULER\s*:\s*(\d+)\s+FAKULTATIF\s*:\s*(\d+)\s*$')
+# The line above each banner, which says what KIND of working the section
+# holds: ANTAR KOTA (intercity), PERKOTAAN (urban) or DINAS (duty roster).
+KLASIFIKASI = re.compile(r'KLASIFIKASI KERETA API\s*:\s*KERETA API\s+(.+?)\s*$')
+
+# Section name -> the category the app groups and colours by. The seven freight
+# sections collapse to one: the spec treats freight as a single class, and the
+# commodity a wagon carries is not a thing the map can show. Everything else
+# keeps its own name, spelled as the register's contents page spells it.
+#
+# A section this map has not seen is title-cased rather than refused, so a
+# re-typeset register still parses; the CLI prints any section it had to guess
+# at, because an unknown category is one the line panel has no colour for.
+SECTION_CATEGORIES = {
+    'ARGO': 'Argo',
+    'EKSEKUTIF': 'Eksekutif',
+    'EKSEKUTIF CAMPURAN': 'Eksekutif Campuran',
+    'EKONOMI JARAK JAUH': 'Ekonomi Jarak Jauh',
+    'EKONOMI LOKAL': 'Ekonomi Lokal',
+    'BANDARA YIA': 'Bandara YIA',
+    'BANDARA SMO': 'Bandara SMO',
+    'EKONOMI LOKAL (FEEDER)': 'Ekonomi Lokal (Feeder)',
+    'COMMUTER LINE DAOP 6 YK': 'Commuter Line Daop 6 YK',
+    'COMMUTER LINE BANDARA SOETTA': 'Commuter Line Bandara Soetta',
+    'COMMUTER LINE DAOP 1 JAK': 'Commuter Line Daop 1 Jak',
+    'BARANG HANTARAN PARCEL (BHP)': 'Barang',
+    'BARANG PETIKEMAS': 'Barang',
+    'BARANG BBM': 'Barang',
+    'BARANG BATUBARA': 'Barang',
+    'BARANG SEMEN': 'Barang',
+    'BARANG PUPUK': 'Barang',
+    'ANTAR KOTA BARANG': 'Barang',
+}
+
+
+@dataclass(frozen=True)
+class Section:
+    """One "KELAS KERETA API" section of the register, with its rows.
+
+    `name` is the banner's own wording; `category` is what that collapses to.
+    `reguler` and `fakultatif` are what the banner CLAIMS, so comparing them
+    against `trains` is the check, not a restatement of it.
+    """
+    name: str
+    category: str
+    klasifikasi: str
+    page: int
+    reguler: int
+    fakultatif: int
+    trains: tuple[dict, ...]
+
+    @property
+    def tally(self) -> tuple[int, int]:
+        """The REGULER and FAKULTATIF rows actually found in this section."""
+        return (sum(1 for t in self.trains if t['jenis'] == 'REGULER'),
+                sum(1 for t in self.trains if t['jenis'] == 'FAKULTATIF'))
+
+    @property
+    def claimed(self) -> tuple[int, int]:
+        return (self.reguler, self.fakultatif)
+
+
+def scan_sections(pages: dict[str, dict]) -> list[Section]:
+    """Every section of the register, in print order, with the rows under it.
+
+    `pages` is the cached extraction: page index as a string -> {"text": ...},
+    which parse_gapeka.py writes to data/gapeka/pages.json. Pages are walked in
+    page order and lines in print order, so a section runs from its banner to
+    the next one wherever the page happens to break -- which is the whole point
+    of reading the banner instead of mapping pages to categories.
+
+    The register's last eight pages are duty rosters, and they carry banners of
+    the same shape. Their rows print no NAMA IDENTITAS column, so
+    parse_train_row() does not match them and those sections come back with no
+    trains and a count they do not meet. That is the honest answer: they are
+    not trains. A caller that wants only the trains takes the sections that
+    have some, and the 464 duty movements the thirteen DINAS banners claim stay
+    out of the 1,775.
+
+    Raises ValueError for a train row above the first banner, which would mean
+    a layout where the category of a row cannot be known.
+    """
+    found: list[dict] = []
+    klasifikasi = ''
+    for page in sorted(pages, key=int):
+        for line in pages[page]['text'].split('\n'):
+            marked = KLASIFIKASI.search(line)
+            if marked:
+                klasifikasi = marked.group(1).strip()
+                continue
+            banner = BANNER.search(line)
+            if banner:
+                name = ' '.join(banner.group(1).split())
+                found.append({
+                    'name': name,
+                    'category': SECTION_CATEGORIES.get(name, name.title()),
+                    'klasifikasi': klasifikasi,
+                    'page': int(page),
+                    'reguler': int(banner.group(2)),
+                    'fakultatif': int(banner.group(3)),
+                    'trains': [],
+                })
+                continue
+            row = parse_train_row(line)
+            if row is None:
+                continue
+            if not found:
+                raise ValueError(f'page {page} prints a train row above the '
+                                 f'first KELAS KERETA API banner: {line!r}')
+            found[-1]['trains'].append(dict(row, page=int(page)))
+    return [Section(**dict(section, trains=tuple(section['trains'])))
+            for section in found]
+
+
+def scan_categories(pages: dict[str, dict]) -> dict[str, str]:
+    """Train number -> category, taken from the banner above each row.
+
+    This is what `category_for_page` should have been. All 1,775 train numbers
+    in this edition are distinct, including the 234 paired ones the register
+    prints as a single cell ("2501-2504-2505-2508"), so nothing collapses.
+    """
+    return {train['no']: section.category
+            for section in scan_sections(pages)
+            for train in section.trains}

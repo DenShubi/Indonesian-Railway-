@@ -8,6 +8,23 @@ Regions and their bounding boxes come from data/regions.json. The cache is
 refetched only when missing or when --force is passed; Overpass is a donated
 public service, so do not hammer it.
 
+The `java` pseudo-region covers the whole island, which is too large for one
+query: a bbox wider than WIDE degrees is fetched tile by tile and the tiles are
+merged on OSM id. Overpass returns a way intersecting the bbox with its whole
+geometry, so adjacent tiles overlap in content rather than leaving seams, and
+merging on id is what removes the duplicates instead of stitching them.
+
+Tiling the island guarantees tiles that are open sea, and a tile of open sea
+legitimately answers with zero elements. The empty answer that means failure is
+the one from a bbox that should hold track -- a regional mirror with no
+Indonesian data answers that way -- so emptiness is tolerated per call, with
+allow_empty, and not globally. Without that, every sea tile would walk all
+three endpoints, sleep between each, and abort the island fetch at the first
+stretch of Java Sea.
+
+Tiles go one at a time with a pause between them. There is no concurrency here
+on purpose.
+
 Usage:  python scripts/fetch_osm.py [region-id ...] [--force]
 """
 import csv, json, pathlib, re, sys, time, unicodedata
@@ -25,6 +42,16 @@ ENDPOINTS = [
     'https://overpass.private.coffee/api/interpreter',
 ]
 UA = 'IndonesianRailwayVisualizer/0.1 (https://github.com/DenShubi/Indonesian-Railway-)'
+
+# A bbox with a side longer than this is fetched tile by tile. The three
+# published regions are all inside it, so their caches stay byte-identical and
+# nothing refetches them; Java's 9.7 degrees of longitude are not.
+WIDE = 2.0
+# Tile side in degrees, and the pause between tiles. 1 degree over Java is
+# about 110 km of track at most, which Overpass answers comfortably, and forty
+# tiles of it is a one-off: the result is cached and refetched only on --force.
+TILE = 1.0
+PAUSE = 2.0
 
 RAIL_QUERY = """[out:json][timeout:240];
 (
@@ -48,7 +75,36 @@ def norm(s: str) -> str:
     return re.sub(r'[^A-Z0-9]', '', s)
 
 
-def overpass(query: str, bbox) -> dict:
+def tiles(bbox, step: float = TILE) -> list[tuple[float, float, float, float]]:
+    """`bbox` cut into tiles of at most `step` degrees a side, (s, w, n, e).
+
+    Tiles abut exactly and the last row and column are short rather than
+    overhanging, so the tiles cover the bbox and nothing outside it. Edges are
+    rounded to six places, which is a tenth of a metre, because walking a float
+    up by 1.0 forty times is how a tile edge ends up at 113.99999999999999 and
+    a query asks for a sliver of sea of its own.
+    """
+    s, w, n, e = bbox
+    out, south = [], s
+    while south < n:
+        north = round(min(south + step, n), 6)
+        west = w
+        while west < e:
+            east = round(min(west + step, e), 6)
+            out.append((south, west, north, east))
+            west = east
+        south = north
+    return out
+
+
+def overpass(query: str, bbox, allow_empty: bool = False) -> dict:
+    """One Overpass query, trying each endpoint in turn.
+
+    A zero-element answer is a failure by default, because a mirror with no
+    Indonesian data answers exactly that way and it looks like success. Pass
+    allow_empty for a bbox that may genuinely hold nothing -- a sea tile -- or
+    every one of those walks all three endpoints and then aborts the fetch.
+    """
     s, w, n, e = bbox
     body = query.format(s=s, w=w, n=n, e=e)
     last = None
@@ -58,8 +114,9 @@ def overpass(query: str, bbox) -> dict:
                               headers={'User-Agent': UA}, timeout=300)
             if r.ok and r.text.lstrip().startswith('{'):
                 payload = r.json()
-                if payload.get('elements'):
-                    print(f'  [ok] {endpoint}  {len(r.content) / 1e6:.1f} MB')
+                if payload.get('elements') or allow_empty:
+                    print(f'  [ok] {endpoint}  {len(r.content) / 1e6:.1f} MB'
+                          f'  {len(payload.get("elements", []))} elements')
                     return payload
                 last = f'{endpoint}: answered with zero elements'
             else:
@@ -71,40 +128,89 @@ def overpass(query: str, bbox) -> dict:
     raise SystemExit(f'All Overpass endpoints failed. Last: {last}')
 
 
+def gather(query: str, bbox) -> list[dict]:
+    """Every Overpass answer for this bbox: one, or one per tile.
+
+    A bbox inside WIDE degrees goes as a single query and must not come back
+    empty. A wider one is tiled, and then a tile may be empty sea -- but not
+    all of them: a whole island answering with nothing is the mirror failure
+    the single-query rule guards against, so it is caught here instead.
+    """
+    s, w, n, e = bbox
+    if max(n - s, e - w) <= WIDE:
+        return [overpass(query, bbox)]
+    boxes = tiles(bbox)
+    print(f'    {len(boxes)} tiles of {TILE} degree')
+    payloads = []
+    for at, box in enumerate(boxes, 1):
+        print(f'    tile {at}/{len(boxes)} {box}')
+        payloads.append(overpass(query, box, allow_empty=True))
+        if at < len(boxes):
+            time.sleep(PAUSE)
+    if not any(p.get('elements') for p in payloads):
+        raise SystemExit(f'all {len(boxes)} tiles answered with zero elements')
+    return payloads
+
+
+def merge_rail(payloads: list[dict]) -> dict:
+    """The rail ways from every tile as one FeatureCollection, deduplicated.
+
+    Overpass hands back a way that merely touches the bbox with its whole
+    geometry, so a way crossing a tile edge arrives twice, identically. The OSM
+    id is what says they are one way.
+    """
+    features = {}
+    for payload in payloads:
+        for el in payload.get('elements', []):
+            geom = el.get('geometry')
+            if not geom or len(geom) < 2 or el['id'] in features:
+                continue
+            tags = el.get('tags', {})
+            features[el['id']] = {
+                'type': 'Feature',
+                'properties': {
+                    'id': el['id'],
+                    'railway': tags.get('railway'),
+                    'usage': tags.get('usage'),
+                    'name': tags.get('name'),
+                },
+                'geometry': {
+                    'type': 'LineString',
+                    'coordinates': [[round(p['lon'], 7), round(p['lat'], 7)]
+                                    for p in geom],
+                },
+            }
+    return {'type': 'FeatureCollection',
+            'features': [features[at] for at in sorted(features)]}
+
+
+def merge_stations(payloads: list[dict]) -> list[dict]:
+    """The station elements from every tile, deduplicated on type and id.
+
+    A node carries one id space and a way another, so the pair is the key; a
+    station mapped as an area sits in both lists under the same number.
+    """
+    out = {}
+    for payload in payloads:
+        for el in payload.get('elements', []):
+            out.setdefault((el['type'], el['id']), el)
+    return [out[key] for key in sorted(out)]
+
+
 def fetch_rail(out: pathlib.Path, bbox) -> None:
     print('  rail ways...')
-    data = overpass(RAIL_QUERY, bbox)
-    features = []
-    for el in data['elements']:
-        geom = el.get('geometry')
-        if not geom or len(geom) < 2:
-            continue
-        tags = el.get('tags', {})
-        features.append({
-            'type': 'Feature',
-            'properties': {
-                'id': el['id'],
-                'railway': tags.get('railway'),
-                'usage': tags.get('usage'),
-                'name': tags.get('name'),
-            },
-            'geometry': {
-                'type': 'LineString',
-                'coordinates': [[round(p['lon'], 7), round(p['lat'], 7)] for p in geom],
-            },
-        })
+    data = merge_rail(gather(RAIL_QUERY, bbox))
+    features = data['features']
     path = out / 'rail.geojson'
-    json.dump({'type': 'FeatureCollection', 'features': features},
-              open(path, 'w'), separators=(',', ':'))
+    json.dump(data, open(path, 'w'), separators=(',', ':'))
     print(f'    {len(features)} ways -> {path.relative_to(ROOT)} '
           f'({path.stat().st_size / 1e6:.1f} MB)')
 
 
 def fetch_stations(out: pathlib.Path, bbox) -> None:
     print('  stations...')
-    data = overpass(STATION_QUERY, bbox)
     rows = []
-    for el in data['elements']:
+    for el in merge_stations(gather(STATION_QUERY, bbox)):
         tags = el.get('tags', {})
         if el['type'] == 'node':
             lat, lon = el.get('lat'), el.get('lon')

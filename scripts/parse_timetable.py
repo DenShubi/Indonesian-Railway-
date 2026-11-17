@@ -366,6 +366,17 @@ def main() -> None:
     wanted = [r for r in REGIONS if not sys.argv[1:] or r['id'] in sys.argv[1:]]
     if not wanted:
         raise SystemExit(f'no such region; known ids: {[r["id"] for r in REGIONS]}')
+    # The island-wide `java` pseudo-region has no per-station timetable PDF --
+    # its trains come from the GAPEKA register, through scripts/parse_gapeka.py
+    # -- so there is nothing here to parse for it.
+    for region in [r for r in wanted if not r.get('pdf')]:
+        print(f'{region["id"]}: no timetable PDF, skipping '
+              '(see scripts/parse_gapeka.py)')
+    wanted = [r for r in wanted if r.get('pdf')]
+    if not wanted:
+        # Otherwise the write at the end would replace data/trips_parsed.json
+        # with nothing at all, which is not what "skip it" means.
+        raise SystemExit('nothing to parse: no region named here has a timetable PDF')
 
     all_trips, all_names = [], {}
     for region in wanted:
