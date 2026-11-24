@@ -10,8 +10,8 @@ import json
 
 import pytest
 
-from scripts.fetch_osm import (RAIL_QUERY, gather, merge_rail, merge_stations,
-                               overpass, tiles)
+from scripts.fetch_osm import (RAIL_QUERY, TILE, WIDE, gather, merge_rail,
+                               merge_stations, overpass, tiles)
 
 JAVA = (-9.0, 105.0, -5.8, 114.7)
 SEA_TILE = (-9.0, 105.0, -8.0, 106.0)
@@ -125,3 +125,12 @@ def test_a_region_exactly_at_the_threshold_is_not_tiled(post):
     # subtraction that measures it is not exact in binary.
     assert merge_rail(gather(RAIL_QUERY, LAND_BBOX))['features']
     assert len(calls) == 1
+
+
+def test_the_default_tile_is_no_larger_than_a_proven_single_query_bbox():
+    # Overpass is queue-bound, so the request count is the cost: ten tiles of
+    # the largest side already known to answer, not forty of half it.
+    assert TILE == WIDE
+    assert len(tiles(JAVA)) == 10
+    assert all(round(n - s, 6) <= WIDE and round(e - w, 6) <= WIDE
+               for s, w, n, e in tiles(JAVA))

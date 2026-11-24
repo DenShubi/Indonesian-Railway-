@@ -22,8 +22,8 @@ allow_empty, and not globally. Without that, every sea tile would walk all
 three endpoints, sleep between each, and abort the island fetch at the first
 stretch of Java Sea.
 
-Tiles go one at a time with a pause between them. There is no concurrency here
-on purpose.
+Tiles go one at a time with a pause between them, and no larger than a bbox
+already known to answer in one query. There is no concurrency here on purpose.
 
 Usage:  python scripts/fetch_osm.py [region-id ...] [--force]
 """
@@ -47,10 +47,15 @@ UA = 'IndonesianRailwayVisualizer/0.1 (https://github.com/DenShubi/Indonesian-Ra
 # published regions are all inside it, so their caches stay byte-identical and
 # nothing refetches them; Java's 9.7 degrees of longitude are not.
 WIDE = 2.0
-# Tile side in degrees, and the pause between tiles. 1 degree over Java is
-# about 110 km of track at most, which Overpass answers comfortably, and forty
-# tiles of it is a one-off: the result is cached and refetched only on --force.
-TILE = 1.0
+# Tile side in degrees. It is WIDE on purpose: a tile should be no larger than
+# the largest bbox this repo already knows Overpass answers in one query, and
+# Surabaya's is two degrees wide. Smaller tiles are not kinder. Overpass is
+# queue-bound, not bandwidth-bound -- a trivial one-street query waited 31
+# seconds the day this was written -- so the cost of a fetch is the number of
+# requests, and one-degree tiles would put 80 of them in the queue instead of
+# 20 for the same data.
+TILE = WIDE
+# Between tiles, on top of however long the server itself took.
 PAUSE = 2.0
 
 RAIL_QUERY = """[out:json][timeout:240];
