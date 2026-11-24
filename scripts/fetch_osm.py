@@ -133,19 +133,25 @@ def overpass(query: str, bbox, allow_empty: bool = False) -> dict:
     raise SystemExit(f'All Overpass endpoints failed. Last: {last}')
 
 
-def gather(query: str, bbox) -> list[dict]:
+def gather(query: str, bbox, tiled: bool = True) -> list[dict]:
     """Every Overpass answer for this bbox: one, or one per tile.
 
     A bbox inside WIDE degrees goes as a single query and must not come back
     empty. A wider one is tiled, and then a tile may be empty sea -- but not
     all of them: a whole island answering with nothing is the mirror failure
     the single-query rule guards against, so it is caught here instead.
+
+    `tiled=False` sends even a wide bbox as one query, for a query too light to
+    need splitting. Tiling exists because the railway is heavy; it is not free.
+    Overpass is queue-bound, so every tile is another wait in a queue that was
+    answering 502 and 504 the week this was written, and another chance to fail
+    the whole fetch. A single query still must not come back empty.
     """
     s, w, n, e = bbox
     # Rounded, because Surabaya's bbox is exactly two degrees wide and
     # 113.2 - 111.2 is the kind of subtraction that comes out at 2.0000000000001
     # and tiles a region that has a perfectly good single-query cache already.
-    if max(round(n - s, 6), round(e - w, 6)) <= WIDE:
+    if not tiled or max(round(n - s, 6), round(e - w, 6)) <= WIDE:
         return [overpass(query, bbox)]
     boxes = tiles(bbox)
     print(f'    {len(boxes)} tiles of {TILE} degree')
@@ -218,7 +224,9 @@ def fetch_rail(out: pathlib.Path, bbox) -> None:
 def fetch_stations(out: pathlib.Path, bbox) -> None:
     print('  stations...')
     rows = []
-    for el in merge_stations(gather(STATION_QUERY, bbox)):
+    # One query for any bbox: Java's stations are about a thousand points, less
+    # than a single railway tile, so tiling them would only multiply the waits.
+    for el in merge_stations(gather(STATION_QUERY, bbox, tiled=False)):
         tags = el.get('tags', {})
         if el['type'] == 'node':
             lat, lon = el.get('lat'), el.get('lon')

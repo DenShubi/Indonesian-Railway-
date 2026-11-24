@@ -134,3 +134,39 @@ def test_the_default_tile_is_no_larger_than_a_proven_single_query_bbox():
     assert len(tiles(JAVA)) == 10
     assert all(round(n - s, 6) <= WIDE and round(e - w, 6) <= WIDE
                for s, w, n, e in tiles(JAVA))
+
+
+STATION = {'type': 'node', 'id': 42, 'lat': -6.137, 'lon': 106.815,
+           'tags': {'railway': 'station', 'name': 'Jakarta Kota', 'railway:ref': 'JAKK'}}
+
+
+def test_the_island_stations_go_as_one_request_not_one_per_tile(post, monkeypatch, tmp_path):
+    # Stations are light -- about a thousand points for the whole island, less
+    # than one railway tile -- so tiling them only queues ten times at a service
+    # that is already full, and gives each of the ten a chance to fail the fetch.
+    from scripts import fetch_osm
+    calls, answers = post
+    answers.append(Answer({'elements': [STATION]}))
+    monkeypatch.setattr(fetch_osm, 'ROOT', tmp_path)
+    fetch_osm.fetch_stations(tmp_path, JAVA)
+    assert len(calls) == 1
+    assert '(-9.0,105.0,-5.8,114.7)' in calls[0][1]      # the island, not a tile
+    rows = (tmp_path / 'stations.csv').read_text(encoding='utf-8').splitlines()
+    assert rows[1].startswith('JAKK,Jakarta Kota,station,')
+
+
+def test_the_island_railway_is_still_tiled(post):
+    calls, answers = post
+    answers.append(Answer({'elements': [WAY_7]}))
+    gather(RAIL_QUERY, JAVA)
+    assert len(calls) == 10
+
+
+def test_an_untiled_query_that_comes_back_empty_still_fails(post):
+    # Untiled is not the same as allow_empty: a whole island answering with no
+    # stations at all is the mirror failure, not a sea tile.
+    from scripts.fetch_osm import STATION_QUERY
+    calls, answers = post
+    answers.append(Answer({'elements': []}))
+    with pytest.raises(SystemExit):
+        gather(STATION_QUERY, JAVA, tiled=False)
