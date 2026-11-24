@@ -15,7 +15,7 @@
 ## Global Constraints
 
 - **Source:** GAPEKA 2026, decree KP-DJKA 116/2026, valid from 1 December 2026. The 61 MB PDF is **not committed**; the parser reads a committed text cache under `data/gapeka/2026/`. No test may open the PDF.
-- **Counts the build must reproduce:** 2,089 timetabled runs, 48,554 station rows, 464 station codes; the register's 1,809 rows, 1,805 of them covered by a timetable. The four without one, `R951`-`R954`, are empty-stock moves and are not drawn.
+- **Counts the build must reproduce:** 2,089 timetabled runs, 48,685 station rows, 466 station codes; the register's 1,809 rows, 1,805 of them covered by a timetable. The four without one, `R951`-`R954`, are empty-stock moves and are not drawn.
 - **Every printed time is kept exactly.** Untimed rows (`Ls -`, `Berh Sb`) get estimated times and an `estimated` flag, and the UI never shows an estimated time as a printed one.
 - **A pass is never a call.** Passes stay out of the departures board and the route diagram's stops, and trains do not brake at them.
 - The readings of `Ls` (passes) and `Berh Sb` (stops) are **inferences**: the document has no legend. Code that relies on them says so.
@@ -33,7 +33,7 @@ Five failure modes the spec implies but no happy path exercises. Each has its te
 
 1. **A contents-list entry counted as a train.** Every timetable section opens with a contents list that repeats each train's header line with no rows beneath it. Counting headers rather than runs with rows gives about 3,400 "trains". → Task 5.
 2. **A run crossing midnight.** Printed times go backwards when the day turns (`23:58:00`, then `00:03:00`). Each step is short, so the rule is step-wise: a printed time earlier than the previous one has crossed midnight. Revision 1 learned that end-to-end arithmetic fails here — Kenlimas Cargo ran 26 h 50 min, so a single "arrival before departure, add a day" rule put it a day short. → Task 5.
-3. **A run that calls at a station twice.** The circular Dhoho and Penataran runs out of Surabaya pass Wonokromo and Gubeng twice. Keyframes, segments and distances must keep both visits, with distance still increasing. → Tasks 5 and 10.
+3. **A trip that calls at a station twice.** In 2025 the circular Dhoho and Penataran ran as one trip through Wonokromo and Gubeng twice. **In 2026 no run calls at any station twice**: those services are printed as one-way legs (KA 435 Surabaya→Kertosono, KA 436 back by Blitar and Malang), which Task 5 confirmed over the whole document. Since each timetabled run is its own trip, a repeat can only appear if legs are ever merged. Task 5 pins "no run repeats a station" over the whole document; Task 10 keeps its non-decreasing-distance test as the guard, and any merge of legs would have to keep both visits. → Tasks 5 and 10.
 4. **An express braking at the stations it runs through.** Easing on every keyframe would stop an Argo at each of the dozens of stations it passes, and indexing every keyframe would put it on their departures boards. → Task 12.
 5. **An estimated time outside its neighbours.** An untimed row is estimated between the nearest printed times either side. That only works if every run's first and last rows are printed, and if consecutive untimed rows get times in order. → Task 5.
 
@@ -148,8 +148,8 @@ def test_estimated_times_fall_between_their_printed_neighbours_and_in_order():
 def test_the_whole_document_parses_to_the_counts_the_spec_gives():
     runs = parse_runs(CACHE)
     assert len(runs) == 2089
-    assert sum(len(r.rows) for r in runs) == 48554
-    assert len({row.code for r in runs for row in r.rows}) == 464
+    assert sum(len(r.rows) for r in runs) == 48685
+    assert len({row.code for r in runs for row in r.rows}) == 466
 ```
 
 - [ ] **Step 3: Run them to verify they fail**
@@ -225,7 +225,7 @@ Expected: all pass; `trains.json` and `network.json` regenerated from 2026.
 
 ---
 
-### Task 7: Station coordinates for the 464 codes
+### Task 7: Station coordinates for the 466 codes
 
 **Files:**
 - Modify: `scripts/build_stations.py`, `scripts/build_shapes.py`
@@ -272,7 +272,7 @@ The three passes run in order: `railway:ref`, then printed name (normalised with
 - [ ] **Step 4: Run the tests, then the CLI**
 
 Run: `python -m pytest -q && python scripts/build_stations.py`
-Expected: 464 stations, none unplaced; the tally printed.
+Expected: 466 stations, none unplaced; the tally printed.
 
 - [ ] **Step 5: Commit**
 
@@ -369,7 +369,7 @@ def test_validate_accepts_coordinates_across_the_island():
 - [ ] **Step 4: Run the tests, then the build**
 
 Run: `python -m pytest -q && python scripts/build_gtfs.py && python scripts/validate.py`
-Expected: about 48,500 `stop_times` rows; validate clean.
+Expected: 48,685 `stop_times` rows; validate clean.
 
 - [ ] **Step 5: Commit**
 
@@ -608,7 +608,7 @@ Run: `npx vitest run && npm run check`
 python scripts/parse_gapeka.py && python scripts/build_stations.py && python scripts/build_shapes.py && python scripts/build_gtfs.py && python scripts/validate.py && python scripts/make_bundle.py
 ```
 
-Expected: 2,089 trips, 464 stations, no straightened segment unreported.
+Expected: 2,089 trips, 466 stations, no straightened segment unreported.
 
 - [ ] **Step 2: Run every check**
 

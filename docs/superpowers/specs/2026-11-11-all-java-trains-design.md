@@ -36,7 +36,7 @@ eighteen minutes. Its sections:
 | --- | --- | --- |
 | 6-51 | The train-path graphs themselves, one per corridor and time window | No |
 | 52-668 | **Timetables, intercity**: one block per train, headed `KA 1 (Anggrek) Relasi SBI - GMR` | Yes |
-| 669-1671 | **Timetables, commuter, local, airport and freight**, headed `KA 2107 (Commuter Line Tangerang) Lintas Pelayanan TNG - DU` | Yes |
+| 669-1672 | **Timetables, commuter, local, airport and freight**, headed `KA 2107 (Commuter Line Tangerang) Lintas Pelayanan TNG - DU` | Yes |
 | 1672-1827 | Rolling stock and train formations | No |
 | ~1828-1874 | **The register**: every train's number, class, service, relasi, operator, distance and times, under `KELAS KERETA API` section banners | Yes |
 | 1875-1886 | **Distance tables** (`JARAK ANTAR STASIUN`), the same format as 2025 | Yes |
@@ -59,11 +59,11 @@ No. Stasiun dan Perhentian  Kecepatan Maksimum  Datang  Berangkat  Keterangan
 
 Measured over the whole document:
 
-- **2,089 timetabled runs, 48,554 station rows.**
+- **2,089 timetabled runs, 48,685 station rows.**
 - They cover **1,805 of the register's 1,809 trains.** The four without a
   timetable are `R951`-`R954`, empty-stock service movements (*Barang Dinas*),
   which no passenger rides and no shipper books.
-- **464 station codes, every one printed with its full name.** That includes the
+- **466 station codes, every one printed with its full name.** That includes the
   minor halts the distance tables skip, such as Gadobangkong.
 - A paired register number is **two consecutive legs**, each with its own
   timetable: register row `32-33` is KA 32 Gambir→Yogyakarta and KA 33 onward
@@ -74,12 +74,12 @@ departure and remarks columns:
 
 | Kind | Printed as | Rows | Meaning |
 | --- | --- | --- | --- |
-| Origin | `- T` | 2,064 | Departs, no arrival |
-| Destination | `T -` | 1,929 | Arrives, no departure |
-| Timed stop | `T T` | 13,108 | Arrives and departs at printed times |
-| Timed pass | `Ls T` | 18,227 | Runs through without stopping, at one printed time |
-| Untimed pass | `Ls -` | 3,412 | Runs through, no time printed |
-| Untimed stop | `Berh Sb` | 9,674 | No time printed; read as a stop (below) |
+| Origin | `- T` | 2,089 | Departs, no arrival |
+| Destination | `T -` | 2,089 | Arrives, no departure |
+| Timed stop | `T T` | 13,115 | Arrives and departs at printed times |
+| Timed pass | `Ls T` | 18,242 | Runs through without stopping, at one printed time |
+| Untimed pass | `Ls -` | 3,444 | Runs through, no time printed |
+| Untimed stop | `Berh Sb` | 9,706 | No time printed; read as a stop (below) |
 
 `Ls` carries one time where a stop carries two, which is what a train passing
 straight through has. `Berh Sb` appears at every station on commuter lines,
@@ -94,11 +94,14 @@ They do not affect where a train is, and are ignored.
 ### The limit, stated plainly
 
 Revision 1 had to interpolate times for most of the island. Revision 2 does
-not: **every printed time is a fact**, and 35,328 rows (timed stops, timed
-passes, origins and destinations) have one, plus about 140 timed rows carrying
-an operational note.
+not: **every printed time is a fact**, and 35,535 rows (timed stops, timed
+passes, origins and destinations) have one. (Counts in this section are the
+parser's, from Task 5. A first regex probe undercounted by 271 rows: it missed
+the airport and Jakarta International Stadium rows, whose long names wrap onto
+the lines around the row, destinations printed with `-` for a speed, and the last
+run, which carries over onto page 1672.)
 
-What is still estimated is the 13,086 untimed rows (`Ls -` and `Berh Sb`). Their
+What is still estimated is the 13,150 untimed rows (`Ls -` and `Berh Sb`). Their
 times are interpolated by distance between the timed rows on either side. That
 is honest only if the map says so, so an estimated time is always marked as one.
 
@@ -215,7 +218,7 @@ and writes:
   already expects. Each timetable's printed times increase monotonically, so a
   time that goes backwards means the day has turned.
 
-**`scripts/build_stations.py`** (extended) — 464 codes, all named. Three passes,
+**`scripts/build_stations.py`** (extended) — 466 codes, all named. Three passes,
 in order: OSM `railway:ref` from the island station cache (380 of 396
 distance-table codes already match this way); then the **printed name** against
 OSM names; then, for a station in the distance tables, its km post along its
@@ -235,7 +238,7 @@ segment length.
 **`scripts/build_gtfs.py`** (extended) — the feed now describes every run.
 `stop_times.txt` gets every row: passes with `pickup_type=1` and
 `drop_off_type=1` (no boarding or alighting), estimated rows with `timepoint=0`.
-That is about 48,500 rows, against 2,015 today.
+That is 48,685 rows, against 2,015 today.
 
 **`scripts/make_bundle.py`** (extended) — assembles segments per trip, writes
 keyframes with their kind and `estimated` flag, and per-trip `category`,
@@ -329,7 +332,7 @@ What revision 1 decided, built on the 2025 register, and where each stands now.
 - **Timing provenance per trip** (`published` or `endpoint`). Replaced by the
   per-row `estimated` flag, since every run is now published.
 - **Bundle under 1.5 MB gzipped**: kept, but the budget changed. Revision 1
-  expected 8-10k keyframes; revision 2 has about 48,500. That must be measured,
+  expected 8-10k keyframes; revision 2 has 48,685. That must be measured,
   not assumed. If it is over, untimed passes are the first to go, since they
   carry no time and the geometry comes from the segments anyway.
 - **FAKULTATIF off by default**: kept.
