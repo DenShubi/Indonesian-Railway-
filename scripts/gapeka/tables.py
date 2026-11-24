@@ -443,3 +443,64 @@ def _name(stations: tuple[tuple[str, float], ...], routes: list[str],
             spent.add(at)
             return route
     return f'{head} - {tail}'
+
+
+@dataclass(frozen=True)
+class Erratum:
+    """Two station codes the register prints in each other's places.
+
+    `positions` are the two stations' indexes in the corridor as the matrix
+    numbers them, from 1, and `printed` the codes the register puts there. The
+    km stay where they are printed; only the labels change places.
+    """
+    page: int
+    corridor: str
+    positions: tuple[int, int]
+    printed: tuple[str, str]
+
+
+ERRATA = (
+    # Page 59 prints Kutoarjo - Kedundang - Yogyakarta - ... - Walikukun as
+    # KTA JN WJ WT KDG STL ..., header and row labels alike, which puts Wates
+    # at km 28,871 and Kedundang at 35,637. The order is wrong, and three
+    # independent things say so:
+    #   * OSM puts Kedundang at 110.099 E and Wates at 110.158 E, on a line
+    #     that runs west to east out of Kutoarjo, so Kedundang comes first.
+    #   * As printed, Wates is at 0.92 times its straight-line distance from
+    #     Kutoarjo, and track cannot be shorter than a straight line. Swapped,
+    #     JN, WJ, KDG, WT and STL run 1.02, 1.04, 1.07, 1.14 and 1.25.
+    #   * Swapped, Yogyakarta - Kedundang is 63,643 - 28,871 = 34,772, and with
+    #     the airport branch's own Kedundang - YIA 5,465 that is 40,237: to the
+    #     metre what the register's train rows print for YIA - YK. As printed
+    #     it is 33,471, 16.8% short.
+    Erratum(59, 'KTA - KDG - YK - PWS - SLO - WK', (4, 5), ('WT', 'KDG')),
+)
+
+
+def apply_errata(corridors: list[Corridor],
+                 errata: tuple[Erratum, ...] = ERRATA) -> list[Corridor]:
+    """The corridors with every erratum's two codes put back in their places.
+
+    Raises ValueError when an erratum names a corridor that is not there, or
+    finds other codes at its positions than the register printed: the parse
+    has then changed under it, and an erratum applied to the wrong stations
+    would be a new error rather than the correction of an old one.
+    """
+    out = list(corridors)
+    for erratum in errata:
+        at = [i for i, c in enumerate(out) if c.name == erratum.corridor]
+        if len(at) != 1:
+            raise ValueError(f'erratum for page {erratum.page}: expected one '
+                             f'corridor {erratum.corridor!r}, found {len(at)}')
+        stations = list(out[at[0]].stations)
+        first, second = (index - 1 for index in erratum.positions)
+        if (stations[first][0], stations[second][0]) != erratum.printed:
+            raise ValueError(
+                f'erratum for page {erratum.page}: {erratum.corridor} has '
+                f'{stations[first][0]} and {stations[second][0]} at '
+                f'{erratum.positions}, not the {erratum.printed} it corrects')
+        stations[first], stations[second] = (
+            (stations[second][0], stations[first][1]),
+            (stations[first][0], stations[second][1]))
+        out[at[0]] = Corridor(erratum.corridor, tuple(stations))
+    return out

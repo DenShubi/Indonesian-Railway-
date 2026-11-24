@@ -16,7 +16,7 @@ increasing length and keeping the one whose total best matches what the
 register prints. That is not a heuristic: the register states the distance, and
 the path through its own graph with that length is the route the train runs.
 
-Two changes get there from the 254, and both are needed:
+Three changes get there from the 254, and all three are needed:
 
   * **One genuinely missing edge.** Page 54 prints the corridor
     KPB - DU - THB - MRI but its matrix stops at THB, so the distance tables
@@ -26,26 +26,17 @@ Two changes get there from the 254, and both are needed:
     register corroborates it -- Duri - Manggarai is printed at 9.663, which is
     the tables' Duri - Tanah Abang 3.637 plus exactly 6.026. add_missing_edges()
     checks that before trusting it.
-  * **Selection by length.** 314 of 316 relasi then land within tolerance --
-    314, not all 316; the two that remain are the one relasi RESIDUAL below is
-    about, and nothing here closes them. Of the 314, the worst is 2.9% out.
-    Routes recovered this way are not obscure: `SGU - PSE` matches exactly, at
-    the 819.682 km the register prints, as the 90th simple path, and `KPB - ML`
-    as the 191st, so no amount of shortest-path tie-breaking could have found
-    either.
-
-RESIDUAL. `YK - YIA` and `YIA - YK`, 50 trains, stay 16.8% out, and raising the
-cap cannot help: the route is not a simple path, so shortest_simple_paths()
-never offers it at any cap. The register prints 40.237 km. Its own tables put
-Kedundang at km 35.637 of the Kutoarjo corridor and Yogyakarta at km 63.643, so
-Yogyakarta to Kedundang is 28.006, and the two-station table for the airport
-branch prints Kedundang - YIA as 5.465: 33.471 in all. The shortfall, 6.766 km,
-is exactly the tables' Wates - Kedundang, and the airport trains do call at
-Wates -- so the official distance includes an out-and-back over that stretch,
-which revisits Kedundang and is therefore not a simple path. This is a
-limitation of enumerating simple paths, not a tuning problem. Nothing here
-invents an edge or widens anything to close it; the plan records the two as an
-explicit exception under Task 9, and the gap is reported on every run.
+  * **A graph without bias.** Selecting on length routes around any
+    systematic error in an edge weight, so the graph must not carry one. Three
+    junctions are printed at different km on different lines and are one node
+    per line (topology.JUNCTIONS), and page 59 prints Wates and Kedundang in
+    each other's places, which tables.ERRATA corrects -- without it the airport
+    run comes out 33.471 km against the 40.237 the register prints, and with it
+    exactly 40.237.
+  * **Selection by length.** Routes recovered this way are not obscure:
+    `SGU - PSE` matches exactly, at the 819.682 km the register prints, as the
+    90th simple path, and `KPB - ML` as the 189th, so no amount of
+    shortest-path tie-breaking could have found either.
 
 Usage:  python scripts/build_java_network.py [--cap N]
 """

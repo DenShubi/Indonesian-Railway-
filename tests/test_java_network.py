@@ -167,3 +167,18 @@ def test_a_pick_above_rank_one_says_how_much_it_gained():
     found = select_path(TWO_WAYS, 'A', 'B', (), 28.0)
     assert found.rank == 2 and found.shortest == 10.0
     assert improvement(found, 28.0) == pytest.approx(18.0 - 2.0)
+
+
+def test_the_airport_run_is_the_km_the_register_prints(cached_pages):
+    # Page 59 prints Wates and Kedundang in each other's places; with the
+    # erratum applied, Yogyakarta - Kedundang - YIA is 34.772 + 5.465, which is
+    # the 40.237 the train rows print, as a plain shortest path.
+    from scripts.build_java_network import JUNCTIONS
+    from scripts.parse_gapeka import read_network
+    corridors, pairs = read_network(cached_pages)
+    graph = build_topology(corridors, pairs, JUNCTIONS)
+    for origin, destination in (('YIA', 'YK'), ('YK', 'YIA')):
+        found = select_path(graph, origin, destination, (), 40.237)
+        assert found.km == pytest.approx(40.237, abs=0.0005)
+        assert found.rank == 1
+    assert codes(found.chain) == ['YK', 'PTN', 'RWL', 'STL', 'WT', 'KDG', 'YIA']

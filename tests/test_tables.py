@@ -7,9 +7,10 @@ carries.
 """
 import pytest
 
-from scripts.gapeka.tables import (Row, parse_corridor_block, parse_inline_pairs,
-                                   parse_matrix_rows, recover_vertical_codes,
-                                   split_side_by_side)
+from scripts.gapeka.tables import (ERRATA, Corridor, Erratum, Row,
+                                   apply_errata, parse_corridor_block,
+                                   parse_inline_pairs, parse_matrix_rows,
+                                   recover_vertical_codes, split_side_by_side)
 
 MATRIX_PAGES = (52, 53, 54, 55, 58, 62, 63)
 
@@ -408,3 +409,44 @@ def test_a_station_code_is_two_to_four_characters():
     assert parse_matrix_rows('TOJB 1 5,000')[0].code == 'TOJB'
     assert parse_matrix_rows('G 1 5,000') == []
     assert parse_matrix_rows('ABCDE 1 5,000') == []
+
+
+# Page 59's Kutoarjo end, as the register prints it.
+KUTOARJO = Corridor('KTA - KDG - YK - PWS - SLO - WK', (
+    ('KTA', 0.0), ('JN', 13.707), ('WJ', 21.985), ('WT', 28.871),
+    ('KDG', 35.637), ('STL', 45.782), ('YK', 63.643)))
+
+
+def test_an_erratum_moves_the_labels_and_leaves_the_km_where_printed():
+    fixed, = apply_errata([KUTOARJO])
+    assert fixed.stations == (
+        ('KTA', 0.0), ('JN', 13.707), ('WJ', 21.985), ('KDG', 28.871),
+        ('WT', 35.637), ('STL', 45.782), ('YK', 63.643))
+    assert fixed.name == KUTOARJO.name
+
+
+def test_an_erratum_leaves_every_other_corridor_alone():
+    other = Corridor('YIA - KDG', (('YIA', 0.0), ('KDG', 5.465)))
+    assert apply_errata([other, KUTOARJO])[0] is other
+
+
+def test_an_erratum_that_no_longer_matches_the_parse_is_refused():
+    # Applied twice, the swap would undo itself; applied to a parse that has
+    # already changed, it would move the wrong stations. Either is refused.
+    fixed = apply_errata([KUTOARJO])
+    with pytest.raises(ValueError, match='not the'):
+        apply_errata(fixed)
+    with pytest.raises(ValueError, match='found 0'):
+        apply_errata([], (Erratum(59, KUTOARJO.name, (4, 5), ('WT', 'KDG')),))
+
+
+def test_the_register_errata_are_named_and_hold_on_the_cached_register(
+        cached_pages):
+    from scripts.parse_gapeka import read_network
+    erratum, = ERRATA
+    assert erratum.page == 59 and erratum.positions == (4, 5)
+    assert erratum.printed == ('WT', 'KDG')
+    corridors, _ = read_network(cached_pages)
+    kutoarjo, = (c for c in corridors if c.name == erratum.corridor)
+    assert kutoarjo.stations[3] == ('KDG', 28.871)
+    assert kutoarjo.stations[4] == ('WT', 35.637)

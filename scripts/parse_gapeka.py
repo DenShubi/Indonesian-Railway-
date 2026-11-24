@@ -39,8 +39,9 @@ import pdfplumber
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from gapeka.rows import SECTION_CATEGORIES, scan_sections            # noqa: E402
-from gapeka.tables import (parse_corridor_block, parse_inline_pairs,  # noqa: E402
-                           parse_matrix_rows, recover_vertical_codes)
+from gapeka.tables import (apply_errata, parse_corridor_block,       # noqa: E402
+                           parse_inline_pairs, parse_matrix_rows,
+                           recover_vertical_codes)
 
 PDF = ROOT / 'Train Timetables' / 'GAPEKA Jadwal Kereta.pdf'
 OUT = ROOT / 'data' / 'gapeka'
@@ -96,7 +97,12 @@ def read_pages(force: bool) -> dict[str, dict]:
 
 
 def read_network(pages: dict[str, dict]) -> tuple[list, list]:
-    """The corridor chains and inline branch pairs, from the matrix pages."""
+    """The corridor chains and inline branch pairs, from the matrix pages.
+
+    The register's known misprints are corrected here, after parsing, by
+    tables.apply_errata(), so that the parse reads what the page prints and the
+    correction is one named table rather than a special case inside a parser.
+    """
     corridors, pairs = [], []
     for page in sorted(pages, key=int):
         lines = [line for line in pages[page]['text'].split('\n') if line.strip()]
@@ -107,7 +113,7 @@ def read_network(pages: dict[str, dict]) -> tuple[list, list]:
         corridors.extend(found)
         for line in lines:
             pairs.extend(parse_inline_pairs(line))
-    return corridors, pairs
+    return apply_errata(corridors), pairs
 
 
 def main() -> None:
