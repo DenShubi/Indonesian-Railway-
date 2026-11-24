@@ -13,7 +13,9 @@ import networkx as nx
 import pytest
 
 from scripts.gapeka.tables import Corridor
-from scripts.gapeka.topology import build_topology, check_length, route_relasi
+from scripts.gapeka.topology import (JUNCTIONS, Junction, build_topology,
+                                     check_length, route_relasi, station,
+                                     to_stations)
 
 
 def corridor(name: str, *stations: tuple[str, float]) -> Corridor:
@@ -204,3 +206,79 @@ def test_a_station_repeated_inside_one_corridor_is_not_a_self_loop():
     g = build_topology([corridor('X', ('A', 0.0), ('A', 5.0), ('B', 9.0))], [])
     assert not nx.number_of_selfloops(g)
     assert g['A']['B']['weight'] == 4.0
+
+
+# Brumbung as page 57 prints it: both tables measure from Tegal over the same
+# track to Alastua, then part, and put the junction 880 m apart.
+MAIN_LINE = corridor('TG - SMT - BBG - GBN - CU', ('SMT', 149.859),
+                     ('ATA', 156.966), ('BBG', 163.822), ('TGW', 173.249))
+GUNDIH_LINE = corridor('TG - BBG - GD', ('SMT', 149.859), ('ATA', 156.966),
+                       ('BBG', 162.942), ('TGG', 174.554))
+BRUMBUNG = (Junction('BBG', 'GD', ('TG - BBG - GD',)),)
+
+
+def test_a_junction_printed_at_two_km_is_one_node_per_line():
+    g = build_topology([MAIN_LINE, GUNDIH_LINE], [], BRUMBUNG)
+    assert g.graph['conflicts'] == ()
+    split, = g.graph['splits']
+    assert (split.code, split.shared, split.near, split.far, split.offset) == (
+        'BBG', 'ATA', 'BBG@GD', 'BBG', 0.88)
+    assert g.graph['nodes'] == {'BBG': ('BBG', 'BBG@GD')}
+    # The shared stretch is one piece of track, carried once, to the nearer
+    # reading: a triangle would give every route a twin of the same length.
+    assert not g.has_edge('ATA', 'BBG')
+    assert g['ATA']['BBG@GD']['weight'] == 5.976
+    assert g['BBG@GD']['BBG']['weight'] == 0.88
+
+
+def test_each_line_through_a_split_junction_keeps_its_own_km():
+    g = build_topology([MAIN_LINE, GUNDIH_LINE], [], BRUMBUNG)
+    main = route_relasi(g, 'SMT', 'TGW')
+    gundih = route_relasi(g, 'SMT', 'TGG')
+    assert main[-1][1] == pytest.approx(173.249 - 149.859)
+    assert gundih[-1][1] == pytest.approx(174.554 - 149.859)
+    # Collapsed to one number, one of the two lines is 880 m wrong.
+    biased = build_topology([MAIN_LINE, GUNDIH_LINE], [])
+    short = route_relasi(biased, 'SMT', 'TGW')[-1][1]
+    assert short == pytest.approx(173.249 - 149.859 - 0.88)
+
+
+def test_a_split_junction_is_one_station_in_the_chain():
+    g = build_topology([MAIN_LINE, GUNDIH_LINE], [], BRUMBUNG)
+    main = route_relasi(g, 'SMT', 'TGW')
+    assert [c for c, _ in main] == ['SMT', 'ATA', 'BBG@GD', 'BBG', 'TGW']
+    folded = to_stations(main, g)
+    assert [c for c, _ in folded] == ['SMT', 'ATA', 'BBG', 'TGW']
+    # At the junction the main line's own reading, 13.963 past Semarang Tawang.
+    assert folded[2][1] == pytest.approx(163.822 - 149.859)
+    # Backwards the same: the far node is the main line's, whichever way round.
+    back = to_stations(route_relasi(g, 'TGW', 'SMT'), g)
+    assert [c for c, _ in back] == ['TGW', 'BBG', 'ATA', 'SMT']
+    assert back[1][1] == pytest.approx(173.249 - 163.822)
+    # And a chain that starts or ends on the junction keeps its 0 and its length.
+    start = route_relasi(g, 'BBG', 'SMT')
+    assert to_stations(start, g)[0] == ('BBG', 0.0)
+    assert to_stations(start, g)[-1][1] == start[-1][1]
+    end = route_relasi(g, 'TGG', 'BBG')
+    assert to_stations(end, g)[-1] == ('BBG', end[-1][1])
+    assert station('BBG@GD') == station('BBG') == 'BBG'
+
+
+def test_a_junction_the_tables_do_not_print_twice_is_refused():
+    with pytest.raises(ValueError, match='out of date'):
+        build_topology([MAIN_LINE], [], BRUMBUNG)
+    same = corridor('TG - BBG - GD', ('ATA', 156.966), ('BBG', 163.822))
+    with pytest.raises(ValueError, match='nothing to split'):
+        build_topology([MAIN_LINE, same], [], BRUMBUNG)
+
+
+def test_the_register_has_no_conflicting_edge_left_once_its_junctions_split(
+        cached_pages):
+    from scripts.parse_gapeka import read_network
+    corridors, pairs = read_network(cached_pages)
+    g = build_topology(corridors, pairs, JUNCTIONS)
+    assert g.graph['conflicts'] == ()
+    offsets = {(s.code, s.offset) for s in g.graph['splits']}
+    assert offsets == {('BBG', 0.88), ('CNP', 0.006), ('KH', 0.243)}
+    assert nx.number_connected_components(g) == 1
+    assert len({station(node) for node in g}) == 396

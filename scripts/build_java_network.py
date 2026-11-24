@@ -53,8 +53,9 @@ import collections
 import json
 import pathlib
 import sys
+import itertools
 import time
-from heapq import heappop, heappush
+from heapq import heappop, heappush, merge
 from typing import NamedTuple
 
 import networkx as nx
@@ -62,7 +63,8 @@ import networkx as nx
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from gapeka.tables import Corridor                                   # noqa: E402
-from gapeka.topology import build_topology, check_length             # noqa: E402
+from gapeka.topology import (JUNCTIONS, build_topology,              # noqa: E402
+                             check_length, station, to_stations)
 
 OUT = ROOT / 'data' / 'gapeka'
 
@@ -80,6 +82,9 @@ MISSING_EDGES = ((('THB', 'MRI'), ('DU', 'MRI', ())),)
 # How far the corroborating relasi may be off and still corroborate: the
 # register prints three decimals, so this is a rounding allowance, not slack.
 CORROBORATION = 0.002
+# The register prints km to the metre, so a route within half a metre of it
+# matches exactly.
+EXACT = 0.0005
 
 
 class Selection(NamedTuple):
@@ -91,7 +96,9 @@ class Selection(NamedTuple):
     anything above it is a route no Dijkstra would have found -- `examined` how
     many candidates were weighed and `exhausted` whether the cap stopped it,
     which is the difference between "this is the best route" and "this is the
-    best of the first few hundred" and must never be silent.
+    best of the first few hundred" and must never be silent. `shortest` is the
+    length of the rank-1 path, so a pick above rank 1 can say how much closer
+    it came than the shortest path would have.
     """
     chain: list[tuple[str, float]]
     gap: float
@@ -99,10 +106,16 @@ class Selection(NamedTuple):
     rank: int
     examined: int
     exhausted: bool
+    shortest: float
 
 
 def within(routed: float, register: float) -> bool:
     return abs(routed - register) <= max(KM_FLOOR, KM_TOLERANCE * register)
+
+
+def improvement(found: 'Selection', register: float) -> float:
+    """How much closer to the register's km a pick came than the shortest path."""
+    return abs(found.shortest - register) - abs(found.km - register)
 
 
 def _chain(legs: list[list[str]], graph: nx.Graph) -> list[tuple[str, float]]:
@@ -196,16 +209,29 @@ def select_path(graph: nx.Graph, origin: str, destination: str,
     19 for all 316 relasi, because it stops a short way past the answer instead
     of enumerating to the cap whenever nothing is inside the tolerance.
 
+    A station split into one node per line (topology.JUNCTIONS) is still one
+    station to the relasi that names it, so each of its nodes is tried as that
+    waypoint and the candidates of every combination are merged, still
+    shortest first. Which node a relasi starts from is then chosen the way its
+    route is, by the km the register prints.
+
     Raises nx.NodeNotFound or nx.NetworkXNoPath for a relasi the graph cannot
     carry, as route_relasi() does, rather than returning a straight line.
     """
     waypoints = [origin, *via, destination]
+    nodes = graph.graph.get('nodes', {})
     for code in waypoints:
-        if code not in graph:
+        if code not in graph and code not in nodes:
             raise nx.NodeNotFound(f'{code} is not a station in the register')
-    best, examined, settled = None, 0, False
-    for legs, total in _candidates(graph, waypoints, cap):
+    choices = [nodes.get(code, (code,)) for code in waypoints]
+    streams = [_candidates(graph, list(combo), cap)
+               for combo in itertools.product(*choices)]
+    found = merge(*streams, key=lambda candidate: candidate[1])
+    best, examined, settled, shortest = None, 0, False, None
+    for legs, total in itertools.islice(found, cap):
         examined += 1
+        if shortest is None:
+            shortest = total
         gap = abs(total - register_km)
         if best is None or gap < best[0]:
             best = (gap, legs, total, examined)
@@ -214,11 +240,12 @@ def select_path(graph: nx.Graph, origin: str, destination: str,
             break
     if best is None:
         raise nx.NetworkXNoPath(f'no route for {" - ".join(waypoints)}')
-    chain = _chain(best[1], graph)
+    chain = to_stations(_chain(best[1], graph), graph)
     # Running out of candidates settles it as surely as passing the answer
     # does; only the cap cutting the search short leaves the answer in doubt.
     return Selection(chain, check_length(chain, register_km), best[2],
-                     best[3], examined, not settled and examined >= cap)
+                     best[3], examined, not settled and examined >= cap,
+                     shortest)
 
 
 def add_missing_edges(graph: nx.Graph, printed: dict,
@@ -273,12 +300,17 @@ def main() -> None:
     trains = json.loads((OUT / 'trains.json').read_text(encoding='utf-8'))['trains']
     corridors = [Corridor(c['name'], tuple((code, km) for code, km in c['stations']))
                  for c in network['corridors']]
-    graph = build_topology(corridors, [tuple(p) for p in network['pairs']])
-    print(f'{len(corridors)} corridors, {graph.number_of_nodes()} stations, '
+    graph = build_topology(corridors, [tuple(p) for p in network['pairs']],
+                           JUNCTIONS)
+    print(f'{len(corridors)} corridors, {graph.number_of_nodes()} nodes for '
+          f'{len({station(n) for n in graph})} stations, '
           f'{graph.number_of_edges()} edges, '
           f'{nx.number_connected_components(graph)} component(s)')
+    for split in graph.graph['splits']:
+        print(f'  junction {split.code}: {split.near} and {split.far}, '
+              f'{split.offset:.3f} km apart past {split.shared}')
     for conflict in graph.graph['conflicts']:
-        print(f'  conflict {conflict.a}-{conflict.b}: kept {conflict.kept} km, '
+        print(f'  !! conflict {conflict.a}-{conflict.b}: kept {conflict.kept} km, '
               + ', '.join(f'{km} ({source})' for km, source in conflict.readings))
 
     by_relasi = collections.defaultdict(list)
@@ -318,6 +350,9 @@ def main() -> None:
           f'{len(report) - len(outside)}/{len(report)} '
           f'({100 * len(outside) / len(report):.1f}% disagreeing, budget 2%)')
     print(f'more than 10% out: {len(gross)}')
+    print(f'exact, to the metre: '
+          f'{sum(1 for r in report if abs(r[3].km - printed[r[2]]) < EXACT)}'
+          f'/{len(report)}')
     for key, why in failed:
         print(f'  !! unroutable {" - ".join((key[0], *key[2], key[1]))}: {why}')
     for _, _, key, found, _ in report:
@@ -331,6 +366,17 @@ def main() -> None:
         print(f'  {signed:+7.1%}  routed {found.km:8.3f}  register '
               f'{printed[key]:8.3f}  {len(by_relasi[key]):3d} train(s)  path '
               f'#{found.rank:<4d} {len(found.chain):3d} stops  '
+              f'{" - ".join((key[0], *key[2], key[1]))}')
+
+    deep = sorted((r for r in report if r[3].rank > 1),
+                  key=lambda r: (improvement(r[3], printed[r[2]]), r[2]))
+    print(f'\n{len(deep)} relasi took a path other than the shortest; the '
+          'improvement is how much closer to the register it came, and a '
+          'sub-kilometre one on a long route is what a detour looks like:')
+    for _, _, key, found, _ in deep:
+        print(f'  {improvement(found, printed[key]):8.3f} km better  path '
+              f'#{found.rank:<4d} routed {found.km:8.3f} against '
+              f'{printed[key]:8.3f}, shortest {found.shortest:8.3f}  '
               f'{" - ".join((key[0], *key[2], key[1]))}')
 
     print(f'\n{len(several)} relasi print two distances for one '
@@ -353,6 +399,9 @@ def main() -> None:
         'edges': sorted([a, b, graph[a][b]['weight']] for a, b in graph.edges),
         'added_edges': [[a, b, km] for (a, b), _ in MISSING_EDGES
                         for km in [graph[a][b]['weight']]],
+        'junctions': [{'station': s.code, 'shared': s.shared, 'near': s.near,
+                       'far': s.far, 'offset': s.offset}
+                      for s in graph.graph['splits']],
         'conflicts': [{'a': c.a, 'b': c.b, 'kept': c.kept,
                        'readings': [[km, source] for km, source in c.readings]}
                       for c in graph.graph['conflicts']],
@@ -361,6 +410,10 @@ def main() -> None:
     print(f'\n  -> {path.relative_to(ROOT)} ({path.stat().st_size / 1e3:.0f} kB)')
     if failed:
         raise SystemExit(f'{len(failed)} relasi could not be routed')
+    if graph.graph['conflicts']:
+        raise SystemExit(f'{len(graph.graph["conflicts"])} edge(s) measured two '
+                         'ways; a biased edge is one the selector routes around, '
+                         'so split the junction in topology.JUNCTIONS')
 
 
 if __name__ == '__main__':
