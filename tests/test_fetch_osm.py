@@ -121,8 +121,8 @@ def test_stations_repeated_across_tiles_are_deduplicated_by_type_and_id():
 def test_a_region_exactly_at_the_threshold_is_not_tiled(post):
     calls, answers = post
     answers.append(Answer({'elements': [WAY_7]}))
-    # Surabaya's bbox is 2.0 degrees of longitude to the digit, and the
-    # subtraction that measures it is not exact in binary.
+    # Surabaya's bbox is 2.0 degrees of longitude to the digit, and so is the
+    # subtraction that measures it: 113.2 - 111.2 is exactly 2.0 in binary.
     assert merge_rail(gather(RAIL_QUERY, LAND_BBOX))['features']
     assert len(calls) == 1
 
@@ -220,3 +220,28 @@ def test_the_island_fetch_fails_when_every_tile_is_empty(post):
     with pytest.raises(SystemExit, match='all 10 tiles answered with zero elements'):
         gather(RAIL_QUERY, JAVA)
     assert len(calls) == 10             # each tile accepted at its first call
+
+
+def test_a_two_degree_span_that_is_not_two_in_binary_is_not_tiled(post):
+    # -6.8 - -8.8 is 2.000000000000001. No region in data/regions.json has a
+    # span like it -- Surabaya's 113.2 - 111.2 is exactly 2.0 -- so this is the
+    # case the rounding in gather() guards against rather than one it meets.
+    # Tiled, it would still be one tile, so the rounding changes only how an
+    # empty answer is treated: as a single query it must hold track, and fails
+    # after every endpoint has been tried, where a tile would be taken for sea.
+    bbox = (-8.8, 111.2, -6.8, 113.2)
+    assert bbox[2] - bbox[0] > WIDE
+    calls, answers = post
+    answers.append(Answer({'elements': []}))
+    with pytest.raises(SystemExit, match='All Overpass endpoints failed'):
+        gather(RAIL_QUERY, bbox)
+    assert len(calls) == 3
+
+
+def test_a_step_that_drifts_as_it_is_walked_leaves_no_sliver():
+    # 105.0 plus 0.1 ten times is 105.99999999999994, and -9.0 plus 0.1 ten
+    # times is -8.000000000000004: unrounded, each walk stops just short of the
+    # edge and queries a sliver of its own, 121 tiles where 100 cover it.
+    covered = tiles((-9.0, 105.0, -8.0, 106.0), step=0.1)
+    assert len(covered) == 100
+    assert covered[-1] == (-8.1, 105.9, -8.0, 106.0)

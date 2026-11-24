@@ -85,9 +85,12 @@ def tiles(bbox, step: float = TILE) -> list[tuple[float, float, float, float]]:
 
     Tiles abut exactly and the last row and column are short rather than
     overhanging, so the tiles cover the bbox and nothing outside it. Edges are
-    rounded to six places, which is a tenth of a metre, because walking a float
-    up by 1.0 forty times is how a tile edge ends up at 113.99999999999999 and
-    a query asks for a sliver of sea of its own.
+    rounded to six places, which is a tenth of a metre, because a step that is
+    not exact in binary drifts as it is walked: 105.0 plus 0.1 ten times is
+    105.99999999999994, and without the rounding the last column would be a
+    sliver six hundred-trillionths of a degree wide, queried on its own. The
+    default step of 2.0 walks Java's bbox exactly, so for the island this is a
+    guard rather than a correction.
     """
     s, w, n, e = bbox
     out, south = [], s
@@ -159,9 +162,15 @@ def gather(query: str, bbox, tiled: bool = True) -> list[dict]:
     the whole fetch. A single query still must not come back empty.
     """
     s, w, n, e = bbox
-    # Rounded, because Surabaya's bbox is exactly two degrees wide and
-    # 113.2 - 111.2 is the kind of subtraction that comes out at 2.0000000000001
-    # and tiles a region that has a perfectly good single-query cache already.
+    # Rounded to six places before it meets WIDE. None of this repo's bboxes
+    # needs it: Surabaya's is the one at the threshold, and 113.2 - 111.2 is
+    # exactly 2.0 in binary. But a span of two degrees is not always 2.0 --
+    # -6.8 - -8.8 is 2.000000000000001 -- and a bbox like that would be sent
+    # down the tiled path for a tenth of a nanometre: still one tile, but one
+    # allowed to come back empty, where a single query must hold track. A
+    # guard for a case the current regions never produce, and on longitude not
+    # even that: no two of Java's longitudes to two places, two degrees apart,
+    # subtract to anything but 2.0.
     if not tiled or max(round(n - s, 6), round(e - w, 6)) <= WIDE:
         return [overpass(query, bbox)]
     boxes = tiles(bbox)
