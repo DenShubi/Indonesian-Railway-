@@ -109,6 +109,13 @@ def overpass(query: str, bbox, allow_empty: bool = False) -> dict:
     Indonesian data answers exactly that way and it looks like success. Pass
     allow_empty for a bbox that may genuinely hold nothing -- a sea tile -- or
     every one of those walks all three endpoints and then aborts the fetch.
+
+    An answer carrying a `remark` is a failure whatever allow_empty says.
+    Overpass reports a query that ran out of time or memory as HTTP 200 JSON
+    with a remark ("runtime error: Query timed out ...") and whatever elements
+    it had reached, often none. Taken at face value, a land tile that timed out
+    would pass as sea under allow_empty, and a partial answer would pass as a
+    whole one without it.
     """
     s, w, n, e = bbox
     body = query.format(s=s, w=w, n=n, e=e)
@@ -119,11 +126,15 @@ def overpass(query: str, bbox, allow_empty: bool = False) -> dict:
                               headers={'User-Agent': UA}, timeout=300)
             if r.ok and r.text.lstrip().startswith('{'):
                 payload = r.json()
-                if payload.get('elements') or allow_empty:
+                if payload.get('remark'):
+                    last = (f'{endpoint}: answered with a remark, '
+                            f'{str(payload["remark"])[:120]!r}')
+                elif payload.get('elements') or allow_empty:
                     print(f'  [ok] {endpoint}  {len(r.content) / 1e6:.1f} MB'
                           f'  {len(payload.get("elements", []))} elements')
                     return payload
-                last = f'{endpoint}: answered with zero elements'
+                else:
+                    last = f'{endpoint}: answered with zero elements'
             else:
                 last = f'{endpoint}: HTTP {r.status_code} {r.text[:120]!r}'
         except requests.RequestException as exc:

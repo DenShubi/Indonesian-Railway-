@@ -170,3 +170,31 @@ def test_an_untiled_query_that_comes_back_empty_still_fails(post):
     answers.append(Answer({'elements': []}))
     with pytest.raises(SystemExit):
         gather(STATION_QUERY, JAVA, tiled=False)
+
+
+TIMED_OUT = {'elements': [],
+             'remark': 'runtime error: Query timed out in "query" at line 3 '
+                       'after 241 seconds.'}
+
+
+def test_a_timed_out_tile_is_not_taken_for_sea(post):
+    calls, answers = post
+    answers.extend([Answer(TIMED_OUT), Answer({'elements': [WAY_7]})])
+    assert overpass(RAIL_QUERY, LAND_BBOX, allow_empty=True) == {'elements': [WAY_7]}
+    assert len(calls) == 2              # the remark sent it to the next endpoint
+
+
+def test_a_partial_answer_with_a_remark_is_not_taken_for_a_whole_one(post):
+    calls, answers = post
+    partial = dict(TIMED_OUT, elements=[WAY_7])
+    answers.extend([Answer(partial), Answer({'elements': [WAY_7, WAY_8]})])
+    assert overpass(RAIL_QUERY, LAND_BBOX) == {'elements': [WAY_7, WAY_8]}
+    assert len(calls) == 2
+
+
+def test_a_remark_from_every_endpoint_fails_the_fetch(post):
+    calls, answers = post
+    answers.append(Answer(TIMED_OUT))
+    with pytest.raises(SystemExit, match='remark'):
+        overpass(RAIL_QUERY, SEA_TILE, allow_empty=True)
+    assert len(calls) == 3
