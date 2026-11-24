@@ -124,11 +124,26 @@ verification budget.
 
 So a relasi is routed by enumerating simple paths in increasing length and
 taking the one whose total best matches the km the register prints for trains on
-that relasi, stopping as soon as one lands within tolerance. This is not a
-heuristic. The register states the distance, and the path through the national
+that relasi. The register states the distance, and the path through the national
 graph with that length is the route the train takes. It recovers the southern
-`SGU - PSE` at 824.9 km against a printed ~825 — as the **58th** simple path,
-which is why shortest-path alone could never have found it.
+`SGU - PSE` at exactly the printed 819.682 km — as the **90th** simple path, and
+`SGU - GMR` at 821.079 as the 125th — which is why shortest-path alone could
+never have found them. (An earlier draft of this paragraph said 824.9 km against
+"~825" as the 58th path. Those figures came from a probe run against a target
+distance that was guessed rather than read from the register.)
+
+**Length-matching only works on an unbiased graph.** It picks whichever path is
+closest to the printed km, so any systematic error in an edge weight is
+something it will route around: the selector finds a detour whose extra length
+happens to cancel the error. The first build kept the *minimum* where two
+corridors disagreed on an edge, and Brumbung is printed 0.880 km apart on the
+north-coast and Gundih lines. That left every Jakarta–Surabaya route on the
+graph 0.88 km short, and 16 relasi duly took a needless loop through the
+Surabaya Pasarturi triangle to make up the difference. They were within
+tolerance — and wrong. A junction printed at different km on different lines is
+therefore modelled as one node per line, joined by the offset the register
+prints, rather than collapsed to a single number. The register's distances then
+need no correction for the selector to choose routes rather than numbers.
 
 Trades off: a substantial pipeline addition, one large OSM fetch, and path
 enumeration rather than a single Dijkstra per relasi.

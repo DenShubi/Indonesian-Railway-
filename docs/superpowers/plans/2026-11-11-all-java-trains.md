@@ -303,6 +303,8 @@ Two hazards the Task 2 review found in the chains this graph is built from:
 - **A chain with a hole yields a shortcut edge that bypasses real stations.** `BJR - MA - KYA` lost four rows to vertical text, so it runs `KWG@52.694, KH@77.386, KYA@91.807` — a direct KH–KYA edge of 14.421 km. The same stretch exists on `CP - MA - KYA` as KH–MA + MA–SKP + SKP–KYA = 14.664 km, so every shortest path takes the shortcut and skips Maos, a genuine calling point. The km for the lost rows are **already parsed** (row 1 of the holed corridor prints them: JRL 65.502, LBG 72.190, MA 79.109, SKP 85.527); only the four codes are missing, which Task 4's `recover_vertical_codes` supplies. Recover them before building the graph, and this dissolves. If it cannot be recovered, drop a corridor edge when a path over the same endpoints with more stations and comparable length already exists.
 - **Three station pairs get conflicting weights from different corridors**, of 408 (the figure was 2 of 399 before the chain repair added KH–MA and before the six inline branches were counted). `ATA–BBG` is 6.856 km on one corridor and 5.976 on another (BBG is printed at 163.822 and 162.942); `CN–CNP` is 1.600 versus 1.606; `KH–MA` is 1.723 against 1.966 on two other corridors. `nx.Graph` silently keeps whichever is written last. Detect a re-write of an existing edge weight and either keep the minimum deliberately or report it — do not let iteration order decide.
 
+  > **Overturned after Task 4.** Task 3 kept the minimum, and its review found that no chain changed under min, max or majority — true under shortest-path routing. Once Task 4 routed by km match, it stopped being true: the minimum leaves every route through Brumbung 0.88 km short, and the selector compensates with a detour (16 relasi through the Surabaya Pasarturi triangle). Each conflict is a junction printed at different km on different lines, so it is now modelled as **one node per line joined by the printed offset**, not resolved to one number. See the spec's "Length-matching only works on an unbiased graph".
+
 - [ ] **Step 4: Run the tests to verify they pass**
 
 Run: `pytest tests/test_topology.py -v`
@@ -395,7 +397,7 @@ Expected: FAIL on the missing `tiles` and `allow_empty`
 
   `select_path(graph, origin, destination, via, register_km, cap=400) -> tuple[list, float]`.
 
-  This is what recovers the routes with no via point to disambiguate them: `SGU - PSE` matches at 824.9 km against a printed ~825, but only as the **58th** simple path. Verified before this task was written.
+  This is what recovers the routes with no via point to disambiguate them: `SGU - PSE` matches the printed 819.682 km exactly, but only as the **90th** simple path, and `SGU - GMR` its 821.079 as the 125th. (This line first said 824.9 km against "~825" as the 58th — a probe against a guessed target, corrected after Task 4's review read the real figure.)
 
 The remaining offset groups Task 3 identified — Kampung Bandan reached the long way round (19 relasi), Solo/Madiun/Jombang to Jakarta by the southern line (8), Malang (5) — are all the same shape of problem and should dissolve under length selection. Report the count still outside tolerance after both changes; if it is not near zero, stop and say so rather than widening the budget.
 
@@ -718,9 +720,14 @@ Expected: FAIL
 
 Keep the existing per-region pass and its zero tolerance untouched — it is the strongest check in the repo and the three published regions must keep passing it exactly as today. Add the national pass beside it. `check-geometry.mjs` walks `segments` as well as `shapes`.
 
-**One documented exception, not a widened tolerance.** After Task 4's km-matched selection, 314 of 316 relasi agree with the register. The two that do not are `YIA - YK` and `YK - YIA`, the Yogyakarta airport branch, carrying 25 trains: the register prints 40.237 km where the best simple path measures 33.471. The shortfall is **exactly** the Wates–Kedundang edge, 6.766 km, so the official distance includes an out-and-back over that stretch — a path that revisits Kedundang, which is not a simple path and which `nx.shortest_simple_paths` therefore cannot enumerate at any cap. The chain we do produce (`YIA KDG STL RWL PTN YK`) is geographically correct; it merely omits a short reversal.
+**No exceptions: the airport branch was a transposition in the register.** After Task 4, `YIA - YK` and `YK - YIA` (25 trains) were the two relasi outside tolerance, printed at 40.237 km against a routed 33.471. An earlier version of this paragraph diagnosed an out-and-back over Wates–Kedundang and proposed a two-relasi exception. That was wrong, and wrong on its own arithmetic: an out-and-back adds the stretch *twice*, giving 47.003, not 40.237.
 
-So the budget gate takes an **explicit exception list** naming these two relasi with that reason, rather than a tolerance wide enough to swallow a 16.8% error everywhere. An unexplained relasi over 10% still fails the build. If a later task teaches the selector to allow one reversal, delete the exception rather than keeping both.
+The real cause is that page 59 prints **Wates and Kedundang in the wrong order**, in both its header and its row labels: `KTA JN WJ WT KDG STL`. Three independent signals agree that Kedundang comes first:
+- **Geography.** OSM puts Kedundang at 110.099°E and Wates at 110.158°E, so Kedundang is west of Wates on a line that runs west to east from Kutoarjo. The airport, at 110.061°E, is west of both.
+- **Physics.** As printed, Wates sits at 0.92× its straight-line distance from Kutoarjo — rail shorter than a straight line, which is impossible. Swapped, the five stations run a smooth 1.02, 1.04, 1.07, 1.14, 1.25.
+- **The train rows.** Swapped, Kedundang is at km 28.871, so Yogyakarta–Kedundang is 34.772 and the airport run is 34.772 + 5.465 = **40.237 km, exactly what the register prints.**
+
+So the codes at those two positions are swapped as a **named register erratum**: a small table in the parser stating the page, the corridor, the two positions and the evidence, applied after parsing and covered by a test that `YIA - YK` routes to 40.237. Keep the km where the register printed them; only the labels move. Do not add an exception list. The national gate fails on any relasi over 10%, with none excused.
 
 **The register is not perfectly self-consistent, so do not cross-check its cells.** On page 55's 42-station Cikampek–Banjar matrix, four cells disagree with the cumulative km by exactly 1.042 km (rows RJP and IH against columns KNP and BJR). The cumulative km themselves are self-consistent and safe, which is what Task 5's km-post placement relies on; it is the off-diagonal cells that are wrong. Verify against cumulative km, never against the full matrix, or this will read as a pipeline bug.
 
