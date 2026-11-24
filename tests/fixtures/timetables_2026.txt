@@ -1,0 +1,380 @@
+# Timetable pages lifted verbatim from "KP DJKA 116 TAHUN 2026 GAPEKA JAWA.pdf"
+# (GAPEKA 2026), exactly as pdfplumber 0.11.4's extract_text() yields them and
+# as data/gapeka/2026/pages.json caches them, except that trailing whitespace
+# is stripped. Page numbers are 0-based, as the cache keys them. No test may
+# open the 61 MB PDF; these lines are the timetables as far as the parser is
+# concerned.
+#
+# tests/conftest.py groups these by the "# page N" markers and drops comments
+# and blank lines. No timetable line starts with '#', so nothing is lost. A
+# block that holds only part of its page says which part; the rest of the page
+# belongs to a run this fixture does not carry.
+
+# KA 1 Anggrek, Surabaya Pasarturi - Gambir: the first timetable of the
+# intercity section, headed "Relasi". Pages 58 and 59 whole, and page 60 down
+# to KA 1's last row. Almost every row is a timed pass ("Ls 08:21:00"): one
+# time, where a stop prints two.
+# page 58
+KA 1 (Anggrek) Relasi SBI - GMR
+Kecepatan
+No. Stasiun dan Perhentian Maksimum Datang Berangkat Keterangan
+(Km/Jam)
+1 Surabaya Pasarturi (SBI) 115 - 08:15:00
+2 Tandes (TES) 115 Ls 08:21:00
+3 Kandangan (KDA) 115 Ls 08:23:00
+4 Benowo (BNW) 115 Ls 08:26:00
+5 Cerme (CME) 115 Ls 08:29:00
+6 Duduk (DD) 115 Ls 08:35:00
+7 Lamongan (LMG) 115 Ls 08:42:00
+8 Surabayan (SBN) 115 Ls 08:46:00
+9 Pucuk (PC) 115 Ls 08:52:00
+10 Gembong (GEB) 115 Ls 08:55:00
+11 Babat (BBT) 115 Ls 08:59:00
+12 Bowerno (BWO) 115 Ls 09:04:00
+13 Sumberrejo (SRJ) 115 Ls 09:12:00
+14 Kapas (KPS) 115 Ls 09:17:00
+15 Bojonegoro (BJ) 115 Ls 09:21:00
+16 Kalitidu (KIT) 115 Ls 09:29:00
+17 Tobo (TBO) 115 Ls 09:37:00
+18 Cepu (CU) 110 Ls 09:43:00
+19 Kapuan (KPA) 110 Ls 09:47:00
+20 Wadu (WDU) 110 Ls 09:50:30
+21 Randublatung (RBG) 110 Ls 09:57:00
+22 Doplang (DPL) 110 Ls 10:05:00
+23 Sulur (SL) 110 Ls 10:10:00
+24 Kradenan (KNN) 115 Ls 10:15:30
+25 Panunggalan (PNL) 115 Ls 10:21:00
+26 Jambon (JBN) 115 Ls 10:24:00
+27 Gambringan (GBN) 115 Ls 10:30:30
+28 Ngrombo (NBO) 115 Ls 10:31:30
+29 Sedadi (SDI) 115 Ls 10:35:00
+30 Karangjati (KGT) 115 Ls 10:40:00
+31 Gubug (GUB) 115 Ls 10:47:30
+32 Tegowanu (TGW) 115 Ls 10:51:30
+33 Brumbung (BBG) 115 Ls 10:57:00
+34 Alastua (ATA) 115 Ls 11:01:00
+35 Semarang Tawang (SMT) 50 11:09:00 11:14:00 // ka 2509 (ka 2509 =)
+36 Semarang Poncol (SMC) 115 Ls 11:18:00
+37 Jerakah (JRK) 115 Ls 11:22:00
+38 Mangkang (MKG) 115 Ls 11:26:00
+39 Kaliwungu (KLN) 115 Ls 11:30:00 // ka 229 (ka 229 =)
+40 Kalibodri (KBD) 110 Ls 11:37:00
+2
+
+# page 59
+Kecepatan
+No. Stasiun dan Perhentian Maksimum Datang Berangkat Keterangan
+(Km/Jam)
+41 Weleri (WLR) 110 Ls 11:42:00
+42 Krengseng (KNS) 105 Ls 11:45:00
+43 Plabuan (PLB) 105 Ls 11:51:00
+44 Kuripan (KRP) 105 Ls 11:56:00
+45 Ujungnegoro (UJN) 105 Ls 12:04:00
+46 Batang (BTG) 115 Ls 12:07:00 // ka 2523 (ka 2523 =)
+47 Pekalongan (PK) 105 Ls 12:13:00
+48 Sragi (SRI) 105 Ls 12:20:00
+49 Comal (CO) 115 Ls 12:23:00
+50 Petarukan (PTA) 115 Ls 12:29:00
+51 Pemalang (PML) 115 Ls 12:33:00
+52 Surodadi (SD) 115 Ls 12:40:00
+53 Larangan (LR) 115 Ls 12:46:00
+54 Tegal (TG) 115 Ls 12:50:00
+55 Brebes (BB) 115 Ls 12:57:00
+56 Tanjung (TGN) 115 Ls 13:08:30
+57 Losari (LOS) 115 Ls 13:13:00 // ka 2529 (ka 2529 =)
+58 Babakan (BBK) 115 Ls 13:18:00
+59 Waruduwur (WDW) 115 Ls 13:26:00
+60 Cirebon Prujakan (CNP) 110 Ls 13:32:00
+61 Cirebon (CN) 115 13:35:00 13:39:00
+62 Cangkring (CNK) 115 Ls 13:45:00
+63 Bangoduwa (BDW) 115 Ls 13:48:00
+64 Arjawinangun (AWN) 115 Ls 13:51:00 // ka 2703F jj (ka 2703F jj =)
+65 Kertasemaya (KTM) 110 Ls 13:59:00
+66 Jatibarang (JTB) 105 Ls 14:04:00
+67 Telagasari (TLS) 105 Ls 14:10:00
+68 Terisi (TIS) 105 Ls 14:15:00
+69 Kadokangabus (KAB) 105 Ls 14:19:00
+70 Cilegeh (CLH) 115 Ls 14:25:00
+71 Haurgeulis (HGL) 115 Ls 14:32:00
+72 Cipunegara (CRA) 115 Ls 14:36:00
+73 Pegadenbaru (PGB) 115 Ls 14:40:00
+74 Cikaum (CKM) 115 Ls 14:45:00
+75 Pasirbungur (PAS) 115 Ls 14:48:30
+76 Pringkasap (PRI) 110 Ls 14:52:00
+77 Pabuaran (PAB) 110 Ls 14:56:00
+78 Tanjungrasa (TJS) 110 Ls 14:59:00
+79 Cikampek (CKP) 115 Ls 15:06:00
+80 Dawuan (DWN) 115 Ls 15:09:00
+81 Kosambi (KOS) 115 Ls 15:13:00
+82 Klari (KLI) 115 Ls 15:15:00
+83 Karawang (KW) 115 Ls 15:19:00 // ka 2501F jj (ka 2501F jj =)
+3
+
+# page 60, its first 17 lines: the end of KA 1, at Gambir.
+Kecepatan
+No. Stasiun dan Perhentian Maksimum Datang Berangkat Keterangan
+(Km/Jam)
+84 Kedunggedeh (KDH) 115 Ls 15:23:00
+85 Lemahabang (LMB) 115 Ls 15:29:00
+86 Cikarang (CKR) 80 Ls 15:32:00
+87 Telaga Murni (TLM) 80 Ls -
+88 Cibitung (CIT) 80 Ls -
+89 Tambun (TB) 80 Ls 15:42:00
+90 Bekasitimur (BKST) 80 Ls -
+91 Bekasi (BKS) 115 Ls 15:48:00
+92 Jatinegara (JNG) 60 Ls 15:57:00
+93 Matraman (MTR) 60 Ls -
+94 Manggarai (MRI) 80 Ls 16:02:00
+95 Cikini (CKI) 80 Ls -
+96 Gondangdia (GDD) 80 Ls -
+97 Gambir (GMR) 0 16:12:00 -
+
+# KA 93 Jayabaya, Surabaya Pasarturi - Malang: page 270 from KA 93's header
+# down, and page 271 down to its last row. Rows 17-18 show an operational note
+# too long for its column: pdfplumber prints the cell's first line ABOVE the
+# row ("x ka 168 (ka 168 x), // ka 2647f jj (ka 2647f") and its last line
+# BELOW it ("jj =)"). Malang, the destination, prints "-" for its speed.
+# page 270
+KA 93 (Jayabaya) Relasi SBI - ML
+Kecepatan
+No. Stasiun dan Perhentian Maksimum Datang Berangkat Keterangan
+(Km/Jam)
+1 Surabaya Pasarturi (SBI) 50 - 07:48:00
+2 Segitigamesigit (STM) 50 Ls 07:52:00
+3 Surabayakota (SB) 50 Ls 07:55:00
+4 Surabayagubeng (SGU) 115 08:02:00 08:07:00
+5 Ngagel (NGA) 115 Ls -
+6 Wonokromo (WO) 80 Ls 08:14:00
+7 Margorejo (MGR) 80 Ls -
+8 Jemursari (JMS) 80 Ls -
+9 Kertomenanggal (KTL) 80 Ls -
+10 Waru (WR) 80 Ls 08:21:00 x ka 468 (ka 468 x)
+11 Sawotratap (STP) 80 Ls -
+12 Gedangan (GDG) 80 Ls 08:25:00 x ka 448 (ka 448 x)
+13 Banjarkemantren (BJK) 80 Ls -
+14 Buduran (BDR) 80 Ls -
+15 Pagerwojo (PWJ) 80 Ls -
+16 Sidoarjo (SDA) 80 08:33:00 08:35:00 x ka 2764f jj (ka 2764f jj x)
+17 Tanggulangin (TGA) 80 Ls 08:42:00
+x ka 168 (ka 168 x), // ka 2647f jj (ka 2647f
+18 Porong (PR) 80 Ls 08:45:00
+jj =)
+19 Bangil (BG) 70 08:58:00 09:00:00 x ka 224f jj
+20 Wonokerto (WN) 70 Ls 09:10:00
+21 Sukorejo (SKJ) 70 Ls 09:19:00 x ka 2630 (ka 2630 x)
+22 Sengon (SN) 70 Ls 09:25:00
+23 Lawang (LW) 70 09:38:00 09:41:00
+24 Singosari (SGS) 70 Ls 09:52:00
+214
+
+# page 271, its first 5 lines: the end of KA 93.
+Kecepatan
+No. Stasiun dan Perhentian Maksimum Datang Berangkat Keterangan
+(Km/Jam)
+25 Blimbing (BMG) 70 Ls 09:59:00
+26 Malang (ML) - 10:05:00 -
+
+# The commuter section's first page, a contents list: KA 351-356 printed
+# as header lines with no station rows beneath them (KA 351's entry is
+# numbered "1." and so is not even a header line). Then page 670 down to the
+# end of KA 351, the first real timetable of the section, headed "Lintas
+# Pelayanan".
+# page 669
+PT. KERETA API INDONESIA (Persero)
+KANTOR PUSAT - BANDUNG
+1
+DAFTAR WAKTU
+Berlaku Mulai Tanggal 01 Desember 2026
+ISI:
+1. KA 351 (Siliwangi) Lintas Pelayanan CPT - SI
+KA 352 (Siliwangi) Lintas Pelayanan SI - CPT
+KA 353 (Siliwangi) Lintas Pelayanan CPT - SI
+KA 354 (Siliwangi) Lintas Pelayanan SI - CPT
+KA 355 (Siliwangi) Lintas Pelayanan CPT - SI
+KA 356 (Siliwangi) Lintas Pelayanan SI - CPT
+2.KA LOKAL EKONOMI
+3.Untuk keperluan angkutan penumpang
+4.Sesuai dengan tabel kecepatan ketetapan
+5.KA tersebut perjalanannya sesuai dengan GAPEKA.
+6.EVP / VP, Manager Op, Manager Sarana 1 Jak, 2 Bd atur dinasan lok rangkaian dan awak KA-nya.
+7.Memberhentikan luar biasa (BLB) suatu KA harus sesuai dengan PD 19 jilid 1 pasal 86.
+
+# page 670
+KA 351 (Siliwangi) Lintas Pelayanan CPT - SI
+Kecepatan
+No. Stasiun dan Perhentian Maksimum Datang Berangkat Keterangan
+(Km/Jam)
+1 Cipatat (CPT) 70 - 07:55:00
+2 Rajamandala (RM) 70 Ls -
+3 Cipeuyeum (CPY) 70 08:11:00 08:13:00
+4 Ciranjang (CRJ) 70 08:23:00 08:25:00
+5 Selajambe (SLJ) 70 Ls -
+6 Tipar (TPR) 70 Ls -
+7 Maleber (MLB) 70 Ls -
+8 Cianjur (CJ) 45 08:41:00 08:44:00
+9 Cilaku (CIK) 45 Ls -
+10 Cibeber (CBB) 40 09:08:00 09:10:00
+11 Sindangresmi (SSI) 40 Ls -
+12 Lampegan (LP) 60 09:34:00 09:36:00
+13 Cireungas (CRG) 60 09:44:00 09:46:00
+14 Gandasoli (GDS) 70 09:55:00 09:57:00
+15 Ranji (RI) 70 Ls -
+16 Sukabumi (SI) 0 10:10:00 -
+
+# KA 435 Commuter Line Dhoho, Surabayakota - Kertosono: page 711's first
+# block. In 2025 the Dhoho ran as one circular working out of Surabaya; GAPEKA
+# 2026 prints it as one-way legs, and this one calls at Wonokromo once.
+# page 711
+KA 435 (Commuter Line Dhoho) Lintas Pelayanan SB - KTS
+Kecepatan
+No. Stasiun dan Perhentian Maksimum Datang Berangkat Keterangan
+(Km/Jam)
+1 Surabayakota (SB) 50 - 03:55:00
+2 Surabayagubeng (SGU) 90 04:03:00 04:06:00
+3 Ngagel (NGA) 90 Ls -
+4 Wonokromo (WO) 90 04:12:00 04:14:00
+5 Sepanjang (SPJ) 90 04:22:00 04:24:00
+6 Boharan (BH) 90 Berh Sb
+7 Krian (KRN) 90 04:40:00 04:42:00
+8 Kedinding (KDN) 90 Berh Sb
+9 Tarik (TRK) 90 04:56:00 04:58:00
+10 Mojokerto (MR) 90 05:08:00 05:10:00
+11 Curahmalang (CRM) 90 Berh Sb
+12 Sumobito (SBO) 90 05:25:00 05:27:00
+13 Peterongan (PTR) 90 Berh Sb
+14 Jombang (JG) 90 05:42:00 05:44:00
+15 Sembung (SMB) 90 05:53:00 05:55:00
+16 Kertosono (KTS) 0 06:04:00 -
+
+# KA 541 and 542 Commuter Line YIA: page 770's first two blocks. The
+# airport's name is too long for its column, so the row prints with neither
+# name nor code ("7 0 05:09:00 -"), the name's first line above it
+# ("Yogyakarta International") and the rest, with the code, below it
+# ("Airport (YIA)"). KA 542 starts on such a row.
+# page 770
+KA 541 (Commuter Line YIA) Lintas Pelayanan YK - YIA
+Kecepatan
+No. Stasiun dan Perhentian Maksimum Datang Berangkat Keterangan
+(Km/Jam)
+1 Yogyakarta (YK) 90 - 04:28:00
+2 Patukan (PTN) 90 Ls 04:33:00
+3 Rewulu (RWL) 90 Ls 04:36:30
+4 Sentolo (STL) 90 Ls 04:44:00
+5 Wates (WT) 90 04:54:00 04:56:00
+6 Kedundang (KDG) 90 Ls 05:04:00
+Yogyakarta International
+7 0 05:09:00 -
+Airport (YIA)
+KA 542 (Commuter Line YIA) Lintas Pelayanan YIA - YK
+Kecepatan
+No. Stasiun dan Perhentian Maksimum Datang Berangkat Keterangan
+(Km/Jam)
+Yogyakarta International
+1 90 - 05:17:00
+Airport (YIA)
+2 Kedundang (KDG) 90 Ls 05:23:00
+3 Wates (WT) 90 05:30:00 05:32:00
+4 Sentolo (STL) 90 Ls 05:41:30
+5 Rewulu (RWL) 90 Ls 05:49:00
+6 Patukan (PTN) 90 Ls 05:53:00
+7 Yogyakarta (YK) 0 05:58:00 -
+
+# KA 1802 Commuter Line Rangkasbitung, Tanahabang - Parungpanjang: page
+# 1252 from KA 1802's header down, and page 1253 down to its last row. It
+# crosses midnight inside a row, across a page break: Cisauk arrives 23:59:00
+# and departs 00:01:00.
+# page 1252
+KA 1802 (Commuter Line Rangkasbitung) Lintas Pelayanan THB - PRP
+Kecepatan
+No. Stasiun dan Perhentian Maksimum Datang Berangkat Keterangan
+(Km/Jam)
+1 Tanahabang (THB) 70 - 23:19:00
+2 Palmerah (PLM) 70 23:24:00 23:25:00
+3 Kebayoran (KBY) 70 23:30:00 23:31:00
+4 Pondokranji (PDJ) 70 23:38:00 23:39:00
+5 Jurangmangu (JMU) 70 Berh Sb
+6 Sudimara (SDM) 70 23:45:00 23:46:00
+7 Rawabuntu (RU) 70 Berh Sb
+8 Serpong (SRP) 70 23:54:00 23:55:00
+420
+
+# page 1253, its first 7 lines: the end of KA 1802.
+Kecepatan
+No. Stasiun dan Perhentian Maksimum Datang Berangkat Keterangan
+(Km/Jam)
+9 Cisauk (CSK) 70 23:59:00 00:01:00
+10 Cicayur (CC) 70 Berh Sb
+11 Jatake (JTK) 70 Berh Sb
+12 Parungpanjang (PRP) 0 00:12:00 -
+
+# KA 2107-2109 Commuter Line Tangerang: page 1300 whole, and page 1301
+# down to the end of KA 2109. Every intermediate row is either a timed stop
+# or "Berh Sb", an untimed stop.
+# page 1300
+KA 2107 (Commuter Line Tangerang) Lintas Pelayanan TNG - DU
+Kecepatan
+No. Stasiun dan Perhentian Maksimum Datang Berangkat Keterangan
+(Km/Jam)
+1 Tangerang (TNG) 75 - 20:07:00
+2 Tanah Tinggi (THI) 75 Berh Sb
+3 Batuceper (BPR) 90 20:13:00 20:14:00
+4 Poris (PI) 90 Berh Sb
+5 Kalideres (KDS) 90 Berh Sb
+6 Rawabuaya (RW) 90 20:21:00 20:22:00
+7 Bojongindah (BOI) 90 Berh Sb
+8 Taman Kota (TKO) 90 Berh Sb
+9 Pesing (PSG) 90 Berh Sb
+10 Grogol (GRG) 90 Berh Sb
+11 Duri (DU) 0 20:33:00 -
+KA 2108 (Commuter Line Tangerang) Lintas Pelayanan DU - TNG
+Kecepatan
+No. Stasiun dan Perhentian Maksimum Datang Berangkat Keterangan
+(Km/Jam)
+1 Duri (DU) 90 - 20:40:00
+2 Grogol (GRG) 90 Berh Sb
+3 Pesing (PSG) 90 Berh Sb
+4 Taman Kota (TKO) 90 Berh Sb
+5 Bojongindah (BOI) 90 Berh Sb
+6 Rawabuaya (RW) 90 20:51:00 20:52:00
+7 Kalideres (KDS) 90 Berh Sb
+8 Poris (PI) 90 Berh Sb
+9 Batuceper (BPR) 75 20:59:00 21:00:00
+10 Tanah Tinggi (THI) 75 Berh Sb
+11 Tangerang (TNG) 0 21:06:00 -
+KA 2109 (Commuter Line Tangerang) Lintas Pelayanan TNG - DU
+Kecepatan
+No. Stasiun dan Perhentian Maksimum Datang Berangkat Keterangan
+(Km/Jam)
+1 Tangerang (TNG) 75 - 20:20:00
+2 Tanah Tinggi (THI) 75 Berh Sb
+3 Batuceper (BPR) 90 20:26:00 20:27:00
+4 Poris (PI) 90 Berh Sb
+5 Kalideres (KDS) 90 Berh Sb
+6 Rawabuaya (RW) 90 20:34:00 20:35:00
+7 Bojongindah (BOI) 90 Berh Sb
+8 Taman Kota (TKO) 90 Berh Sb
+9 Pesing (PSG) 90 Berh Sb
+468
+
+# page 1301, its first 5 lines: the end of KA 2109.
+Kecepatan
+No. Stasiun dan Perhentian Maksimum Datang Berangkat Keterangan
+(Km/Jam)
+10 Grogol (GRG) 90 Berh Sb
+11 Duri (DU) 0 20:46:00 -
+
+# KA 2200 Commuter Line Tanjungpriuk: page 1310's first block. Jakarta
+# International Stadium wraps the same way the airport does, but with the
+# whole name above the row and only the code, "(JIS)", below it.
+# page 1310
+KA 2200 (Commuter Line Tanjungpriuk) Lintas Pelayanan JAKK - TPK
+Kecepatan
+No. Stasiun dan Perhentian Maksimum Datang Berangkat Keterangan
+(Km/Jam)
+1 Jakarta Kota (JAKK) 40 - 05:00:00
+2 Kampungbandan (KPB) 40 Berh Sb
+3 Ancol (AC) 40 Berh Sb
+Jakarta International Stadium
+4 40 Ls -
+(JIS)
+5 Tanjungpriuk (TPK) 0 05:17:00 -

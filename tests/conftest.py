@@ -1,7 +1,8 @@
 """Register page fixtures, read from tests/fixtures rather than from the PDF.
 
 Extracting "Train Timetables/GAPEKA Jadwal Kereta.pdf" with pdfplumber takes
-about nine minutes, so the test suite never opens it. Every fixture file holds
+about nine minutes, and the 2026 edition about eighteen, so the test suite
+never opens either. Every fixture file holds
 text copied verbatim out of a known page, and each records which page in a
 comment, so a parser can be held to what the register actually prints.
 """
@@ -84,6 +85,32 @@ def register_sections() -> dict[str, dict]:
     """
     return {str(page): {'text': '\n'.join(lines)}
             for page, lines in load_pages('register_sections.txt').items()}
+
+
+@pytest.fixture(scope='session')
+def timetable_pages() -> dict[str, str]:
+    """The 2026 timetable fixture, shaped as data/gapeka/2026/pages.json is.
+
+    The 2026 cache maps each page straight to its text, {"<page>": "<text>"},
+    with no {"text": ...} wrapper, so the fixture's lines are joined back into
+    page text the same way.
+    """
+    return {str(page): '\n'.join(lines)
+            for page, lines in load_pages('timetables_2026.txt').items()}
+
+
+@pytest.fixture(scope='session')
+def cached_2026_pages() -> dict[str, str]:
+    """All 1,887 pages of GAPEKA 2026 as cache_gapeka_2026.py cached them.
+
+    data/gapeka/2026/pages.json is committed; the 61 MB PDF it came from is
+    not, and no test opens it. A checkout without the cache skips.
+    """
+    path = (pathlib.Path(__file__).resolve().parents[1]
+            / 'data' / 'gapeka' / '2026' / 'pages.json')
+    if not path.exists():
+        pytest.skip('data/gapeka/2026/pages.json missing - run scripts/cache_gapeka_2026.py')
+    return json.loads(path.read_text(encoding='utf-8'))
 
 
 @pytest.fixture(scope='session')

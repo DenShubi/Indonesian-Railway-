@@ -1,4 +1,5 @@
-"""Extract the GAPEKA 2025 register once, and keep what it says.
+"""Extract the GAPEKA 2025 register once, and keep what it says; and parse the
+2026 timetables from their committed cache.
 
 "Train Timetables/GAPEKA Jadwal Kereta.pdf" is Lampiran II of DJKA decree
 KP-DJKA 224/2024 and it is the primary source for every train on Java. This
@@ -28,6 +29,18 @@ a station pair next to a distance in every row -- "R1100 ... KRL DP-BOO 22,126"
 -- and reading those as branches would wire Solo to Yogyakarta direct and
 short-circuit half the island.
 
+GAPEKA 2026 is read differently: its 61 MB PDF is not in the repository, so
+scripts/cache_gapeka_2026.py extracts it once, by hand, into the committed
+data/gapeka/2026/pages.json, and this script reads only that. From it comes
+
+  timetables.json  2,089 timetabled runs, one record per run:
+                   {no, service, origin, destination,
+                    rows: [[code, name, max_kmh, arr, dep, kind, note]]}
+
+with times as printed, in seconds from midnight and rolled past 86,400 where a
+run crosses midnight, and null where a row prints none. Estimated times are
+not stored: they need routed distances, which only exist at bundle time.
+
 Usage:  python scripts/parse_gapeka.py [--force]
 """
 import json
@@ -42,6 +55,7 @@ from gapeka.rows import SECTION_CATEGORIES, scan_sections            # noqa: E40
 from gapeka.tables import (apply_errata, parse_corridor_block,       # noqa: E402
                            parse_inline_pairs, parse_matrix_rows,
                            recover_vertical_codes)
+from gapeka.timetables import DAY, KINDS, parse_runs, run_record     # noqa: E402
 
 PDF = ROOT / 'Train Timetables' / 'GAPEKA Jadwal Kereta.pdf'
 OUT = ROOT / 'data' / 'gapeka'
@@ -53,6 +67,14 @@ TRAINS = 1775
 SECTIONS = 18
 CORRIDORS = 37
 CODES = 396
+
+# What the 2026 timetables hold, asserted for the same reason. The parser
+# cross-checks each run's numbering and ends itself; these catch a cache that
+# has lost or gained pages.
+PAGES_2026 = OUT / '2026' / 'pages.json'
+RUNS_2026 = 2089
+ROWS_2026 = 48685
+CODES_2026 = 466
 
 
 def extract(path: pathlib.Path) -> dict[str, dict]:
@@ -116,9 +138,41 @@ def read_network(pages: dict[str, dict]) -> tuple[list, list]:
     return apply_errata(corridors), pairs
 
 
+def write_timetables() -> None:
+    """data/gapeka/timetables.json, from the committed 2026 page cache."""
+    if not PAGES_2026.exists():
+        raise SystemExit(f'missing {PAGES_2026.relative_to(ROOT)} - run '
+                         f'scripts/cache_gapeka_2026.py <pdf> first')
+    runs = parse_runs(json.loads(PAGES_2026.read_text(encoding='utf-8')))
+    rows = [row for run in runs for row in run.rows]
+    codes = {row.code for row in rows}
+    print(f'{len(runs)} timetabled runs, {len(rows)} station rows, {len(codes)} codes')
+    for kind in KINDS:
+        print(f'  {kind:<13s} {sum(1 for row in rows if row.kind == kind):>6d}')
+
+    def printed(run):
+        return [t for row in run.rows for t in (row.arr, row.dep) if t is not None]
+
+    def span(run):
+        return printed(run)[-1] - printed(run)[0]
+    longest = max(runs, key=span)
+    crossing = sum(1 for run in runs if printed(run)[-1] >= DAY)
+    print(f'  {crossing} runs cross midnight; the longest, KA {longest.no} '
+          f'{longest.service}, takes {span(longest) // 3600} h {span(longest) % 3600 // 60} min')
+
+    path = OUT / 'timetables.json'
+    path.write_text(json.dumps({'runs': [run_record(run) for run in runs]},
+                               separators=(',', ':')), encoding='utf-8')
+    print(f'  -> {path.relative_to(ROOT)} ({path.stat().st_size / 1e6:.1f} MB)\n')
+    if (len(runs), len(rows), len(codes)) != (RUNS_2026, ROWS_2026, CODES_2026):
+        raise SystemExit(f'expected {RUNS_2026} runs, {ROWS_2026} rows and {CODES_2026} '
+                         f'codes; got {len(runs)}, {len(rows)}, {len(codes)}')
+
+
 def main() -> None:
     force = '--force' in sys.argv[1:]
     OUT.mkdir(parents=True, exist_ok=True)
+    write_timetables()
     pages = read_pages(force)
 
     sections = scan_sections(pages)
