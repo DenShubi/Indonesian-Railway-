@@ -680,6 +680,8 @@ Expected: FAIL
 
 Keep `proj()` exactly as it is for published trips — its first-pass rule is what makes the circular Dhoho and Penataran runs work, and the comment at `make_bundle.py:44-57` explains why. Register trips need no projection: their keyframe distances come from the segment library's cumulative distance at each published call.
 
+`data/regions.json` now carries a `java` pseudo-region, added in Task 4 for the island OSM fetch. `make_bundle.py` turns every region into a bundle region, so as things stand it would appear in the app's region picker as an empty "Java" entry beside the existing **All Java** button. Filter it out of the bundle's `regions`, and test that the picker's regions are exactly the three published ones.
+
 - [ ] **Step 4: Run the tests, then the build**
 
 Run: `pytest tests/test_bundle.py -v && python scripts/make_bundle.py`
