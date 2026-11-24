@@ -198,3 +198,25 @@ def test_a_remark_from_every_endpoint_fails_the_fetch(post):
     with pytest.raises(SystemExit, match='remark'):
         overpass(RAIL_QUERY, SEA_TILE, allow_empty=True)
     assert len(calls) == 3
+
+
+# Review Focus 5, where it is wired in: gather() is what tiles the island and
+# passes allow_empty, so it is gather() that has to be held to it.
+def test_the_island_fetch_accepts_an_empty_tile_at_one_call(post):
+    calls, answers = post
+    # The second tile is sea. Retried, it would cost three calls, not one.
+    answers.extend([Answer({'elements': [WAY_7]}), Answer({'elements': []})]
+                   + [Answer({'elements': [WAY_8]})] * 8)
+    payloads = gather(RAIL_QUERY, JAVA)
+    assert len(calls) == 10
+    assert len({query for _, query in calls}) == 10      # ten tiles, no repeats
+    assert payloads[1] == {'elements': []}
+    assert sorted(f['properties']['id'] for f in merge_rail(payloads)['features']) == [7, 8]
+
+
+def test_the_island_fetch_fails_when_every_tile_is_empty(post):
+    calls, answers = post
+    answers.append(Answer({'elements': []}))
+    with pytest.raises(SystemExit, match='all 10 tiles answered with zero elements'):
+        gather(RAIL_QUERY, JAVA)
+    assert len(calls) == 10             # each tile accepted at its first call
