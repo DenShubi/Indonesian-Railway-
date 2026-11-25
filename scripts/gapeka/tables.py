@@ -541,12 +541,15 @@ class Alias:
 
 ALIASES_2026 = (
     # Benteng, Surabaya. Page 1884 prints it as BET in the row labels of two
-    # matrices and in the route "SGU - SDT - BET", but as SBE in the third
-    # matrix's own route and header row ("SBE - SDT - STM - SBI", "SBE SDT SB
-    # STM SBI") -- one station, two spellings, on one page. The 2026 timetables
-    # call it SBE ("Benteng (SBE)", KA 2514), so does OSM, and so did the 2025
-    # tables, at identical km: SGU - SDT - SBE 9,194 and SBE - SBI 10,176 in
-    # both editions. BET appears nowhere else in the document.
+    # matrices and in the route "SGU - SDT - BET", but as SBE in the first
+    # matrix's own header row ("SGU SDT SBE") and in the third matrix's route
+    # and header ("SBE - SDT - STM - SBI", "SBE SDT SB STM SBI") -- one
+    # station, two spellings, on one page. The 2026 timetables call it SBE
+    # ("Benteng (SBE)", KA 2514), so does OSM, and so did the 2025 tables, at
+    # identical km: SGU - SDT - SBE 9,194 and SBE - SBI 10,176 in both
+    # editions. Elsewhere the document uses BET for Benteng too: page 1764's
+    # freight-formation table prints "MABET TANKER BET - MN" and "BANTENG
+    # CARGO BET - SBI-KPB". The code is the tables' own; the station is one.
     Alias(1884, 'BET', 'SBE'),
 )
 

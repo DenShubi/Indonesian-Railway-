@@ -378,3 +378,16 @@ def test_midnight_is_crossed_by_157_runs_and_no_run_lasts_a_day(document):
     # KA 2523 Massao Cargo, Kalimas - Tanjungpriuk, 19 h 44 min. Nothing runs
     # over 24 h in 2026, so the step-wise rule never has to roll twice.
     assert longest.no == '2523' and span(longest)[1] - span(longest)[0] == 19 * 3600 + 44 * 60
+
+
+NEWLINE = chr(10)
+
+
+def test_a_page_number_between_a_header_and_its_column_heading_is_allowed(timetable_pages):
+    # Built from page 670, not verbatim: in all 2,089 real timetables the
+    # column heading follows its header directly. A page break could still
+    # put a page number between them, and that must not drop the timetable.
+    lines = timetable_pages['670'].split(NEWLINE)
+    at = next(i for i, line in enumerate(lines) if line.startswith('KA 351 (Siliwangi)'))
+    pages = {'670': NEWLINE.join(lines[:at + 1] + ['17'] + lines[at + 1:])}
+    assert parse_runs(pages) == parse_runs({'670': timetable_pages['670']})

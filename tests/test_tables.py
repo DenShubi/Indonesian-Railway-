@@ -559,6 +559,8 @@ def test_a_carry_the_new_edition_no_longer_needs_is_refused():
         carry_forward([main], [main], carry)
     with pytest.raises(ValueError, match='found 0'):
         carry_forward([], [], carry)
+    with pytest.raises(ValueError, match='found 2'):      # never silently the first
+        carry_forward([], [main, main], carry)
     carried, = carry_forward(
         [], [Corridor('TG - CU', main.stations, 'GAPEKA 2025 page 57')], carry)
     assert carried.stations == main.stations and 'carried forward' in carried.source
@@ -580,3 +582,14 @@ def test_an_erratum_keeps_its_corridors_source():
         ('KTA', 0.0), ('JN', 13.707), ('WJ', 21.985), ('WT', 28.871), ('KDG', 35.637)),
         'GAPEKA 2026 page 1882')
     assert apply_errata([kutoarjo], ERRATA_2026)[0].source == 'GAPEKA 2026 page 1882'
+
+
+def test_the_alias_reaches_inline_pairs_as_well_as_matrices():
+    # No 2026 inline pair prints BET today, so this is built by hand: an alias
+    # applied to the matrices but not the pairs would split Benteng in two.
+    from scripts.parse_gapeka import read_network
+    page = chr(10).join(['AAA - BET', 'AAA BET', 'O/D', '1 2', 'AAA 1 5,000',
+                         'BET 2 5,000', 'BET-CCC 1,500'])
+    corridors, pairs = read_network({'1884': page}, {}, (), ALIASES_2026, '2026')
+    assert [code for c in corridors for code, _ in c.stations] == ['AAA', 'SBE']
+    assert pairs == [('SBE', 'CCC', 1.5)]

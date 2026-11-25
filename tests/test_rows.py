@@ -199,6 +199,8 @@ def test_an_erratum_excuses_only_the_split_never_the_total():
                                 erratum) == ['S']      # JUMLAH says 71
     assert banner_disagreements([Section('S', 'x', 'k', 1, 70, 0, rows, 70, 70, 69.0)],
                                 erratum) == ['S']      # footer km is a km short
+    assert banner_disagreements([Section('S', 'x', 'k', 1, 70, 0, rows, 70, 70, 70.001)],
+                                erratum) == ['S']      # and a metre is still out
 
 
 def test_every_banner_tallies_against_its_section(cached_2026_pages):
