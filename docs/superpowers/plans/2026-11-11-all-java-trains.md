@@ -225,7 +225,7 @@ Expected: all pass; `trains.json` and `network.json` regenerated from 2026.
 
 - [ ] **Step 5: Delete the superseded 2025 outputs and commit**
 
-`git rm data/gapeka/relasi.json data/gapeka/pages.json`, then commit.
+`git rm data/gapeka/relasi.json`, and move the 2025 page cache to `data/gapeka/2025/pages.json` rather than deleting it — the carried-forward Tegal–Cepu corridor and its evidence test read it (done in `712f430`). Then commit.
 
 ---
 
