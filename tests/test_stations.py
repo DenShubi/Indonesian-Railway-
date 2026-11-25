@@ -482,3 +482,53 @@ def test_the_committed_extra_cache_places_the_sidoarjo_halts_down_the_line(commi
     lats = [float(extra[found[c]]['lat']) for c in halts]
     assert lats == sorted(lats, reverse=True)
     assert 'RI' not in found                              # never Kranji, nor Pondok Ranji
+
+
+def test_route_between_weighs_length_not_the_number_of_edges():
+    # Two edges round by a point 5.6 km off the line, against four along it.
+    a, b = (0.0, 0.0), (0.0, 0.04)
+    along = [a, (0.0, 0.01), (0.0, 0.02), (0.0, 0.03), b]
+    g = line_graph(along)
+    nx.add_path(g, [a, (0.05, 0.02), b])
+    for u, v in [(a, (0.05, 0.02)), ((0.05, 0.02), b)]:
+        g[u][v]['weight'] = hav(u, v)
+    assert route_between(g, a, b) == along
+
+
+def test_the_extra_cache_never_takes_part_in_the_ref_pass():
+    # The extra cache tags every platform with its station's code.
+    with pytest.raises(SystemExit, match='YK'):
+        build(codes={'YK': 'Yogyakarta'}, osm=[], extra=[osm('YK', 'Peron 1', -7.789, 110.363)])
+
+
+def test_an_estimate_whose_track_wanders_off_fails_the_build():
+    # A and B are 2.2 km apart, but the only track between them runs 11 km out
+    # and back.
+    out = [(0.0, i / 111.195) for i in range(12)]
+    back = [(0.02, i / 111.195) for i in range(11, -1, -1)]
+    g = line_graph(out + back)
+    with pytest.raises(SystemExit, match=r'X .*runs 24\.\d km, against 2\.2 km straight'):
+        build(codes={'A': 'Aa', 'X': 'Ex', 'B': 'Bee'},
+              osm=[osm('A', 'Aa', *out[0]), osm('B', 'Bee', *back[-1])],
+              runs=[run('A', 'X', 'B')], graph=g)
+
+
+def test_the_km_post_tries_the_tightest_bracket_first():
+    # Both corridors bracket X and both routes fit; the long one puts X at km
+    # 10.4, the short one at 10, which is where it is.
+    track = [(0.0, i / 111.195) for i in range(21)]
+    loose = {'name': 'A - B', 'stations': [['A', 0.0], ['X', 10.4], ['B', 20.0]]}
+    tight = {'name': 'C - D', 'stations': [['C', 8.0], ['X', 10.0], ['D', 12.0]]}
+    stations = [osm(c, c, *track[k]) for c, k in (('A', 0), ('C', 8), ('D', 12), ('B', 20))]
+    rows = build(codes={c: c for c in 'ACXDB'}, osm=stations, corridors=[loose, tight],
+                 graph=line_graph(track))
+    assert rows['X']['lon'] * 111.195 == pytest.approx(10.0, abs=1e-6)
+
+
+def test_a_line_name_followed_by_more_words_is_another_line():
+    with pytest.raises(SystemExit, match='Commuter Line Dhoho'):
+        regions_by_service([service_run('Commuter Line Dhoho Ekspres', 'SB')],
+                           REGIONS[:1])
+    runs = [service_run('Commuter Line Dhoho', 'SB'),
+            service_run('Commuter Line Dhoho Ekspres', 'SB', 'MR')]
+    assert regions_by_service(runs, REGIONS[:1]) == {'SB': 'surabaya'}
