@@ -13,7 +13,7 @@ import networkx as nx
 import pytest
 
 from conftest import committed
-from scripts.build_shapes import hav, route_between
+from scripts.build_shapes import build_graph, hav, route_between
 from scripts.fetch_osm import norm
 from scripts.build_stations import (Checks, build, by_name, by_ref, cumulative_km,
                                     misplaced, neighbours_of, table_spans, triples_of,
@@ -541,3 +541,17 @@ def test_an_estimate_between_anchors_on_one_node_fails_rather_than_stacking():
         build(codes={'A': 'Aa', 'X': 'Ex', 'B': 'Bee'},
               osm=[osm('A', 'Aa', 0.0, 0.001), osm('B', 'Bee', 0.0, 0.002)],
               runs=[run('A', 'X', 'B')], graph=g)
+
+
+def test_every_edge_build_graph_makes_weighs_at_least_its_haversine_length(tmp_path):
+    # route_between's A* is exact only if no edge is lighter than haversine. The
+    # 4.4 km hole between the first two ways is found on build_graph's plane,
+    # which away from its mean latitude is a little short.
+    ways = [[(110.0, -6.0), (110.01, -6.0)], [(110.05, -6.0), (110.06, -6.0)],
+            [(110.0, -8.0), (110.01, -8.0)]]
+    path = tmp_path / 'rail.geojson'
+    path.write_text(json.dumps({'features': [
+        {'geometry': {'type': 'LineString', 'coordinates': w}} for w in ways]}))
+    g, _, _ = build_graph(path, 'test')
+    assert g.has_edge((-6.0, 110.01), (-6.0, 110.05))
+    assert all(d['weight'] >= hav(u, v) for u, v, d in g.edges(data=True))

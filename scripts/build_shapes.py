@@ -97,7 +97,10 @@ def build_graph(rail_path, label):
         gap, ci, a, b = best
         if gap > BRIDGE:
             break
-        g.add_edge(a, b, weight=gap)
+        # Found on the plane, weighed on the sphere like every other edge: the
+        # plane is a little short away from lat0, and a bridge lighter than its
+        # haversine length would make route_between's heuristic overestimate.
+        g.add_edge(a, b, weight=hav(a, b))
         bridged.append(round(gap))
         trunk |= rest.pop(ci)
     if bridged:
@@ -141,12 +144,11 @@ def route_between(g, a, b):
 
     Neither end has to be a node: each is snapped to the nearest one, so a
     station's OSM coordinate can be routed from directly. Every edge weighs at
-    least the haversine distance between its ends (a bridged hole, measured on
-    build_graph's plane, to within a fraction of a percent), so A* with haversine
-    as its heuristic finds the path Dijkstra would, while searching towards the
-    target rather than in a disc around the source -- on a graph the length of
-    the island, the difference between routing one pair and searching half of
-    Java for it. Raises networkx.NetworkXNoPath where the two ends are on pieces
+    least the haversine distance between its ends, so haversine never
+    overestimates what is left, and A* with it as the heuristic finds the path
+    Dijkstra would, while searching towards the target rather than in a disc
+    around the source -- on a graph the length of the island, the difference
+    between routing one pair and searching half of Java for it. Raises networkx.NetworkXNoPath where the two ends are on pieces
     of track that bridging did not join.
     """
     return nx.astar_path(g, nearest_node(g, a), nearest_node(g, b),
