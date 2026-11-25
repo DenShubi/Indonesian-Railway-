@@ -532,3 +532,12 @@ def test_a_line_name_followed_by_more_words_is_another_line():
     runs = [service_run('Commuter Line Dhoho', 'SB'),
             service_run('Commuter Line Dhoho Ekspres', 'SB', 'MR')]
     assert regions_by_service(runs, REGIONS[:1]) == {'SB': 'surabaya'}
+
+
+def test_an_estimate_between_anchors_on_one_node_fails_rather_than_stacking():
+    # A and B both snap to the first node, so the route between them is empty.
+    g = line_graph([(0.0, 0.0), (0.0, 0.5)])
+    with pytest.raises(SystemExit, match=r'X .*A and B snap to the same point of track'):
+        build(codes={'A': 'Aa', 'X': 'Ex', 'B': 'Bee'},
+              osm=[osm('A', 'Aa', 0.0, 0.001), osm('B', 'Bee', 0.0, 0.002)],
+              runs=[run('A', 'X', 'B')], graph=g)

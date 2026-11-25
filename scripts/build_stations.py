@@ -476,8 +476,8 @@ def by_estimate(codes: list[str], runs: list[dict], graph, where: dict,
     print is used and the others reported. The codes in a bracket are spaced
     evenly along the track from one end to the other, which is an estimate and
     is labelled one. The track has to be the line between the two: a route that
-    cannot be found, or that wanders off as build_shapes.py's detour guard
-    judges one, fails the code rather than putting it somewhere else.
+    cannot be found, has no length, or wanders off as build_shapes.py's detour
+    guard judges one, fails the code rather than putting it somewhere else.
     """
     def fail(code, reason):
         _why(why, code, reason)
@@ -519,6 +519,12 @@ def by_estimate(codes: list[str], runs: list[dict], graph, where: dict,
                 fail(c, f'no track joins {a} and {b}')
             continue
         cum = cumulative_km(line)
+        if not cum[-1]:
+            # Both ends snap to one node, and every halt between them would
+            # land on it.
+            for c in mine:
+                fail(c, f'{a} and {b} snap to the same point of track')
+            continue
         if cum[-1] > max(3 * straight, straight + 5):
             for c in mine:
                 fail(c, f'the track from {a} to {b} runs {cum[-1]:.1f} km, against '
