@@ -1,0 +1,52 @@
+# Register lines lifted verbatim from "KP DJKA 116 TAHUN 2026 GAPEKA JAWA.pdf"
+# (GAPEKA 2026), exactly as pdfplumber 0.11.4's extract_text() yields them and
+# as data/gapeka/2026/pages.json caches them. Page numbers are 0-based, as the
+# cache keys them. No test may open the PDF.
+#
+# tests/conftest.py drops comments and blank lines, and groups lines by their
+# "# page N" marker. Each block is a few lines of its page, not the page, and
+# keeps them in print order.
+
+# Page 1828, the register's first section: its classification, its banner and
+# total, and its first row -- the plainest row of 2026, times printed without
+# their seconds.
+# page 1828
+KLASIFIKASI KERETA API : KERETA API ANTAR KOTA
+KELAS KERETA API : ARGO REGULER : 36 FAKULTATIF : 0
+WILAYAH : JAWA JUMLAH : 36
+2 1 REGULER Anggrek Anggrek 1 SBI-GMR PT. KAI 720,109 720 08:15 16:12 07.57
+
+# Page 1829: one of six rows over 1,000 km, whose rounded km groups its
+# thousands ("1.002"), which a \d+ pattern for that column loses.
+# page 1829
+2 82-83 REGULER Sangkuriang Sangkuriang 2 BD-SGU-KTG PT. KAI 1.002,375 1.002 15:55 08:52 16.57
+
+# Page 1831: name and identity columns spelled differently, "Sri Tanjung" and
+# "Sritanjung".
+# page 1831
+22 312-313 REGULER Sri Tanjung Sritanjung 2 LPN-SB-KTG PT. KAI 620,060 620 06:50 19:55 13.05
+
+# Page 1835: the same in case only, "Bandara SMO" and "Bandara Smo".
+# page 1835
+1 595 REGULER Bandara SMO Bandara Smo 1 CRB-SMO PT. KAI 126,402 126 05:30 08:15 02.45
+
+# Page 1837: the banner that claims no FAKULTATIF train, above one of the six
+# FAKULTATIF rows beneath it (see rows.BANNER_ERRATA).
+# page 1837
+KELAS KERETA API : COMMUTER LINE BANDARA SOETTA REGULER : 70 FAKULTATIF : 0
+3 805F-806F FAKULTATIF Commuter Line BST Commuter Line Bst 3 MRI-DU-BST PT. KCI 37,685 38 05:30 06:16 00.46
+
+# Page 1838: the Soetta section's footer, then the one banner whose counts
+# group their thousands, "1.055", and the total under it.
+# page 1838
+70 JUMLAH KERETA API DAN KM-KERETA API 2.907,470 2.907
+KELAS KERETA API : COMMUTER LINE DAOP 1 JAK REGULER : 1.055 FAKULTATIF : 24
+WILAYAH : JAWA JUMLAH : 1.079
+
+# Page 1854: Ketandan, a run over 1,000 km in the Barang Ternak section; R951,
+# the first of the four empty-stock moves that have no timetable; and R1, a
+# duty-roster row, which prints "-" for its identity number and is not a train.
+# page 1854
+1 2764F-2761F FAKULTATIF Ketandan Ketandan 1 KTG-SBI-KPB PT. KAI 1.037,411 1.037 22:20 01:45 03.25
+1 R951 REGULER Ejek Sidotopo Ejek Sidotopo 1 SBE-SDT PT. KAI 5,740 6 08:30 08:40 00.10
+1 R1 REGULER Dinas Rangkaian Anggrek - GMR-JAKK PT. KAI 5,404 5 16:27 16:40 00.13

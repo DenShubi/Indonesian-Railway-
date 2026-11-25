@@ -114,14 +114,31 @@ def cached_2026_pages() -> dict[str, str]:
 
 
 @pytest.fixture(scope='session')
-def cached_pages() -> dict[str, dict]:
-    """The whole register as parse_gapeka.py cached it, or a skip.
+def register_2026() -> dict[int, list[str]]:
+    return load_pages('register_2026.txt')
 
-    data/gapeka/pages.json is the committed extraction the pipeline runs off,
-    so a test may read it; the PDF it came from takes nine minutes and no test
-    opens that. A checkout that has not run the CLI yet skips instead.
-    """
-    path = pathlib.Path(__file__).resolve().parents[1] / 'data' / 'gapeka' / 'pages.json'
+
+@pytest.fixture(scope='session')
+def cached_2026_words() -> dict[str, list]:
+    """The twelve 2026 distance-table pages' word coordinates, as cached."""
+    path = (pathlib.Path(__file__).resolve().parents[1]
+            / 'data' / 'gapeka' / '2026' / 'words.json')
     if not path.exists():
-        pytest.skip('data/gapeka/pages.json missing - run scripts/parse_gapeka.py')
+        pytest.skip('data/gapeka/2026/words.json missing - run scripts/cache_gapeka_2026.py')
+    return json.loads(path.read_text(encoding='utf-8'))
+
+
+@pytest.fixture(scope='session')
+def cached_pages() -> dict[str, dict]:
+    """The whole 2025 register as parse_gapeka.py cached it, or a skip.
+
+    data/gapeka/2025/pages.json is committed. The pipeline now reads it only
+    for the one corridor 2026 does not print, but the 2025 parser tests and
+    the evidence for carrying that corridor forward run off it, so a test may
+    read it; the PDF it came from no test opens. Without it, these skip.
+    """
+    path = (pathlib.Path(__file__).resolve().parents[1]
+            / 'data' / 'gapeka' / '2025' / 'pages.json')
+    if not path.exists():
+        pytest.skip('data/gapeka/2025/pages.json missing - run scripts/parse_gapeka.py --force')
     return json.loads(path.read_text(encoding='utf-8'))

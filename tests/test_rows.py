@@ -1,12 +1,17 @@
 """The register's train rows, parsed straight from the text pdfplumber yields.
 
-Every row here is verbatim from tests/fixtures/register_rows.txt; the index
-constants name which quirk each line was chosen for.
+Every 2025 row here is verbatim from tests/fixtures/register_rows.txt, and the
+index constants name which quirk each line was chosen for. Every 2026 line is
+verbatim from tests/fixtures/register_2026.txt, by page; the few Section
+objects built by hand say so.
 """
+from types import SimpleNamespace
+
 import pytest
 
-from scripts.gapeka.rows import (CATEGORIES, category_for_page, parse_train_row,
-                                scan_categories, scan_sections)
+from scripts.gapeka.rows import (BANNER_ERRATA, CATEGORIES, BannerErratum, Section,
+                                 banner_disagreements, category_for_page, match_runs,
+                                 parse_train_row, scan_categories, scan_sections)
 
 PLAIN, YOGYAKARTA, VIA, FREIGHT, RAGGED = range(5)
 
@@ -130,3 +135,115 @@ def test_every_train_banner_tallies_over_the_whole_register(cached_pages):
     duty = [s for s in sections if not s.trains]
     assert all(s.klasifikasi == 'DINAS' for s in duty)
     assert sum(sum(s.claimed) for s in duty) == 464
+
+
+# GAPEKA 2026. Rows are verbatim from tests/fixtures/register_2026.txt, keyed
+# by page; the whole-register tests read the committed 2026 cache.
+
+def as_pages(register_2026, *pages):
+    return {str(page): '\n'.join(register_2026[page]) for page in pages}
+
+
+def test_a_2026_register_row_parses_with_seconds_omitted(register_2026):
+    row = parse_train_row(register_2026[1828][3])
+    assert row['no'] == '1' and row['dep'] == '08:15' and row['arr'] == '16:12'
+    assert row['km'] == 720.109 and row['service'] == 'Anggrek'
+
+
+def test_2025_rows_still_parse(register_rows):
+    assert parse_train_row(register_rows[PLAIN])['dep'] == '09:10'
+    assert len([line for line in register_rows if parse_train_row(line)]) == 5
+
+
+def test_a_run_over_a_thousand_km_groups_its_rounded_km(register_2026):
+    row = parse_train_row(register_2026[1829][0])     # "1.002,375 1.002"
+    assert (row['no'], row['km']) == ('82-83', 1002.375)
+    assert row['relasi'] == ('BD', 'KTG') and row['via'] == ('SGU',)
+
+
+def test_an_identity_spelled_otherwise_still_gives_one_service_name(register_2026):
+    assert parse_train_row(register_2026[1831][0])['service'] == 'Sri Tanjung'
+    assert parse_train_row(register_2026[1835][0])['service'] == 'Bandara SMO'
+    assert parse_train_row(register_2026[1837][1])['service'] == 'Commuter Line BST'
+
+
+def test_a_duty_roster_row_is_not_a_train(register_2026):
+    assert parse_train_row(register_2026[1854][2]) is None   # "Anggrek - GMR-JAKK"
+    assert parse_train_row(register_2026[1854][1])['no'] == 'R951'
+
+
+def test_a_banner_count_over_a_thousand_is_read_whole(register_2026):
+    sections = scan_sections(as_pages(register_2026, 1837, 1838))
+    soetta, jakarta = sections
+    assert jakarta.claimed == (1055, 24) and jakarta.jumlah == 1079
+    # The footer closing Soetta's section on the next page is Soetta's.
+    assert (soetta.footer_rows, soetta.footer_km) == (70, 2907.47)
+
+
+def test_a_stale_banner_erratum_is_refused():
+    soetta = Section('COMMUTER LINE BANDARA SOETTA', 'x', 'PERKOTAAN', 1837, 70, 0,
+                     tuple({'jenis': 'REGULER', 'km': 1.0} for _ in range(70)), 70)
+    with pytest.raises(ValueError, match='not the'):
+        banner_disagreements([soetta])                 # rows now meet the banner
+    with pytest.raises(ValueError, match='found 0'):
+        banner_disagreements([], BANNER_ERRATA)
+
+
+def test_an_erratum_excuses_only_the_split_never_the_total():
+    rows = tuple({'jenis': 'REGULER', 'km': 1.0} for _ in range(64)) + \
+        tuple({'jenis': 'FAKULTATIF', 'km': 1.0} for _ in range(6))
+    erratum = (BannerErratum(1, 'S', (70, 0), (64, 6)),)
+    assert banner_disagreements([Section('S', 'x', 'k', 1, 70, 0, rows, 70, 70, 70.0)],
+                                erratum) == []
+    assert banner_disagreements([Section('S', 'x', 'k', 1, 70, 0, rows, 71, 70, 70.0)],
+                                erratum) == ['S']      # JUMLAH says 71
+    assert banner_disagreements([Section('S', 'x', 'k', 1, 70, 0, rows, 70, 70, 69.0)],
+                                erratum) == ['S']      # footer km is a km short
+
+
+def test_every_banner_tallies_against_its_section(cached_2026_pages):
+    sections = scan_sections(cached_2026_pages)
+    trains = [s for s in sections if s.trains]
+    assert len(trains) == 19 and sum(len(s.trains) for s in trains) == 1815
+    assert banner_disagreements(sections) == []
+    # Without the erratum exactly one section is out, and only in its split.
+    assert banner_disagreements(sections, ()) == ['COMMUTER LINE BANDARA SOETTA']
+    # Every section's footer prints its km to the metre.
+    assert all(abs(sum(t['km'] for t in s.trains) - s.footer_km) < 0.0005 for s in trains)
+    # The fourteen duty rosters claim 538 movements that are not trains.
+    duty = [s for s in sections if not s.trains]
+    assert len(duty) == 14 and {s.klasifikasi for s in duty} == {'DINAS'}
+    assert sum(sum(s.claimed) for s in duty) == 538
+
+
+def test_the_soetta_banner_is_the_one_that_is_wrong(cached_2026_pages):
+    # An F in the number marks a FAKULTATIF row everywhere in 2026, the six
+    # Soetta rows included: so the rows are right, and the banner's 70/0 not.
+    trains = [t for s in scan_sections(cached_2026_pages) for t in s.trains]
+    assert all(('F' in t['no']) == (t['jenis'] == 'FAKULTATIF') for t in trains)
+    assert sum(t['jenis'] == 'FAKULTATIF' for t in trains) == 101
+
+
+def run(no):
+    return SimpleNamespace(no=no)
+
+
+def test_a_run_belongs_to_its_number_or_a_whole_part_of_a_paired_one():
+    register = ['1', '32-33', '2501-2504-2505-2508']
+    found = match_runs([run('1'), run('33'), run('2505'), run('3'), run('250')], register)
+    assert found == {'1': '1', '33': '32-33', '2505': '2501-2504-2505-2508'}
+
+
+def test_a_run_two_register_rows_claim_is_refused():
+    with pytest.raises(ValueError, match='belongs to register rows'):
+        match_runs([run('33')], ['32-33', '33-34'])
+
+
+def test_every_register_row_but_the_four_empty_stock_moves_has_a_run(cached_2026_pages):
+    from scripts.gapeka.timetables import parse_runs
+    runs = parse_runs(cached_2026_pages)
+    register = [t['no'] for s in scan_sections(cached_2026_pages) for t in s.trains]
+    found = match_runs(runs, register)
+    assert sorted(set(register) - set(found.values())) == ['R951', 'R952', 'R953', 'R954']
+    # And every one of the 2,089 runs has its register row.
+    assert len(found) == len(runs) == 2089

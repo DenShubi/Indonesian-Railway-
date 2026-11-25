@@ -2,15 +2,18 @@
 
 Every line fed to the parser here is verbatim from
 tests/fixtures/register_tables.txt, which holds pages 52, 55, 58, 62 and 63 of
-the register. Each test names the page it leans on and the quirk that page
-carries.
+the 2025 register. Each test names the page it leans on and the quirk that
+page carries. The 2026 tests at the end read the committed 2026 cache, and the
+2025 one where they compare the two editions.
 """
 import pytest
 
-from scripts.gapeka.tables import (ERRATA, Corridor, Erratum, Row,
-                                   apply_errata, parse_corridor_block,
-                                   parse_inline_pairs, parse_matrix_rows,
-                                   recover_vertical_codes, split_side_by_side)
+from scripts.gapeka.tables import (ALIASES_2026, CARRIED_2026, ERRATA, ERRATA_2026,
+                                   Alias, Carry, Corridor, Erratum, Row,
+                                   apply_errata, carry_forward, compare_editions,
+                                   parse_corridor_block, parse_inline_pairs,
+                                   parse_matrix_rows, recover_vertical_codes,
+                                   split_side_by_side)
 
 MATRIX_PAGES = (52, 53, 54, 55, 58, 62, 63)
 
@@ -457,3 +460,123 @@ def test_the_register_errata_are_named_and_hold_on_the_cached_register(
     kutoarjo, = (c for c in corridors if c.name == erratum.corridor)
     assert kutoarjo.stations[3] == ('KDG', 28.871)
     assert kutoarjo.stations[4] == ('WT', 35.637)
+
+
+# GAPEKA 2026
+@pytest.fixture(scope='module')
+def tables_2026(cached_2026_pages, cached_2026_words, cached_pages):
+    from scripts.parse_gapeka import network_2026
+    return network_2026(cached_2026_pages, cached_2026_words, cached_pages)
+
+
+@pytest.fixture(scope='module')
+def printed_2026(cached_2026_pages, cached_2026_words):
+    """The 2026 corridors as the tables print them, nothing carried in."""
+    from scripts.parse_gapeka import read_network
+    tables = {page: cached_2026_pages[page] for page in cached_2026_words}
+    return read_network(tables, cached_2026_words, ERRATA_2026, ALIASES_2026, '2026')[0]
+
+
+def test_no_2026_page_needs_vertical_text_recovery(cached_2026_pages, cached_2026_words):
+    # 2025 wrecked two headers into vertical text; 2026 prints all twelve
+    # pages' matrices whole, so the recovery finds nothing to do anywhere.
+    from scripts.parse_gapeka import recovered_pages
+    assert sorted(cached_2026_words, key=int) == [str(p) for p in range(1875, 1887)]
+    assert recovered_pages(cached_2026_pages, cached_2026_words) == {}
+
+
+def test_the_2026_tables_carry_the_wates_kedundang_erratum(tables_2026):
+    corridors, _ = tables_2026
+    kutoarjo, = (c for c in corridors if c.name == ERRATA_2026[0].corridor)
+    assert [c for c, _ in kutoarjo.stations][3:5] == ['KDG', 'WT']
+    assert kutoarjo.stations[3:5] == (('KDG', 28.871), ('WT', 35.637))
+    assert kutoarjo.source == 'GAPEKA 2026 page 1882'
+
+
+def test_benteng_is_read_as_sbe_and_its_tables_keep_their_printed_names(tables_2026):
+    corridors, _ = tables_2026
+    assert not any(code == 'BET' for c in corridors for code, _ in c.stations)
+    names = {c.name for c in corridors}
+    # The page's own routes, once BET reads as SBE: the third matrix names
+    # itself with SBE while labelling the same row BET.
+    assert {'SGU - SDT - SBE', 'SBE - SDT - STM - SBI'} <= names
+    benteng, = (c for c in corridors if c.name == 'SBE - SDT - STM - SBI')
+    assert benteng.stations[0] == ('SBE', 0.0) and benteng.stations[-1] == ('SBI', 10.176)
+    assert ALIASES_2026 == (Alias(1884, 'BET', 'SBE'),)
+
+
+def test_an_alias_for_a_code_nothing_prints_is_refused(cached_2026_pages, cached_2026_words):
+    from scripts.parse_gapeka import read_network
+    tables = {page: cached_2026_pages[page] for page in cached_2026_words}
+    with pytest.raises(ValueError, match='XYZ'):
+        read_network(tables, cached_2026_words, ERRATA_2026, (Alias(1, 'XYZ', 'SBE'),),
+                     '2026')
+
+
+def test_the_editions_agree_everywhere_but_serpong(printed_2026, cached_pages):
+    # The evidence for carrying Tegal - Cepu forward. If 2026 ever disagrees
+    # with 2025 anywhere else, this fails, and the carry has to be argued again.
+    from scripts.parse_gapeka import read_network
+    previous, _ = read_network(cached_pages)
+    differences = compare_editions(printed_2026, previous)
+    assert len(differences) == 36 == len(printed_2026)           # every 2026 table
+    assert {name: diff for name, diff in differences.items() if diff} == {
+        'THB - KEN - MER': [(5, ('SRP', 24.278), ('SRP', 23.201))]}
+    # And the one 2025 table 2026 does not print is the one carried.
+    missing = {c.name for c in previous} - {c.name for c in printed_2026}
+    assert missing == {carry.corridor for carry in CARRIED_2026}
+
+
+def test_page_1880_prints_the_main_lines_title_but_no_matrix(cached_2026_pages, printed_2026):
+    carry, = CARRIED_2026
+    assert carry.title in cached_2026_pages[str(carry.page)].split('\n')
+    assert carry.corridor not in {c.name for c in printed_2026}
+    # The thirteen stations strictly between Brumbung and Cepu label no 2026
+    # matrix row at all: only the 2025 table measures them.
+    labels = {row.code for page in range(1875, 1887)
+              for line in cached_2026_pages[str(page)].split('\n')
+              for row in parse_matrix_rows(line)}
+    between = ['TGW', 'GUB', 'KGT', 'SDI', 'NBO', 'JBN', 'PNL', 'KNN', 'SL', 'DPL',
+               'RBG', 'WDU', 'KPA']
+    assert not set(between) & labels
+
+
+def test_the_carried_corridor_is_the_2025_table_and_says_so(tables_2026, cached_pages):
+    from scripts.parse_gapeka import read_network
+    corridors, _ = tables_2026
+    carried, = (c for c in corridors if c.name == CARRIED_2026[0].corridor)
+    old, = (c for c in read_network(cached_pages)[0] if c.name == carried.name)
+    assert carried.stations == old.stations and len(carried.stations) == 37
+    assert carried.source.startswith('GAPEKA 2025 page 57, carried forward')
+    assert len(corridors) == 37
+    assert {c.source.split(' page')[0] for c in corridors} == {'GAPEKA 2026', 'GAPEKA 2025'}
+
+
+def test_a_carry_the_new_edition_no_longer_needs_is_refused():
+    main = Corridor('TG - CU', (('TG', 0.0), ('CU', 288.966)))
+    carry = (Carry('TG - CU', 1880, 'TEGAL - CEPU'),)
+    with pytest.raises(ValueError, match='hide the new table'):
+        carry_forward([main], [main], carry)
+    with pytest.raises(ValueError, match='found 0'):
+        carry_forward([], [], carry)
+    carried, = carry_forward(
+        [], [Corridor('TG - CU', main.stations, 'GAPEKA 2025 page 57')], carry)
+    assert carried.stations == main.stations and 'carried forward' in carried.source
+
+
+def test_brumbung_needs_the_carried_main_line(tables_2026, printed_2026):
+    from scripts.gapeka.topology import JUNCTIONS, build_topology
+    corridors, pairs = tables_2026
+    with pytest.raises(ValueError, match='out of date'):
+        build_topology(printed_2026, pairs, JUNCTIONS)
+    graph = build_topology(corridors, pairs, JUNCTIONS)
+    assert graph.graph['conflicts'] == ()
+    assert {(s.code, s.offset) for s in graph.graph['splits']} == \
+        {('BBG', 0.88), ('CNP', 0.006), ('KH', 0.243)}
+
+
+def test_an_erratum_keeps_its_corridors_source():
+    kutoarjo = Corridor(ERRATA_2026[0].corridor, (
+        ('KTA', 0.0), ('JN', 13.707), ('WJ', 21.985), ('WT', 28.871), ('KDG', 35.637)),
+        'GAPEKA 2026 page 1882')
+    assert apply_errata([kutoarjo], ERRATA_2026)[0].source == 'GAPEKA 2026 page 1882'

@@ -1,45 +1,49 @@
-"""Extract the GAPEKA 2025 register once, and keep what it says; and parse the
-2026 timetables from their committed cache.
+"""Read GAPEKA 2026 from its committed cache, and keep what it says.
 
-"Train Timetables/GAPEKA Jadwal Kereta.pdf" is Lampiran II of DJKA decree
-KP-DJKA 224/2024 and it is the primary source for every train on Java. This
-script is the only thing in the pipeline that opens it: every page's text goes
-once into data/gapeka/pages.json and later runs read that back unless --force
-is passed, so nothing downstream -- and no test -- needs pdfplumber at all.
-Three files come out of it:
-
-  pages.json     the extraction itself, text per page, plus the per-word
-                 coordinates for the twelve pages that print a distance matrix
-  trains.json    1,775 trains, each with the category of the section it is in
-  network.json   37 corridor chains and 6 inline branch pairs, 396 stations
-
-pages.json keeps word coordinates only for the matrix pages because those are
-the only pages any parser reads them on -- tables.recover_vertical_codes()
-de-interleaves the two wrecked headers from them -- and all 64 pages of
-coordinates would triple the file for nothing. The whole extraction takes about
-half a minute, measured, and is deterministic: a --force re-run writes the same
-656 kB byte for byte.
-
-Which pages hold what is read off the register rather than hardcoded. A train
-section starts at a "KELAS KERETA API" banner, so rows.scan_sections() finds
-the train tables wherever they are. The distance tables are the pages that
-print a matrix row; a page's inline branch pairs ("KEN-CGD 6,439") are taken
-only from those pages, because the register's duty rosters on pages 32-40 put
-a station pair next to a distance in every row -- "R1100 ... KRL DP-BOO 22,126"
--- and reading those as branches would wire Solo to Yogyakarta direct and
-short-circuit half the island.
-
-GAPEKA 2026 is read differently: its 61 MB PDF is not in the repository, so
-scripts/cache_gapeka_2026.py extracts it once, by hand, into the committed
-data/gapeka/2026/pages.json, and this script reads only that. From it comes
+GAPEKA 2026 (decree KP-DJKA 116/2026, valid from 1 December 2026) is the
+source for every train on Java. Its 61 MB PDF is not in the repository:
+scripts/cache_gapeka_2026.py extracts it once, by hand, into
+data/gapeka/2026/pages.json (page text) and words.json (the word coordinates
+of the twelve distance-table pages), and this script reads only those. Three
+files come out of it:
 
   timetables.json  2,089 timetabled runs, one record per run:
                    {no, service, origin, destination,
                     rows: [[code, name, max_kmh, arr, dep, kind, note]]}
+                   times as printed, in seconds from midnight, rolled past
+                   86,400 where a run crosses midnight, null where a row
+                   prints none. Estimated times are not stored: they need
+                   routed distances, which only exist at bundle time.
+  trains.json      the register, pages 1828-1863: 1,815 trains in nineteen
+                   sections, each with its category and the timetabled runs
+                   that make it up
+  network.json     the distance tables, pages 1875-1886: 37 corridors, each
+                   with the edition and page it was read from, and 6 inline
+                   branch pairs
 
-with times as printed, in seconds from midnight and rolled past 86,400 where a
-run crosses midnight, and null where a row prints none. Estimated times are
-not stored: they need routed distances, which only exist at bundle time.
+The register and the distance tables are no longer sources of times; they are
+the independent checks on distance. Two corrections are applied to the 2026
+tables, both named in tables.py with their evidence: Benteng's BET is read as
+SBE (ALIASES_2026), and the Tegal - Cepu main line, whose matrix page 1880
+does not print, is carried forward from 2025 (CARRIED_2026). The Wates /
+Kedundang transposition is corrected in 2026 as it was in 2025 (ERRATA_2026).
+
+GAPEKA 2025, "Train Timetables/GAPEKA Jadwal Kereta.pdf" (KP-DJKA 224/2024), is
+read for that carried corridor only. Its cache, data/gapeka/2025/pages.json,
+is committed; --force re-extracts it from the PDF, which takes about half a
+minute and writes the same 656 kB byte for byte. That cache keeps word
+coordinates only for its matrix pages, the only pages any parser reads them on.
+
+Which pages hold what is read off the document rather than hardcoded, except
+the distance tables' twelve pages, which are the only pages words.json holds:
+a train section starts at a "KELAS KERETA API" banner, so rows.scan_sections()
+finds the register wherever it is. Inline branch pairs ("KEN-CGD 6,439") are
+taken only from distance-table pages, because the register's duty rosters
+put a station pair next to a distance in every row -- "R1100 ... KRL DP-BOO
+22,126" -- and reading those as branches would wire Solo to Yogyakarta direct.
+
+Every count below is asserted before anything is written, so a parse that went
+wrong leaves the last good files in place.
 
 Usage:  python scripts/parse_gapeka.py [--force]
 """
@@ -47,44 +51,45 @@ import json
 import pathlib
 import sys
 
-import pdfplumber
+import networkx as nx
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from gapeka.rows import SECTION_CATEGORIES, scan_sections            # noqa: E402
-from gapeka.tables import (apply_errata, parse_corridor_block,       # noqa: E402
-                           parse_inline_pairs, parse_matrix_rows,
-                           recover_vertical_codes)
+from gapeka.rows import (SECTION_CATEGORIES, banner_disagreements,   # noqa: E402
+                         match_runs, scan_sections)
+from gapeka.tables import (ALIASES_2026, ERRATA, ERRATA_2026,        # noqa: E402
+                           apply_errata, carry_forward, compare_editions,
+                           parse_corridor_block, parse_inline_pairs,
+                           parse_matrix_rows, recover_vertical_codes)
 from gapeka.timetables import DAY, KINDS, parse_runs, run_record     # noqa: E402
+from gapeka.topology import JUNCTIONS, build_topology, station       # noqa: E402
 
-PDF = ROOT / 'Train Timetables' / 'GAPEKA Jadwal Kereta.pdf'
 OUT = ROOT / 'data' / 'gapeka'
-
-# What this edition holds. Asserted rather than merely printed: the page roles
-# are discovered, so a discovery that goes wrong has to fail loudly instead of
-# quietly writing a smaller network for the rest of the pipeline to build on.
-TRAINS = 1775
-SECTIONS = 18
-CORRIDORS = 37
-CODES = 396
-
-# What the 2026 timetables hold, asserted for the same reason. The parser
-# cross-checks each run's numbering and ends itself; these catch a cache that
-# has lost or gained pages.
+PDF_2025 = ROOT / 'Train Timetables' / 'GAPEKA Jadwal Kereta.pdf'
+PAGES_2025 = OUT / '2025' / 'pages.json'
 PAGES_2026 = OUT / '2026' / 'pages.json'
-RUNS_2026 = 2089
-ROWS_2026 = 48685
-CODES_2026 = 466
+WORDS_2026 = OUT / '2026' / 'words.json'
+
+# What GAPEKA 2026 holds. Asserted rather than merely printed: the page roles
+# are discovered, so a discovery that goes wrong has to fail loudly instead of
+# quietly writing less for the rest of the pipeline to build on. The timetable
+# parser cross-checks each run's numbering and ends itself; these catch a cache
+# that has lost or gained pages.
+RUNS = 2089
+ROWS = 48685
+TIMETABLE_CODES = 466
+TRAINS = 1815
+SECTIONS = 19
+CORRIDORS = 37                  # 36 printed, 1 carried forward from 2025
+NETWORK_CODES = 396
+# The register rows no timetable belongs to: the four empty-stock moves round
+# Sidotopo, Barang Dinas (EJEK), which no passenger rides and nobody draws.
+UNTIMETABLED = ['R951', 'R952', 'R953', 'R954']
 
 
-def extract(path: pathlib.Path) -> dict[str, dict]:
-    """Every page of the register as {"<page>": {"text", "words"?}}.
-
-    Keyed on the page index as a string, because that is what JSON gives back
-    and sorting on int(key) is the only thing that reads it. Coordinates are
-    rounded to a tenth of a point, which is finer than any gap tables.py
-    measures and halves the file.
-    """
+def extract_2025(path: pathlib.Path) -> dict[str, dict]:
+    """Every page of the 2025 register as {"<page>": {"text", "words"?}}."""
+    import pdfplumber           # only --force needs it
     pages = {}
     with pdfplumber.open(path) as pdf:
         for at, page in enumerate(pdf.pages):
@@ -99,51 +104,88 @@ def extract(path: pathlib.Path) -> dict[str, dict]:
     return pages
 
 
-def read_pages(force: bool) -> dict[str, dict]:
-    """The cached extraction, extracting it first if it is missing or stale."""
-    path = OUT / 'pages.json'
-    if path.exists() and not force:
-        pages = json.loads(path.read_text(encoding='utf-8'))
-        print(f'{path.relative_to(ROOT)}: {len(pages)} pages cached '
-              f'({path.stat().st_size / 1e6:.1f} MB) - pass --force to re-extract')
-        return pages
-    if not PDF.exists():
-        raise SystemExit(f'missing {PDF.relative_to(ROOT)}')
-    print(f'extracting {PDF.name}...')
-    pages = extract(PDF)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(pages, separators=(',', ':')), encoding='utf-8')
-    print(f'  -> {path.relative_to(ROOT)} '
-          f'({path.stat().st_size / 1e6:.1f} MB, {len(pages)} pages)')
+def read_2025(force: bool) -> dict[str, dict]:
+    """The cached 2025 extraction, extracting it first if asked to."""
+    if PAGES_2025.exists() and not force:
+        return json.loads(PAGES_2025.read_text(encoding='utf-8'))
+    if not PDF_2025.exists():
+        raise SystemExit(f'missing {PDF_2025.relative_to(ROOT)}')
+    print(f'extracting {PDF_2025.name}...')
+    pages = extract_2025(PDF_2025)
+    PAGES_2025.parent.mkdir(parents=True, exist_ok=True)
+    PAGES_2025.write_text(json.dumps(pages, separators=(',', ':')), encoding='utf-8')
+    print(f'  -> {PAGES_2025.relative_to(ROOT)} ({PAGES_2025.stat().st_size / 1e6:.1f} MB)')
     return pages
 
 
-def read_network(pages: dict[str, dict]) -> tuple[list, list]:
+def read_2026() -> tuple[dict[str, str], dict[str, list]]:
+    for path in (PAGES_2026, WORDS_2026):
+        if not path.exists():
+            raise SystemExit(f'missing {path.relative_to(ROOT)} - run '
+                             f'scripts/cache_gapeka_2026.py <pdf> first')
+    return (json.loads(PAGES_2026.read_text(encoding='utf-8')),
+            json.loads(WORDS_2026.read_text(encoding='utf-8')))
+
+
+def _text(page) -> str:
+    return page if isinstance(page, str) else page['text']
+
+
+def read_network(pages: dict, words: dict | None = None, errata=ERRATA,
+                 aliases=(), edition: str = '2025') -> tuple[list, list]:
     """The corridor chains and inline branch pairs, from the matrix pages.
 
-    The register's known misprints are corrected here, after parsing, by
-    tables.apply_errata(), so that the parse reads what the page prints and the
-    correction is one named table rather than a special case inside a parser.
+    `pages` is either cache shape; `words` is 2026's separate words.json, and
+    when it is left out each page's own "words" are read, as 2025 caches them.
+    Each corridor's `source` names the edition and page it was read from.
+
+    The known misprints are corrected after parsing, by tables.apply_errata(),
+    so that the parse reads what the page prints and the correction is one
+    named table rather than a special case inside a parser. An alias whose
+    printed code no matrix row carries raises ValueError: it is out of date.
     """
-    corridors, pairs = [], []
+    alias = {a.printed: a.code for a in aliases}
+    corridors, pairs, printed = [], [], set()
     for page in sorted(pages, key=int):
-        lines = [line for line in pages[page]['text'].split('\n') if line.strip()]
-        if not any(parse_matrix_rows(line) for line in lines):
+        lines = [line for line in _text(pages[page]).split('\n') if line.strip()]
+        rows = [row for line in lines for row in parse_matrix_rows(line)]
+        if not rows:
             continue
-        words = pages[page].get('words', [])
-        found = parse_corridor_block(lines, recover_vertical_codes(words, int(page)))
-        corridors.extend(found)
+        printed |= {row.code for row in rows}
+        found = words.get(page, []) if words is not None else pages[page].get('words', [])
+        for corridor in parse_corridor_block(
+                lines, recover_vertical_codes(found, int(page)), alias):
+            corridors.append(type(corridor)(corridor.name, corridor.stations,
+                                            f'GAPEKA {edition} page {page}'))
         for line in lines:
-            pairs.extend(parse_inline_pairs(line))
-    return apply_errata(corridors), pairs
+            pairs.extend((alias.get(a, a), alias.get(b, b), km)
+                         for a, b, km in parse_inline_pairs(line))
+    stale = sorted(a.printed for a in aliases if a.printed not in printed)
+    if stale:
+        raise ValueError(f'aliases for codes no matrix row prints: {stale}')
+    return apply_errata(corridors, errata), pairs
 
 
-def write_timetables() -> None:
-    """data/gapeka/timetables.json, from the committed 2026 page cache."""
-    if not PAGES_2026.exists():
-        raise SystemExit(f'missing {PAGES_2026.relative_to(ROOT)} - run '
-                         f'scripts/cache_gapeka_2026.py <pdf> first')
-    runs = parse_runs(json.loads(PAGES_2026.read_text(encoding='utf-8')))
+def recovered_pages(pages: dict, words: dict) -> dict[str, dict[int, str]]:
+    """Each page on which vertical-text recovery found codes, and what it found."""
+    out = {}
+    for page in sorted(words, key=int):
+        codes = recover_vertical_codes(words[page], int(page))
+        if codes:
+            out[page] = codes
+    return out
+
+
+def network_2026(pages: dict, words: dict, pages_2025: dict) -> tuple[list, list]:
+    """2026's corridors with the carried one added, and its inline pairs."""
+    tables = {page: pages[page] for page in words}
+    printed, pairs = read_network(tables, words, ERRATA_2026, ALIASES_2026, '2026')
+    previous, _ = read_network(pages_2025)
+    return carry_forward(printed, previous), pairs
+
+
+def timetables(pages: dict) -> list:
+    runs = parse_runs(pages)
     rows = [row for run in runs for row in run.rows]
     codes = {row.code for row in rows}
     print(f'{len(runs)} timetabled runs, {len(rows)} station rows, {len(codes)} codes')
@@ -159,50 +201,95 @@ def write_timetables() -> None:
     crossing = sum(1 for run in runs if printed(run)[-1] >= DAY)
     print(f'  {crossing} runs cross midnight; the longest, KA {longest.no} '
           f'{longest.service}, takes {span(longest) // 3600} h {span(longest) % 3600 // 60} min')
-
-    # Checked before anything is written, so a parse that went wrong leaves
-    # the last good timetables.json in place rather than replacing it.
-    if (len(runs), len(rows), len(codes)) != (RUNS_2026, ROWS_2026, CODES_2026):
-        raise SystemExit(f'expected {RUNS_2026} runs, {ROWS_2026} rows and {CODES_2026} '
+    if (len(runs), len(rows), len(codes)) != (RUNS, ROWS, TIMETABLE_CODES):
+        raise SystemExit(f'expected {RUNS} runs, {ROWS} rows and {TIMETABLE_CODES} '
                          f'codes; got {len(runs)}, {len(rows)}, {len(codes)}')
-    path = OUT / 'timetables.json'
-    path.write_text(json.dumps({'runs': [run_record(run) for run in runs]},
-                               separators=(',', ':')), encoding='utf-8')
-    print(f'  -> {path.relative_to(ROOT)} ({path.stat().st_size / 1e6:.1f} MB)\n')
+    return runs
+
+
+def register(pages: dict, runs: list) -> tuple[list, list]:
+    """The register's trains, each with its runs, and its sections."""
+    sections = scan_sections(pages)
+    counted = [s for s in sections if s.trains]
+    duty = [s for s in sections if not s.trains]
+    print(f'\n{sum(len(s.trains) for s in counted)} trains in {len(counted)} sections '
+          f'({len(duty)} duty-roster sections hold no train rows)')
+    for s in counted:
+        note = '' if s.tally == s.claimed else \
+            f'   banner says {s.claimed[0]}/{s.claimed[1]} (BANNER_ERRATA)'
+        print(f'  p{s.page:<4d} {s.name:<30s} {s.category:<24s}'
+              f' {s.tally[0]:>4d} reguler {s.tally[1]:>3d} fakultatif{note}')
+    off = banner_disagreements(sections)
+    if off:
+        raise SystemExit(f'sections disagreeing with their own printed counts: {off}')
+    guessed = sorted(s.name for s in counted if s.name not in SECTION_CATEGORIES)
+    if guessed:
+        raise SystemExit(f'sections with no category in SECTION_CATEGORIES: {guessed}')
+
+    trains = [dict(t, category=s.category, section=s.name) for s in counted for t in s.trains]
+    belongs = match_runs(runs, [t['no'] for t in trains])
+    orphans = [run.no for run in runs if run.no not in belongs]
+    if orphans:
+        # None in 2026. A run with no register row has no category but the
+        # one its timetable section implies, and choosing that is a decision
+        # for a person, not a default for this script.
+        raise SystemExit(f'timetabled runs with no register row: {orphans}')
+    legs: dict[str, list[str]] = {}
+    for run in runs:
+        legs.setdefault(belongs[run.no], []).append(run.no)
+    for train in trains:
+        train['runs'] = legs.get(train['no'], [])
+    untimed = sorted(t['no'] for t in trains if not t['runs'])
+    print(f'  {len(runs)} runs belong to {len(legs)} register rows; '
+          f'{len(untimed)} rows have no timetable: {untimed}')
+    if (len(trains), len(counted), untimed) != (TRAINS, SECTIONS, UNTIMETABLED):
+        raise SystemExit(f'expected {TRAINS} trains in {SECTIONS} sections, untimetabled '
+                         f'{UNTIMETABLED}; got {len(trains)}, {len(counted)}, {untimed}')
+    return trains, sections
+
+
+def network(pages: dict, words: dict, pages_2025: dict) -> tuple[list, list, list]:
+    recovered = recovered_pages(pages, words)
+    print(f'\nvertical-text recovery: '
+          f'{"needed on pages " + str(sorted(recovered)) if recovered else "needed on no page"}')
+    corridors, pairs = network_2026(pages, words, pages_2025)
+    previous, _ = read_network(pages_2025)
+    changed = {name: diff for name, diff in compare_editions(corridors, previous).items()
+               if diff}
+    codes = sorted({code for c in corridors for code, _ in c.stations}
+                   | {code for pair in pairs for code in pair[:2]})
+    print(f'{len(corridors)} corridors, {len(pairs)} inline pairs, {len(codes)} codes')
+    for c in corridors:
+        print(f'  {c.name:<40s} {len(c.stations):>3d} stations  {c.source}')
+    for name, diff in changed.items():
+        print(f'  changed since 2025: {name}: {diff}')
+    graph = build_topology(corridors, pairs, JUNCTIONS)
+    if graph.graph['conflicts']:
+        raise SystemExit(f'edges measured two ways: {graph.graph["conflicts"]}')
+    if nx.number_connected_components(graph) != 1:
+        raise SystemExit(f'the network falls into {nx.number_connected_components(graph)} '
+                         f'pieces')
+    if (len(corridors), len(codes)) != (CORRIDORS, NETWORK_CODES):
+        raise SystemExit(f'expected {CORRIDORS} corridors over {NETWORK_CODES} codes; '
+                         f'got {len(corridors)}, {len(codes)}')
+    print(f'  one graph: {len({station(n) for n in graph})} stations, '
+          f'{graph.number_of_edges()} edges, junctions split at '
+          f'{", ".join(s.code for s in graph.graph["splits"])}')
+    return corridors, pairs, codes
 
 
 def main() -> None:
     force = '--force' in sys.argv[1:]
+    pages, words = read_2026()
+    pages_2025 = read_2025(force)
+    runs = timetables(pages)
+    trains, sections = register(pages, runs)
+    corridors, pairs, codes = network(pages, words, pages_2025)
+
     OUT.mkdir(parents=True, exist_ok=True)
-    write_timetables()
-    pages = read_pages(force)
-
-    sections = scan_sections(pages)
-    trains = [dict(train, category=section.category, section=section.name)
-              for section in sections for train in section.trains]
-    counted = [section for section in sections if section.trains]
-    duty = [section for section in sections if not section.trains]
-    print(f'\n{len(trains)} trains in {len(counted)} sections '
-          f'({len(duty)} duty-roster sections hold no train rows)')
-    for section in counted:
-        flag = '' if section.tally == section.claimed else '   !! banner says ' \
-            f'{section.claimed[0]}/{section.claimed[1]}'
-        print(f'  p{section.page:<3d} {section.name:<30s} {section.category:<30s}'
-              f' {section.tally[0]:>4d} reguler {section.tally[1]:>3d} fakultatif{flag}')
-    off = [s.name for s in counted if s.tally != s.claimed]
-    if off:
-        raise SystemExit(f'sections disagreeing with their own banner: {off}')
-
-    corridors, pairs = read_network(pages)
-    codes = sorted({code for c in corridors for code, _ in c.stations}
-                   | {code for pair in pairs for code in pair[:2]})
-    relasi = {(t['relasi'][0], t['relasi'][1], t['via']) for t in trains}
-    print(f'\n{len(corridors)} corridors, {len(pairs)} inline pairs, '
-          f'{len(codes)} station codes, {len(relasi)} distinct relasi')
-    guessed = sorted(s.name for s in counted if s.name not in SECTION_CATEGORIES)
-    if guessed:
-        print(f'  !! sections whose category had to be guessed at: {guessed}')
-
+    (OUT / 'timetables.json').write_text(json.dumps(
+        {'runs': [run_record(run) for run in runs]}, separators=(',', ':')),
+        encoding='utf-8')
     (OUT / 'trains.json').write_text(json.dumps({
         'trains': trains,
         'sections': [{'name': s.name, 'category': s.category,
@@ -211,22 +298,16 @@ def main() -> None:
                       'rows': len(s.trains)} for s in sections],
     }, separators=(',', ':')), encoding='utf-8')
     (OUT / 'network.json').write_text(json.dumps({
-        'corridors': [{'name': c.name, 'stations': [[code, km]
-                                                    for code, km in c.stations]}
+        'corridors': [{'name': c.name, 'source': c.source,
+                       'stations': [[code, km] for code, km in c.stations]}
                       for c in corridors],
         'pairs': [[a, b, km] for a, b, km in pairs],
         'codes': codes,
     }, separators=(',', ':')), encoding='utf-8')
-    for name in ('trains.json', 'network.json'):
+    print()
+    for name in ('timetables.json', 'trains.json', 'network.json'):
         path = OUT / name
         print(f'  -> {path.relative_to(ROOT)} ({path.stat().st_size / 1e3:.0f} kB)')
-
-    if (len(trains), len(counted), len(corridors), len(codes)) != \
-            (TRAINS, SECTIONS, CORRIDORS, CODES):
-        raise SystemExit(
-            f'expected {TRAINS} trains in {SECTIONS} sections and {CORRIDORS} '
-            f'corridors over {CODES} codes; got {len(trains)}, {len(counted)}, '
-            f'{len(corridors)}, {len(codes)}')
 
 
 if __name__ == '__main__':

@@ -74,7 +74,7 @@ merges or rebases them. That is the topology layer's job, and it needs both
 numbers to do it.
 """
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 # An Indonesian-formatted distance: thousands grouped with ".", one to three
 # decimals after the ",". The "," is required, because the only tokens that
@@ -131,8 +131,14 @@ class Row:
 
 @dataclass(frozen=True)
 class Corridor:
+    """One distance table as a chain of (code, km from its head).
+
+    `source` says where the table was read: the edition and page, and whether
+    it was carried forward from an older edition. Empty when nobody said.
+    """
     name: str
     stations: tuple[tuple[str, float], ...]
+    source: str = ''
 
 
 def _km(text: str) -> float:
@@ -398,7 +404,8 @@ def _chain(group: list[Row], codes: dict[int, str]) -> tuple[tuple[str, float], 
 
 
 def parse_corridor_block(lines: list[str],
-                         codes: dict[int, str] | None = None) -> list[Corridor]:
+                         codes: dict[int, str] | None = None,
+                         aliases: dict[str, str] | None = None) -> list[Corridor]:
     """The corridors on these lines, which may be one block or a whole page.
 
     Each corridor is named for the code route printed above its block, matched
@@ -421,9 +428,18 @@ def parse_corridor_block(lines: list[str],
     it and a corridor the page wrecked comes back whole; leave it out and that
     corridor comes back with its hole, which is what every caller that has only
     the page text gets.
+
+    `aliases` maps a code as printed to the code it stands for (see ALIASES),
+    and is applied to row labels and code routes alike before anything is
+    named, so a corridor whose labels and route spell a station differently
+    still gets its printed route as its name.
     """
-    rows = [row for line in lines for row in parse_matrix_rows(line)]
-    routes = _routes(lines)
+    aliases = aliases or {}
+    rows = [Row(aliases.get(row.code, row.code), row.index, row.values)
+            for line in lines for row in parse_matrix_rows(line)]
+    routes = [' - '.join(aliases.get(code, code) for code in route.split(' - '))
+              for route in _routes(lines)]
+    codes = {index: aliases.get(code, code) for index, code in (codes or {}).items()}
     spent: set[int] = set()
     out = []
     for group in split_side_by_side(rows):
@@ -502,5 +518,106 @@ def apply_errata(corridors: list[Corridor],
         stations[first], stations[second] = (
             (stations[second][0], stations[first][1]),
             (stations[first][0], stations[second][1]))
-        out[at[0]] = Corridor(erratum.corridor, tuple(stations))
+        out[at[0]] = replace(out[at[0]], stations=tuple(stations))
+    return out
+
+# GAPEKA 2026 reprints the same transposition on its own Kutoarjo table, page
+# 1882: KTA JN WJ WT KDG STL, Wates at 28,871 and Kedundang at 35,637, to the
+# metre what 2025 printed. Everything ERRATA's comment gives still holds, and a
+# fourth witness is new: 24 of the 2026 timetables run Wojo, Kedundang, Wates,
+# Sentolo, in that order.
+ERRATA_2026 = (
+    Erratum(1882, 'KTA - KDG - YK - PWS - SLO - WK', (4, 5), ('WT', 'KDG')),
+)
+
+
+@dataclass(frozen=True)
+class Alias:
+    """A station the tables print under another code than everything else uses."""
+    page: int
+    printed: str
+    code: str
+
+
+ALIASES_2026 = (
+    # Benteng, Surabaya. Page 1884 prints it as BET in the row labels of two
+    # matrices and in the route "SGU - SDT - BET", but as SBE in the third
+    # matrix's own route and header row ("SBE - SDT - STM - SBI", "SBE SDT SB
+    # STM SBI") -- one station, two spellings, on one page. The 2026 timetables
+    # call it SBE ("Benteng (SBE)", KA 2514), so does OSM, and so did the 2025
+    # tables, at identical km: SGU - SDT - SBE 9,194 and SBE - SBI 10,176 in
+    # both editions. BET appears nowhere else in the document.
+    Alias(1884, 'BET', 'SBE'),
+)
+
+
+@dataclass(frozen=True)
+class Carry:
+    """A corridor an edition names but does not print, taken from the last one.
+
+    `page` is where the new edition prints `title`, the corridor's full-name
+    title, with no matrix under it.
+    """
+    corridor: str
+    page: int
+    title: str
+
+
+CARRIED_2026 = (
+    # The north-coast main line, Tegal - Semarang - Brumbung - Gambringan - Cepu.
+    # Page 1880 prints its title first of three, then the matrices of the other
+    # two (TG - BBG - GD and GBN - GD), and no matrix for it: not as text, and
+    # not as an image, because the page has none. The 2025 table stands in, on
+    # the evidence compare_editions() measures and the suite pins: of the 36
+    # corridors both editions print, 35 are identical station for station, and
+    # the one that is not, Tanah Abang - Merak, moved one station, Serpong, from
+    # km 24.278 to 23.201. So the carried table could be stale by about a
+    # kilometre in places, which the distance check tolerates; it feeds that
+    # check and the Brumbung junction, never a time and never the geometry.
+    Carry('TG - SMT - BBG - GBN - CU', 1880,
+          'TEGAL - SEMARANG TAWANG - BRUMBUNG - GAMBRINGAN - CEPU'),
+)
+
+
+def carry_forward(current: list[Corridor], previous: list[Corridor],
+                  carried: tuple[Carry, ...] = CARRIED_2026) -> list[Corridor]:
+    """The current edition's corridors, plus each carried one from `previous`.
+
+    A carried corridor keeps the previous edition's stations exactly and says
+    so in its `source`. Raises ValueError when the current edition prints the
+    corridor after all -- the carry is then out of date and would hide the new
+    table -- or when the previous edition does not have it exactly once.
+    """
+    out = list(current)
+    for carry in carried:
+        if any(c.name == carry.corridor for c in current):
+            raise ValueError(f'{carry.corridor} is printed in this edition; '
+                             f'carrying it forward would hide the new table')
+        old = [c for c in previous if c.name == carry.corridor]
+        if len(old) != 1:
+            raise ValueError(f'expected one {carry.corridor} to carry forward, '
+                             f'found {len(old)}')
+        out.append(replace(old[0], source=f'{old[0].source}, carried forward: page '
+                                          f'{carry.page} prints its title but no matrix'))
+    return out
+
+
+def compare_editions(current: list[Corridor],
+                     previous: list[Corridor]) -> dict[str, list[tuple]]:
+    """How each corridor both editions print differs between them.
+
+    Corridor name -> its differing stations as (position, previous (code, km),
+    current (code, km)), with an empty list for an identical corridor. A
+    corridor whose station count changed lists every position either has.
+    """
+    old = {c.name: c.stations for c in previous}
+    out = {}
+    for corridor in current:
+        if corridor.name not in old:
+            continue
+        a, b = old[corridor.name], corridor.stations
+        out[corridor.name] = [
+            (at, a[at] if at < len(a) else None, b[at] if at < len(b) else None)
+            for at in range(max(len(a), len(b)))
+            if at >= len(a) or at >= len(b) or a[at] != b[at]]
     return out
