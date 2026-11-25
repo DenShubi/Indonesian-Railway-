@@ -61,6 +61,7 @@ Three things about this graph that are not obvious from the chains.
     left once the three junctions are split.
 """
 import collections
+import itertools
 from dataclasses import dataclass
 
 import networkx as nx
@@ -275,18 +276,33 @@ def route_relasi(graph: nx.Graph, origin: str, destination: str,
     the chain can pass the same station twice. km accumulates edge by edge and
     is therefore non-decreasing whatever the chain revisits.
 
+    A split junction (graph.graph['nodes']) is one station with a node per
+    line, so wherever it is a waypoint -- origin, via or destination -- each of
+    its nodes is tried in that place and the shortest combination is kept.
+    Taking the plain code alone would make a train on the other line run past
+    the junction to the plain node and back: SMT - TGG via ATA, BBG would go
+    BBG@GD, BBG, BBG@GD and carry Brumbung's 0.88 km offset twice, 26.455 km
+    where the Gundih line prints 24.695.
+
     Raises nx.NodeNotFound for a code the tables do not carry and
     nx.NetworkXNoPath when no route exists, rather than returning a chain that
     cuts across country: the spec's first anti-goal is a map implying
     precision it does not have, and a silently straightened leg is that.
     """
-    chain = [(origin, 0.0)]
+    nodes = graph.graph.get('nodes', {})
     waypoints = [origin, *via, destination]
-    for start, end in zip(waypoints, waypoints[1:]):
-        path = nx.shortest_path(graph, start, end, weight='weight')
-        for a, b in zip(path, path[1:]):
-            chain.append((b, chain[-1][1] + graph[a][b]['weight']))
-    return chain
+    best = None
+    for combo in itertools.product(*(nodes.get(code, (code,)) for code in waypoints)):
+        chain = [(combo[0], 0.0)]
+        for start, end in zip(combo, combo[1:]):
+            path = nx.shortest_path(graph, start, end, weight='weight')
+            for a, b in zip(path, path[1:]):
+                chain.append((b, chain[-1][1] + graph[a][b]['weight']))
+        # Strictly shorter only, so a tie keeps the first combination in
+        # nodes' sorted order and the answer does not depend on luck.
+        if best is None or chain[-1][1] < best[-1][1]:
+            best = chain
+    return best
 
 
 def check_length(chain: list[tuple[str, float]], register_km: float) -> float:

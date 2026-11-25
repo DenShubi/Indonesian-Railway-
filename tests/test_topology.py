@@ -264,6 +264,42 @@ def test_a_split_junction_is_one_station_in_the_chain():
     assert station('BBG@GD') == station('BBG') == 'BBG'
 
 
+def test_a_route_ending_on_a_split_junction_stops_at_its_own_lines_node():
+    # Tunggu to Brumbung is the Gundih line's 174.554 - 162.942. Ending on the
+    # plain node instead ran on to the main line's reading, 0.88 km further.
+    g = build_topology([MAIN_LINE, GUNDIH_LINE], [], BRUMBUNG)
+    end = route_relasi(g, 'TGG', 'BBG')
+    assert [c for c, _ in end] == ['TGG', 'BBG@GD']
+    assert end[-1][1] == pytest.approx(174.554 - 162.942)
+
+
+def test_a_split_junction_named_as_a_via_point_is_not_run_through_twice():
+    # Via (ATA, BBG) to Tunggu the train is on the Gundih line throughout. A
+    # via that resolved to the plain node went BBG@GD, BBG, BBG@GD and carried
+    # the offset twice, 26.455 km where the table prints 24.695.
+    g = build_topology([MAIN_LINE, GUNDIH_LINE], [], BRUMBUNG)
+    chain = route_relasi(g, 'SMT', 'TGG', via=('ATA', 'BBG'))
+    assert [c for c, _ in chain] == ['SMT', 'ATA', 'BBG@GD', 'TGG']
+    assert chain[-1][1] == pytest.approx(174.554 - 149.859)
+    # On the main line the same via is the plain node, as before.
+    main = route_relasi(g, 'SMT', 'TGW', via=('ATA', 'BBG'))
+    assert main[-1][1] == pytest.approx(173.249 - 149.859)
+
+
+@pytest.mark.parametrize('origin, destination, via, printed', [
+    ('SMT', 'TGG', ('ATA', 'BBG'), 24.695),     # Gundih line through Brumbung
+    ('TGG', 'BBG', (), 11.612),                 # ending on Brumbung
+    ('CN', 'LWG', ('CNP',), 9.134),             # Purwokerto line, Cirebon Prujakan
+    ('LBG', 'SKP', ('KH', 'MA'), 13.337),       # Banjar line, Kasugihan
+])
+def test_every_split_junction_as_a_waypoint_measures_what_its_line_prints(
+        cached_pages, origin, destination, via, printed):
+    from scripts.parse_gapeka import read_network
+    corridors, pairs = read_network(cached_pages)
+    g = build_topology(corridors, pairs, JUNCTIONS)
+    assert route_relasi(g, origin, destination, via)[-1][1] == pytest.approx(printed, abs=5e-4)
+
+
 def test_a_junction_the_tables_do_not_print_twice_is_refused():
     with pytest.raises(ValueError, match='out of date'):
         build_topology([MAIN_LINE], [], BRUMBUNG)
