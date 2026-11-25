@@ -4,8 +4,9 @@ The source is "KP DJKA 116 TAHUN 2026 GAPEKA JAWA.pdf", the 2026 Grafik
 Perjalanan Kereta Api for Java under decree KP-DJKA 116/2026, valid from
 1 December 2026. It is 1,887 pages and 61 MB, and it is NOT committed: git
 keeps every version of a binary forever and 61 MB is past GitHub's warning
-threshold. It was downloaded by hand and lives outside the repository, so its
-path is an argument. This script is the only thing that opens it, and it is
+threshold. The copy the committed cache came from is the user's own download
+of decree KP-DJKA 116/2026, kept outside the repository, so its path is an
+argument. This script is the only thing that opens it, and it is
 never run by the build; what it writes is committed instead:
 
   data/gapeka/2026/pages.json   {"<0-based page>": "<text>"} for all 1,887
@@ -24,9 +25,11 @@ A full text extraction takes about eighteen minutes (1,105 s measured, on the
 machine that made the committed cache); the twelve pages of words take a few
 seconds more. --pages-from reuses an extraction already made -- a JSON file of
 the same {"<page>": "<text>"} shape -- instead of spending those eighteen
-minutes again, and still reads the words from the PDF. The committed
-pages.json was written that way, from an extract_text() dump made with the
-same pdfplumber version.
+minutes again, and still reads the words from the PDF. It trusts that text:
+beyond checking that it covers pages 0-1886, nothing compares it with the PDF
+it is meant to have come from, not even a spot check of one page. The
+committed pages.json was written that way, from an extract_text() dump made
+with the same pdfplumber version.
 
 Usage:  python scripts/cache_gapeka_2026.py <pdf> [--pages-from <pages.json>]
 """

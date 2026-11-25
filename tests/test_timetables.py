@@ -343,7 +343,11 @@ def test_the_whole_document_parses_to_the_counts_it_prints(document):
     # cross-checked by the parser itself: each run's rows are numbered 1 to n
     # with none missing, each starts at its header's origin and ends at its
     # destination, and the whole document has 48,685 lines that start with a
-    # number and carry a time, "Ls" or "Berh Sb" -- one per row.
+    # number and carry an HH:MM:SS time, " Ls " or "Berh Sb" -- one per row,
+    # all of them on pages 58-1672. (The parser's looser LOOKS_LIKE_A_ROW,
+    # which also takes a bracketed code before a number, matches 48,766: the
+    # other 81 are formation tables on pages 1708-1771, "5 K1 SS (NG) 0 24 10
+    # ...", outside every run, where it is never applied.)
     assert len(document) == 2089
     assert sum(len(r.rows) for r in document) == 48685
     assert len({row.code for r in document for row in r.rows}) == 466
