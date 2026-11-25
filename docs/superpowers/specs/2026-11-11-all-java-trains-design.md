@@ -208,6 +208,22 @@ and writes:
   erratum applies; 24 trains in the 2026 timetables run Wojo, Kedundang, Wates,
   Sentolo, which confirms it a fourth way.
 
+  **One corridor is missing from the 2026 tables, and is carried forward from
+  2025.** Page 1880 prints the title *Tegal – Semarang Tawang – Brumbung –
+  Gambringan – Cepu* but not its matrix — not as text, and not as an image; the
+  page has none. That is the north-coast main line. The 2025 tables have it, and
+  the two editions' tables agree almost exactly wherever both print a corridor:
+  of 34, 32 are identical station for station to the metre; Kutoarjo–Walikukun
+  differs only by the Wates/Kedundang erratum; and Tanah Abang–Merak differs at
+  one station, Serpong, revised from km 24.278 to 23.201. So the 2025 Tegal–Cepu
+  corridor is used, recorded with its provenance. It feeds only the distance
+  check and the Brumbung junction model — never a time, never the geometry — and
+  a carried-forward value could be up to about a kilometre stale, as Serpong
+  shows.
+
+  **The 2026 tables print Benteng as `BET`**, where the 2026 timetables and OSM
+  both call it `SBE`, at identical km. The tables' code is aliased to `SBE`.
+
 **Times and keyframes.** Every row becomes a keyframe carrying its kind:
 
 - Timed rows keep their printed times exactly.

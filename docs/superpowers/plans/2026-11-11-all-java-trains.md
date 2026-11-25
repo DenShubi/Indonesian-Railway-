@@ -214,6 +214,10 @@ Make the seconds in `ROW`'s two time groups optional; every 2025 assertion must 
 
 Also list every run with no register row — the probe found about four — and give each a category from its timetable section, flagged, rather than a silent default.
 
+**Two corrections to the 2026 tables, both measured after Task 5** (see the spec's "One corridor is missing from the 2026 tables"):
+- **Carry the Tegal–Semarang–Brumbung–Gambringan–Cepu corridor forward from 2025.** Page 1880 prints its title but not its matrix, and has no image. Take it from the 2025 network, apply the Wates/Kedundang erratum as for every corridor, and record its provenance on the corridor so the report can say which table came from which edition. Pin, in a test, the evidence that justifies it: of the corridors both editions print, all agree station for station except Tanah Abang–Merak at Serpong (24.278 → 23.201). If that ever stops being true, the test must fail rather than the carry-forward silently staying. Without this corridor the Brumbung `Junction` raises its "out of date" error — the guard is right to.
+- **Alias the tables' `BET` to `SBE`** (Benteng), which the 2026 timetables and OSM both use, at identical km. A named alias, like the erratum, with the evidence in its comment.
+
 - [ ] **Step 4: Run the tests, then the CLI**
 
 Run: `python -m pytest -q && python scripts/parse_gapeka.py`
