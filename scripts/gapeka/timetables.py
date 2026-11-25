@@ -39,8 +39,12 @@ Five things the layout does that make the obvious reading wrong:
 
   * Each section, and most groups of trains within it, opens with a contents
     list ("DAFTAR WAKTU ... ISI:") that repeats every train's header line with
-    no rows beneath it. Counting headers gives about 3,960 trains; only 2,089
-    of them have rows. A header with nothing under it is not a run.
+    no rows beneath it. The document prints 4,024 header lines; 1,935 are
+    contents entries and 2,089 head a timetable. A run starts only at a header
+    followed straight away by the column heading ("Kecepatan"), which no
+    contents entry has. So a real header misprinted out of recognition does
+    not hand its rows to the contents entry above it: with no run open, those
+    rows are reported as rows outside any timetable.
   * A station name too long for its column wraps round its row: the row
     prints with no name or code ("7 0 05:09:00 -"), the name's first line
     above it ("Yogyakarta International") and the rest, ending in the code,
@@ -80,6 +84,7 @@ module. One consequence: the Dhoho and Penataran, which 2025 printed as loops
 calling at Wonokromo twice, are one-way legs in 2026, and no 2026 run calls
 at any station twice. Rows are kept by position all the same.
 """
+import math
 import re
 from dataclasses import dataclass, field, replace
 
@@ -238,12 +243,15 @@ def parse_runs(pages: dict[str, str]) -> list[Run]:
 
     `pages` is the cache, {"<0-based page>": "<page text>"}, or any part of
     it; pages are read in page order, so a run carries on across a page break.
-    A header with no rows under it -- a contents-list entry -- is not a run.
-    Raises TimetableError if any line inside a run fails to parse.
+    A run opens only at a header whose next line is the column heading; a
+    header without one -- a contents-list entry -- is not a run, and a station
+    row under it is reported. Raises TimetableError if any line inside a run
+    fails to parse.
     """
     runs: list[Run] = []
     problems: list[tuple[str, str, str]] = []
     block: _Block | None = None
+    heading_for: _Block | None = None     # a header waiting for its heading
     page = ''
 
     def settle() -> None:
@@ -278,12 +286,18 @@ def parse_runs(pages: dict[str, str]) -> list[Run]:
             line = raw.strip()
             if not line:
                 continue
+            if heading_for is not None:
+                if line == 'Kecepatan':
+                    block, heading_for = heading_for, None
+                    continue
+                if not line.isdigit():            # a page number may come between
+                    heading_for = None
             header = HEADER.match(line)
             if header:
                 close()
                 no, service, relasi = header.groups()
                 stops = [stop for stop in DASH.split(relasi) if stop]
-                block = _Block(no, ' '.join(service.split()), stops[0], stops[-1])
+                heading_for = _Block(no, ' '.join(service.split()), stops[0], stops[-1])
                 continue
             full, bare = ROW.match(line), BARE.match(line)
             if block is None:
@@ -341,18 +355,28 @@ def estimate_times(run: Run, km: list[float]) -> list[tuple[int, int, bool]]:
     therefore come out in order. A printed row fills its missing side from the
     side it prints: an origin arrives when it departs.
 
-    Raises ValueError when `km` cannot carry that: the wrong length, a
-    distance going backwards, untimed rows between two printed rows at the same
-    km, or a run that does not start and end on a printed time.
+    Raises ValueError when the run or `km` cannot carry that: the wrong
+    number of distances, one that is not a finite number (a NaN compares false
+    both ways, so it would slip past the order check), a distance going
+    backwards, untimed rows between two printed rows at the same km, a run that
+    does not start and end on a printed time, or printed times that go
+    backwards -- which parse_runs() never returns, having rolled them past
+    midnight, but a Run built any other way might.
     """
     rows = run.rows
     if len(km) != len(rows):
         raise ValueError(f'KA {run.no}: {len(km)} distances for {len(rows)} rows')
+    if not all(math.isfinite(d) for d in km):
+        raise ValueError(f'KA {run.no}: every distance must be a finite number')
     if any(b < a for a, b in zip(km, km[1:])):
         raise ValueError(f'KA {run.no}: distances must not decrease')
     printed = [i for i, row in enumerate(rows) if row.arr is not None or row.dep is not None]
     if not printed or printed[0] != 0 or printed[-1] != len(rows) - 1:
         raise ValueError(f'KA {run.no} does not start and end on a printed time')
+    times = [t for row in rows for t in (row.arr, row.dep) if t is not None]
+    if any(b < a for a, b in zip(times, times[1:])):
+        raise ValueError(f'KA {run.no}: printed times go backwards; roll them past '
+                         f'midnight first')
     out = []
     for before, after in zip(printed, printed[1:] + [None]):
         row = rows[before]

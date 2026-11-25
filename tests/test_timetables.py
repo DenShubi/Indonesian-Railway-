@@ -7,6 +7,7 @@ hand -- and those say why. Each test names the run it leans on and the quirk
 that run carries.
 """
 import collections
+from dataclasses import replace
 
 import pytest
 
@@ -144,6 +145,9 @@ def test_a_run_calling_at_a_station_twice_keeps_both_visits():
     # prove the parser keeps rows by position and never collapses them by code.
     looped = {'0': '\n'.join([
         'KA 9 (Constructed Loop) Lintas Pelayanan SB - SB',
+        'Kecepatan',
+        'No. Stasiun dan Perhentian Maksimum Datang Berangkat Keterangan',
+        '(Km/Jam)',
         '1 Surabayakota (SB) 50 - 03:55:00',
         '2 Surabayagubeng (SGU) 90 04:03:00 04:06:00',
         '3 Wonokromo (WO) 90 04:12:00 04:14:00',
@@ -190,8 +194,63 @@ def test_a_header_that_disagrees_with_its_rows_is_reported(timetable_pages):
 
 def test_a_wrapped_name_that_never_gets_its_code_is_reported(timetable_pages):
     lines = [line for line in page_lines(timetable_pages, 770) if line != 'Airport (YIA)']
-    with pytest.raises(TimetableError):
+    with pytest.raises(TimetableError) as caught:
         parse_runs({'770': '\n'.join(lines)})
+    assert any('no code below it' in why for _, _, why in caught.value.problems)
+
+
+def test_a_wrapped_note_that_never_gets_its_lower_half_is_reported(timetable_pages):
+    # Porong's note wraps round it; without "jj =)" below, Bangil arrives first.
+    lines = [line for line in page_lines(timetable_pages, 270) if line != 'jj =)']
+    with pytest.raises(TimetableError) as caught:
+        parse_runs({'270': '\n'.join(lines), '271': timetable_pages['271']})
+    page, line, why = caught.value.problems[0]
+    assert line.startswith('18 Porong') and why == 'a wrapped cell with no lower half'
+
+
+def test_a_row_after_the_destination_is_reported(timetable_pages):
+    # KA 541 ends on the airport, whose code is owed from the line below. A
+    # row there instead is a row after the run has reached its destination.
+    lines = page_lines(timetable_pages, 770)
+    lines[lines.index('Airport (YIA)')] = '8 Patukan (PTN) 90 Ls 05:15:00'
+    with pytest.raises(TimetableError) as caught:
+        parse_runs({'770': '\n'.join(lines)})
+    assert ('770', '8 Patukan (PTN) 90 Ls 05:15:00',
+            'a row after KA 541 reached its destination') in caught.value.problems
+
+
+def test_a_line_that_looks_like_a_row_but_does_not_parse_is_reported(timetable_pages):
+    # A code in lower case fits neither row pattern, but the line still starts
+    # with a number and carries times, so it is reported, not taken as a note.
+    lines = [line.replace('(BPR)', '(bpr)', 1) for line in page_lines(timetable_pages, 1300)]
+    with pytest.raises(TimetableError) as caught:
+        parse_runs({'1300': '\n'.join(lines)})
+    page, line, why = caught.value.problems[0]
+    assert line == '3 Batuceper (bpr) 90 20:13:00 20:14:00'
+    assert why == 'looks like a station row but does not parse'
+
+
+def test_rows_under_a_header_with_no_column_heading_are_reported(timetable_pages):
+    # Without "Kecepatan" after it, KA 2107's header reads as a contents entry,
+    # so its rows belong to no run, and each says so.
+    lines = page_lines(timetable_pages, 1300)
+    del lines[lines.index('Kecepatan')]
+    with pytest.raises(TimetableError) as caught:
+        parse_runs({'1300': '\n'.join(lines)})
+    assert caught.value.problems[0] == ('1300', '1 Tangerang (TNG) 75 - 20:07:00',
+                                        'a station row outside any timetable')
+
+
+def test_a_misprinted_header_after_a_contents_list_does_not_take_its_rows(timetable_pages):
+    # If KA 351's header did not parse, its rows must not fall to KA 356, the
+    # last entry of the contents list above it on page 669.
+    pages = {'669': timetable_pages['669'],
+             '670': timetable_pages['670'].replace('KA 351 (Siliwangi)', 'KA 351 Siliwangi')}
+    with pytest.raises(TimetableError) as caught:
+        parse_runs(pages)
+    assert {why for _, _, why in caught.value.problems} == \
+        {'a station row outside any timetable'}
+    assert caught.value.problems[0][1] == '1 Cipatat (CPT) 70 - 07:55:00'
 
 
 # Review Focus 5
@@ -211,7 +270,9 @@ def test_estimated_times_fall_between_their_printed_neighbours_and_in_order(runs
     assert est[1] == (72611, 72611, True)
     # Poris and Kalideres, two untimed rows in a row, between Batuceper's
     # departure at 20:14 and Rawabuaya's arrival at 20:21.
+    # Poris is 1.625 of the 6.481 km, so 105 of the 420 s: 20:15:45.
     assert hms('20:14:00') < est[3][0] < est[4][0] < hms('20:21:00')
+    assert est[3] == (72945, 72945, True) and est[4] == (73088, 73088, True)
 
 
 def test_printed_times_come_through_estimation_unchanged(runs):
@@ -238,6 +299,23 @@ def test_estimation_refuses_distances_it_cannot_use(runs):
         estimate_times(run, KM_2107[:3] + [3.0] + KM_2107[4:])   # km going back
     with pytest.raises(ValueError):
         estimate_times(run, [0.0] * 3 + [3.575] * 3 + KM_2107[6:])  # no span to spread over
+    with pytest.raises(ValueError, match='finite'):
+        estimate_times(run, KM_2107[:3] + [float('nan')] + KM_2107[4:])
+
+
+def test_estimation_refuses_a_run_it_cannot_bound(runs):
+    # Runs built by hand: parse_runs() returns neither of these.
+    run = runs['2107']
+    unprinted_start = replace(run, rows=(replace(run.rows[0], dep=None),) + run.rows[1:])
+    with pytest.raises(ValueError, match='start and end on a printed time'):
+        estimate_times(unprinted_start, KM_2107)
+    unprinted_end = replace(run, rows=run.rows[:-1] + (replace(run.rows[-1], arr=None),))
+    with pytest.raises(ValueError, match='start and end on a printed time'):
+        estimate_times(unprinted_end, KM_2107)
+    unrolled = replace(run, rows=run.rows[:5] + (replace(run.rows[5], arr=hms('20:00:00')),)
+                       + run.rows[6:])
+    with pytest.raises(ValueError, match='go backwards'):
+        estimate_times(unrolled, KM_2107)
 
 
 def test_a_record_is_the_row_in_column_order(runs):
