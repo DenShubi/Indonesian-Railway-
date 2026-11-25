@@ -210,7 +210,7 @@ Expected: the 2026 cases FAIL.
 
 - [ ] **Step 3: Implement**
 
-Make the seconds in `ROW`'s two time groups optional; every 2025 assertion must still hold. **Settle the banner reconciliation**: the banners read so far claim 1,274 trains against 1,809 register rows, while in 2025 they tallied exactly. Find how the commuter sections word their banners. If a section genuinely prints no count, say so in the code and test the sections that do. Do not loosen the tally to make it pass. The distance tables run through `recover_vertical_codes` with the twelve pages' words, then `apply_errata`; report whether vertical-text recovery was needed on any 2026 page.
+Make the seconds in `ROW`'s two time groups optional; every 2025 assertion must still hold. **Settle the banner reconciliation** *(resolved in `712f430`: banner counts write thousands with a dot, and the register is 1,815 rows; see the spec)*: the banners read so far claim 1,274 trains against 1,809 register rows, while in 2025 they tallied exactly. Find how the commuter sections word their banners. If a section genuinely prints no count, say so in the code and test the sections that do. Do not loosen the tally to make it pass. The distance tables run through `recover_vertical_codes` with the twelve pages' words, then `apply_errata`; report whether vertical-text recovery was needed on any 2026 page.
 
 Also list every run with no register row — the probe found about four — and give each a category from its timetable section, flagged, rather than a silent default.
 
