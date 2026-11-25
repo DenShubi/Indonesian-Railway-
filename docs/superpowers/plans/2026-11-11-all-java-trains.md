@@ -2,7 +2,7 @@
 
 > **For agentic workers:** Implement task by task, each followed by a fresh review before the next starts. Steps use checkbox (`- [ ]`) syntax for tracking. The `superpowers:subagent-driven-development` skill this header once named is not installed here; the loop is run by hand.
 
-**Goal:** Animate every train in GAPEKA 2026 — 2,089 timetabled runs covering 1,805 of the register's 1,809 trains — at the times the timetables print, along real OpenStreetMap track.
+**Goal:** Animate every train in GAPEKA 2026 — 2,089 timetabled runs covering 1,811 of the register's 1,815 trains — at the times the timetables print, along real OpenStreetMap track.
 
 **Architecture:** GAPEKA 2026 prints a station-by-station timetable for every train. Each run's printed station sequence is its route; each consecutive station pair is routed once over an island-wide OSM rail graph and stored in a shared segment library; every timetable row becomes a keyframe that knows whether it is a stop or a pass, and whether its time is printed or estimated. The register and the distance tables, parsed by Tasks 1-4, stop being sources of times and become independent checks on distance.
 
@@ -15,7 +15,7 @@
 ## Global Constraints
 
 - **Source:** GAPEKA 2026, decree KP-DJKA 116/2026, valid from 1 December 2026. The 61 MB PDF is **not committed**; the parser reads a committed text cache under `data/gapeka/2026/`. No test may open the PDF.
-- **Counts the build must reproduce:** 2,089 timetabled runs, 48,685 station rows, 466 station codes; the register's 1,809 rows, 1,805 of them covered by a timetable. The four without one, `R951`-`R954`, are empty-stock moves and are not drawn.
+- **Counts the build must reproduce:** 2,089 timetabled runs, 48,685 station rows, 466 station codes; the register's 1,815 rows, 1,811 of them covered by a timetable. The four without one, `R951`-`R954`, are empty-stock moves and are not drawn.
 - **Every printed time is kept exactly.** Untimed rows (`Ls -`, `Berh Sb`) get estimated times and an `estimated` flag, and the UI never shows an estimated time as a printed one.
 - **A pass is never a call.** Passes stay out of the departures board and the route diagram's stops, and trains do not brake at them.
 - The readings of `Ls` (passes) and `Berh Sb` (stops) are **inferences**: the document has no legend. Code that relies on them says so.
@@ -70,7 +70,7 @@ The fix round `69e9c18`-`da57e8f` was not given its own review. **Task 5's revie
 - `src/data/bundle.ts`, `src/sim/trains.ts`, `src/map/trackLayer.ts`, `src/map/stationLayer.ts`, `src/ui/linePanel.ts`, `src/ui/trainPanel.ts`, `src/main.ts`, `src/styles.css`.
 - `package.json`, `.github/workflows/deploy.yml`, `README.md`.
 
-**Retired from the build** (files stay, nothing reads them): `scripts/parse_timetable.py`, `scripts/build_java_network.py`, `scripts/validate_gapeka.py`'s 2025 per-region pass, the three regional timetable PDFs, and `data/gapeka/relasi.json` and the 2025 `data/gapeka/pages.json`, which are deleted as superseded outputs.
+**Retired from the build** (files stay, nothing reads them): `scripts/parse_timetable.py`, `scripts/build_java_network.py`, `scripts/validate_gapeka.py`'s 2025 per-region pass, the three regional timetable PDFs, and `data/gapeka/relasi.json`, deleted as a superseded output. The 2025 page cache is kept, moved to `data/gapeka/2025/pages.json`: the carried-forward Tegal–Cepu corridor and its evidence test read it.
 
 ---
 
@@ -440,7 +440,7 @@ Expected: about 2,089 trips; raw and gzipped sizes printed.
 
 **Interfaces:**
 - Consumes: `build_topology` and `route_relasi` from Task 3, the junction split and the erratum.
-- Produces: `run_distance(graph, run) -> float` — the table distance along a run's printed sequence, computed as `route_relasi(graph, first, last, via=<every interior station the tables know>)`.
+- Produces: `run_distance(graph, run) -> float` — the table distance along a run's printed sequence, computed as `route_relasi(graph, first, last, via=<every interior station the tables know>)`, where `first` and `last` are the **first and last stations the tables know**, which is not always the run's own ends. Pangrango (KA 265-272) now ends at Bogor Paledang, `BOP`, which no distance table includes; 76 timetable codes are absent from the tables altogether. Where a run's own end is unknown to the tables, measure from the nearest known station, report the unmeasured stretch by name, and compare against the register's km with that stretch in mind — never fail the gate on a station the tables simply do not print, and never silently drop the run from the check.
 
 - [ ] **Step 1: Write the failing tests**
 

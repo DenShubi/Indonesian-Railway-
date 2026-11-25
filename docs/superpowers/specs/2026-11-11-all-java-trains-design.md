@@ -60,7 +60,7 @@ No. Stasiun dan Perhentian  Kecepatan Maksimum  Datang  Berangkat  Keterangan
 Measured over the whole document:
 
 - **2,089 timetabled runs, 48,685 station rows.**
-- They cover **1,805 of the register's 1,809 trains.** The four without a
+- They cover **1,811 of the register's 1,815 trains.** The four without a
   timetable are `R951`-`R954`, empty-stock service movements (*Barang Dinas*),
   which no passenger rides and no shipper books.
 - **466 station codes, every one printed with its full name.** That includes the
@@ -108,7 +108,7 @@ is honest only if the map says so, so an estimated time is always marked as one.
 ## Goals
 
 1. **Every train in GAPEKA 2026 animated**: 2,089 timetabled runs, covering
-   1,805 of the register's 1,809 trains, freight included. The four empty-stock
+   1,811 of the register's 1,815 trains, freight included. The four empty-stock
    movements are not drawn.
 2. Every train follows real OpenStreetMap rail alignment, as today. No
    straight-line cheating between distant stations.
@@ -197,11 +197,16 @@ and writes:
 - `data/gapeka/trains.json` — the register: number, class, category, service,
   relasi, operator, km, departure, arrival, REGULER or FAKULTATIF. Same columns
   as 2025, except that times drop their seconds (`08:15` for `08:15:00`).
-  Categories come from the `KELAS KERETA API` banners. **One reconciliation is
-  open**: in 2025 the banners tallied the register exactly, but the 2026 banners
-  read so far claim 1,274 trains against 1,809 register rows. The commuter
-  sections probably word their banners differently. This must be settled, not
-  waived.
+  Categories come from the `KELAS KERETA API` banners. The 2026 register has
+  **1,815 rows in 19 train sections**, and every section agrees with its banner,
+  its `JUMLAH` line, its footer row count and its footer km to the metre. Two
+  things had hidden that: banner counts and the rounded-km column group
+  thousands with a dot (`REGULER : 1.055`, `1.002,375 1.002`), which a plain
+  `\d+` misses — it hid 1,079 commuter trains and six runs over 1,000 km. One
+  real disagreement remains, named as a banner erratum: Commuter Line Bandara
+  Soetta's banner claims 70 REGULER and 0 FAKULTATIF, but its rows are 64 and 6,
+  and an `F` in a train number marks FAKULTATIF in all 101 rows that carry one.
+  The fourteen duty-roster sections, 538 movements, are not trains, as in 2025.
 - `data/gapeka/network.json` — the distance tables, parsed by the existing
   `tables.py` unchanged: 36 corridors, all monotonic from 0. **The 2026 tables
   print the same Wates/Kedundang transposition as 2025**, so the existing named
@@ -213,9 +218,11 @@ and writes:
   Gambringan – Cepu* but not its matrix — not as text, and not as an image; the
   page has none. That is the north-coast main line. The 2025 tables have it, and
   the two editions' tables agree almost exactly wherever both print a corridor:
-  of 34, 32 are identical station for station to the metre; Kutoarjo–Walikukun
-  differs only by the Wates/Kedundang erratum; and Tanah Abang–Merak differs at
-  one station, Serpong, revised from km 24.278 to 23.201. So the 2025 Tegal–Cepu
+  with Benteng's code aliased and the Wates/Kedundang erratum applied to both,
+  every one of the 36 corridors 2026 prints exists in 2025, and 35 are identical
+  station for station to the metre. The one difference is Tanah Abang–Merak at
+  Serpong, revised from km 24.278 to 23.201. A test fails if that ever stops
+  being true. So the 2025 Tegal–Cepu
   corridor is used, recorded with its provenance. It feeds only the distance
   check and the Brumbung junction model — never a time, never the geometry — and
   a carried-forward value could be up to about a kilometre stale, as Serpong
