@@ -160,13 +160,15 @@ def write_timetables() -> None:
     print(f'  {crossing} runs cross midnight; the longest, KA {longest.no} '
           f'{longest.service}, takes {span(longest) // 3600} h {span(longest) % 3600 // 60} min')
 
+    # Checked before anything is written, so a parse that went wrong leaves
+    # the last good timetables.json in place rather than replacing it.
+    if (len(runs), len(rows), len(codes)) != (RUNS_2026, ROWS_2026, CODES_2026):
+        raise SystemExit(f'expected {RUNS_2026} runs, {ROWS_2026} rows and {CODES_2026} '
+                         f'codes; got {len(runs)}, {len(rows)}, {len(codes)}')
     path = OUT / 'timetables.json'
     path.write_text(json.dumps({'runs': [run_record(run) for run in runs]},
                                separators=(',', ':')), encoding='utf-8')
     print(f'  -> {path.relative_to(ROOT)} ({path.stat().st_size / 1e6:.1f} MB)\n')
-    if (len(runs), len(rows), len(codes)) != (RUNS_2026, ROWS_2026, CODES_2026):
-        raise SystemExit(f'expected {RUNS_2026} runs, {ROWS_2026} rows and {CODES_2026} '
-                         f'codes; got {len(runs)}, {len(rows)}, {len(codes)}')
 
 
 def main() -> None:
