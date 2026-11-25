@@ -11,7 +11,7 @@ import json
 import pytest
 
 from scripts.fetch_osm import (RAIL_QUERY, TILE, WIDE, gather, merge_rail,
-                               merge_stations, overpass, tiles)
+                               merge_stations, norm, overpass, tiles)
 
 JAVA = (-9.0, 105.0, -5.8, 114.7)
 SEA_TILE = (-9.0, 105.0, -8.0, 106.0)
@@ -257,3 +257,9 @@ def test_the_extra_station_tags_go_as_one_request_into_their_own_file(post, monk
     assert len(calls) == 1 and 'train_station' in calls[0][1]
     assert (tmp_path / 'stations_extra.csv').exists()
     assert not (tmp_path / 'stations.csv').exists()        # the main cache is left alone
+
+
+def test_a_leading_halte_or_stasiun_is_not_part_of_the_name():
+    # OSM maps the Surabaya - Sidoarjo halts as "Halte Ngagel"; GAPEKA prints "Ngagel".
+    assert norm('Halte Ngagel') == norm('Stasiun Ngagel') == norm('Ngagel') == 'NGAGEL'
+    assert norm('Pondok Cina') == norm('Pondokcina')

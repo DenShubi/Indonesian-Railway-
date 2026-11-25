@@ -91,9 +91,14 @@ ISLAND = 'java'
 
 
 def norm(s: str) -> str:
-    """Station name reduced to letters and digits, for fuzzy comparison."""
+    """Station name reduced to letters and digits, for exact comparison.
+
+    A leading "Stasiun" (station) or "Halte" (halt) is dropped: OSM maps the
+    Surabaya - Sidoarjo halts as "Halte Ngagel" and so on, where the timetables
+    print "Ngagel".
+    """
     s = unicodedata.normalize('NFKD', s or '').encode('ascii', 'ignore').decode().upper()
-    s = re.sub(r'^STASIUN\s+', '', s)
+    s = re.sub(r'^(STASIUN|HALTE)\s+', '', s)
     return re.sub(r'[^A-Z0-9]', '', s)
 
 

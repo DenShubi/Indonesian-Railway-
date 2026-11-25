@@ -1,8 +1,8 @@
-"""Station placement: the three passes, their order, and the checks on a wrong match.
+"""Station placement: the four passes, their order, and the checks on a wrong match.
 
 The pass tests run on hand-made OSM rows and tiny graphs, so each shows one
-rule. The last tests run the first two passes over the committed caches, which
-is where the ambiguity they guard against was found.
+rule. The last tests run the name passes over the committed caches, which is
+where the ambiguity and the missing halts they guard against were found.
 """
 import csv
 import json
@@ -193,3 +193,102 @@ def test_the_committed_caches_place_the_airport_by_name(committed_inputs):
     names = by_name({c: n for c, n in codes.items() if c not in refs}, rows,
                     set(refs.values()), neighbours, where, [])
     assert 'BST' not in refs and rows[names['BST']]['name'] == 'Bandara Soekarno-Hatta'
+
+
+def run(*codes):
+    """A timetabled run as timetables.json holds it, reduced to its codes."""
+    return {'rows': [[c, c.title()] for c in codes]}
+
+
+# Ten kilometres east along the equator from A, then ten north to B.
+L_TRACK = ([(0.0, i / 111.195) for i in range(11)]
+           + [(i / 111.195, 10 / 111.195) for i in range(1, 11)])
+A_B = [osm('A', 'Aa', *L_TRACK[0]), osm('B', 'Bee', *L_TRACK[-1])]
+
+
+def test_ranji_is_not_found_inside_kranji():
+    # RI Ranji (Sukabumi line) and KRI Kranji (Bekasi line) are different stations.
+    kranji = osm('', 'Kranji', -6.2245133, 106.9798267)
+    with pytest.raises(SystemExit, match='RI'):
+        build(codes={'RI': 'Ranji'}, osm=[kranji], extra=[kranji])
+
+
+def test_the_extra_cache_places_only_what_the_main_cache_could_not():
+    main = [OSM_YK, osm('', 'Kalimas', -7.2198464, 112.7348088)]
+    extra = [osm('', 'Stasiun Yogyakarta', -7.0, 110.0), osm('', 'Stasiun Kalimas', -7.0, 112.0),
+             osm('', 'Halte Ngagel', -7.2879058, 112.748011)]
+    rows = build(codes={'YK': 'Yogyakarta', 'KLM': 'Kalimas', 'NGA': 'Ngagel'},
+                 osm=main, extra=extra)
+    assert {c: r['source'] for c, r in rows.items()} == {
+        'YK': 'osm-ref', 'KLM': 'osm-name', 'NGA': 'osm-extra'}
+    assert rows['KLM']['lat'] == -7.2198464
+
+
+def test_a_name_is_normalised_afresh_not_read_from_the_stored_column():
+    # Both caches were written when norm() still kept "Halte".
+    halt = {**osm('', 'Halte Ngagel', -7.2879058, 112.748011), 'norm': 'HALTENGAGEL'}
+    assert build(codes={'NGA': 'Ngagel'}, osm=[], extra=[halt])['NGA']['source'] == 'osm-extra'
+
+
+def test_unplaced_halts_are_spaced_evenly_along_the_track_in_printed_order():
+    rows = build(codes={'A': 'Aa', 'X': 'Ex', 'Y': 'Why', 'B': 'Bee'}, osm=A_B,
+                 runs=[run('A', 'X', 'Y', 'B'), run('B', 'Y', 'X', 'A')],
+                 graph=line_graph(L_TRACK))
+    assert rows['X']['source'] == rows['Y']['source'] == 'estimated'
+    # A third of the 20 km of track is 6.67 km east of A, on the first leg;
+    # two thirds is 3.33 km up the second.
+    assert (rows['X']['lat'], rows['X']['lon'] * 111.195) == pytest.approx((0.0, 6.667), abs=1e-3)
+    assert (rows['Y']['lat'] * 111.195, rows['Y']['lon'] * 111.195) == pytest.approx(
+        (3.333, 10.0), abs=1e-3)
+
+
+def test_an_estimate_is_on_the_track_not_across_country():
+    rows = build(codes={'A': 'Aa', 'X': 'Ex', 'B': 'Bee'}, osm=A_B,
+                 runs=[run('A', 'X', 'B')], graph=line_graph(L_TRACK))
+    # Halfway along the track is the corner, not the midpoint of the chord.
+    assert (rows['X']['lat'], rows['X']['lon'] * 111.195) == pytest.approx((0.0, 10.0), abs=1e-6)
+
+
+def test_the_bracket_most_runs_print_wins_and_the_others_are_reported(capsys):
+    c = osm('C', 'Cee', *L_TRACK[5])
+    rows = build(codes={'A': 'Aa', 'X': 'Ex', 'B': 'Bee', 'C': 'Cee'}, osm=A_B + [c],
+                 runs=[run('A', 'X', 'B'), run('B', 'X', 'A'), run('A', 'X', 'C')],
+                 graph=line_graph(L_TRACK))
+    assert rows['X']['lon'] * 111.195 == pytest.approx(10.0, abs=1e-6)     # A-B, not A-C
+    out = capsys.readouterr().out
+    assert 'X: runs disagree on its bracket; took A-B (2 runs); not A-C (1 runs)' in out
+
+
+def test_an_estimate_whose_neighbours_no_track_joins_fails_the_build():
+    g = line_graph(L_TRACK[:5])
+    g.add_edge(L_TRACK[-2], L_TRACK[-1], weight=hav(L_TRACK[-2], L_TRACK[-1]))
+    with pytest.raises(SystemExit, match='X .*no track joins A and B'):
+        build(codes={'A': 'Aa', 'X': 'Ex', 'B': 'Bee'}, osm=A_B,
+              runs=[run('A', 'X', 'B')], graph=g)
+
+
+def test_an_estimate_never_replaces_a_km_post():
+    corridor = {'name': 'A - B', 'stations': [['A', 0.0], ['X', 5.0], ['B', 20.0]]}
+    rows = build(codes={'A': 'Aa', 'X': 'Ex', 'B': 'Bee'}, osm=A_B, corridors=[corridor],
+                 runs=[run('A', 'X', 'B')], graph=line_graph(L_TRACK))
+    assert rows['X']['source'] == 'km-post'
+    assert rows['X']['lon'] * 111.195 == pytest.approx(5.0, abs=1e-3)
+
+
+def test_the_committed_extra_cache_places_the_sidoarjo_halts_down_the_line(committed_inputs):
+    runs, rows = committed_inputs
+    path = ROOT / 'data' / 'osm' / 'java' / 'stations_extra.csv'
+    if not path.exists():
+        committed(path, 'scripts/fetch_osm.py java')
+    extra = list(csv.DictReader(open(path, encoding='utf-8')))
+    codes, neighbours = printed_names(runs), neighbours_of(runs)
+    refs = by_ref(codes, rows, neighbours, {}, [])
+    where = {c: (float(rows[i]['lat']), float(rows[i]['lon'])) for c, i in refs.items()}
+    rest = {c: n for c, n in codes.items() if c not in refs}
+    names = by_name(rest, rows, set(refs.values()), neighbours, where, [])
+    rest = {c: n for c, n in rest.items() if c not in names}
+    found = by_name(rest, extra, set(), neighbours, where, [])
+    halts = ['NGA', 'MGR', 'JMS', 'KTL', 'STP', 'BJK', 'BDR', 'PWJ']
+    lats = [float(extra[found[c]]['lat']) for c in halts]
+    assert lats == sorted(lats, reverse=True)
+    assert 'RI' not in found                              # never Kranji, nor Pondok Ranji
