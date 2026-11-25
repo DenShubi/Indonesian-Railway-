@@ -61,9 +61,8 @@ from build_shapes import build_graph, hav, route_between     # noqa: E402
 from fetch_osm import norm                                    # noqa: E402
 
 SOURCES = ('osm-ref', 'osm-name', 'osm-extra', 'km-post', 'estimated')
-# The fetch's whole-island bbox. It exists for fetch_osm.py and is not a region
-# the app publishes, so a station is never labelled with it.
-ISLAND = 'java'
+# How a 2026 service names a published region's line: "Commuter Line Dhoho".
+LINE_PREFIX = 'Commuter Line '
 # Twice the farthest any correctly placed 2026 station lies from its nearest
 # timetable neighbour: Ciledug (CLD) is 15.2 km from Sindanglaut. A station
 # placed farther than this from every neighbour is almost certainly the wrong
@@ -99,13 +98,39 @@ def neighbours_of(runs: list[dict]) -> dict[str, set[str]]:
     return dict(out)
 
 
-def region_of(lat: float, lon: float, regions: list[dict]) -> str:
-    """The published region whose bbox holds the point, or '' outside all three."""
-    for region in regions:
-        s, w, n, e = region['bbox']
-        if region['id'] != ISLAND and s <= lat <= n and w <= lon <= e:
-            return region['id']
-    return ''
+def regions_by_service(runs: list[dict], regions: list[dict]) -> dict[str, str]:
+    """Each code a published region's own services run through -> that region.
+
+    A region is its lines, the keys of its `colors`, and each line is the 2026
+    service "Commuter Line <line>", matched whole: "Yogyakarta" is also inside
+    the airport service's name. Every row of such a run counts, stop or pass. A
+    bounding box will not do: Bandung's contains Jakarta, and would put fifty
+    Jakarta stations in the Bandung view. The `java` pseudo-region has no lines,
+    so it labels nothing. A line no service matches, or a code two regions'
+    services both reach, fails: the regions are hundreds of kilometres apart, so
+    either means something upstream has changed.
+    """
+    line_of = {f'{LINE_PREFIX}{line}': region['id']
+               for region in regions for line in region.get('colors', {})}
+    found = {run.get('service') for run in runs} & set(line_of)
+    unmatched = sorted(service for service in line_of if service not in found)
+    if unmatched:
+        raise SystemExit('no 2026 run is the service of '
+                         + ', '.join(f'{line_of[s]}\'s "{s}"' for s in unmatched))
+    out: dict[str, str] = {}
+    both = collections.defaultdict(set)
+    for run in runs:
+        region = line_of.get(run.get('service'))
+        if region is None:
+            continue
+        for row in run['rows']:
+            if out.setdefault(row[0], region) != region:
+                both[row[0]] |= {out[row[0]], region}
+    if both:
+        raise SystemExit('served by two regions\' lines: '
+                         + ', '.join(f'{c} ({" and ".join(sorted(r))})'
+                                     for c, r in sorted(both.items())))
+    return out
 
 
 def cumulative_km(polyline: list[tuple[float, float]]) -> list[float]:
@@ -343,8 +368,8 @@ def build(codes: dict[str, str], osm: list[dict], neighbours=None, placed=None,
 
     `placed` holds coordinates already known for codes outside `codes`, which
     count as neighbours but are not written. `extra` is stations_extra.csv, for
-    names only. `runs` give pass 4 its run order, and give the neighbours when
-    `neighbours` is not passed. Without a `graph` neither the km post nor the
+    names only. `runs` give pass 4 its run order, each station its region by
+    regions_by_service(), and the neighbours when `neighbours` is not passed. Without a `graph` neither the km post nor the
     estimate has track to go on, and both are skipped.
     """
     extra = list(extra)
@@ -381,8 +406,9 @@ def build(codes: dict[str, str], osm: list[dict], neighbours=None, placed=None,
     else:
         why.update({c: 'no track graph to place it on' for c in codes if c not in found})
 
+    region = regions_by_service(runs, list(regions))
     rows = {code: {'code': code, 'name': codes[code], 'lat': la, 'lon': lo,
-                   'source': source, 'region': region_of(la, lo, regions)}
+                   'source': source, 'region': region.get(code, '')}
             for code, (la, lo, source) in found.items()}
 
     far = [f'  {c} ({rows[c]["source"]}): {km:.1f} km from its nearest neighbour {n}'

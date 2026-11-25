@@ -15,7 +15,7 @@ from conftest import committed
 from scripts.build_shapes import hav, route_between
 from scripts.build_stations import (build, by_name, by_ref, cumulative_km,
                                     far_from_neighbours, neighbours_of,
-                                    place_by_km, printed_names, region_of)
+                                    place_by_km, printed_names, regions_by_service)
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
@@ -154,10 +154,50 @@ def test_route_between_raises_where_no_track_joins_the_ends():
         route_between(g, (0.0, 0.0), (1.0, 1.0))
 
 
-def test_a_station_takes_the_published_region_around_it_and_never_the_island():
+REGIONS = [{'id': 'surabaya', 'colors': {'Dhoho': 'E4572E'}},
+           {'id': 'bandung', 'colors': {'Bandung Raya': '1F8FA8'}},
+           {'id': 'java'}]
+
+
+def service_run(service, *codes):
+    return {'service': service, 'rows': [[c, c.title()] for c in codes]}
+
+
+def test_a_region_is_the_stations_its_own_lines_run_through():
+    runs = [service_run('Commuter Line Dhoho', 'SB', 'WO', 'KTS'),
+            service_run('Commuter Line Bandung Raya', 'PDL', 'KAC', 'CCL'),
+            service_run('Argo Bromo Anggrek', 'GMR', 'SB')]
+    assert regions_by_service(runs, REGIONS) == {
+        'SB': 'surabaya', 'WO': 'surabaya', 'KTS': 'surabaya',
+        'PDL': 'bandung', 'KAC': 'bandung', 'CCL': 'bandung'}
+
+
+def test_a_line_is_matched_whole_not_inside_another_service_name():
+    regions = [{'id': 'yogyakarta', 'colors': {'Yogyakarta': 'D14836'}}]
+    with pytest.raises(SystemExit, match='Commuter Line Yogyakarta'):
+        regions_by_service([service_run('Commuter Line Bandara Yogyakarta', 'YK', 'YIA')],
+                           regions)
+
+
+def test_a_line_no_2026_service_matches_fails():
+    with pytest.raises(SystemExit, match='Commuter Line Bandung Raya'):
+        regions_by_service([service_run('Commuter Line Dhoho', 'SB')], REGIONS)
+
+
+def test_a_station_two_regions_lines_both_reach_fails_naming_both():
+    runs = [service_run('Commuter Line Dhoho', 'SB', 'XX'),
+            service_run('Commuter Line Bandung Raya', 'XX', 'KAC')]
+    with pytest.raises(SystemExit, match=r'XX \(bandung and surabaya\)'):
+        regions_by_service(runs, REGIONS)
+
+
+def test_the_committed_timetables_leave_jakarta_out_of_the_bandung_view(committed_inputs):
+    runs, _ = committed_inputs
     regions = json.loads((ROOT / 'data' / 'regions.json').read_text(encoding='utf-8'))
-    assert region_of(-7.2652, 112.7522, regions) == 'surabaya'        # Surabaya Gubeng
-    assert region_of(-6.9763, 110.4269, regions) == ''                # Semarang Tawang
+    region = regions_by_service(runs, regions)
+    assert 'AC' not in region                             # Ancol, Jakarta
+    assert region['KAC'] == 'bandung'                     # Kiaracondong, Bandung Raya
+    assert region['SGU'] == 'surabaya' and region['YK'] == 'yogyakarta'
 
 
 def test_neighbours_are_the_codes_printed_either_side():
