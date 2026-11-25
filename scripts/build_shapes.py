@@ -23,7 +23,14 @@ D = ROOT / 'data'
 G = ROOT / 'gtfs'
 
 STITCH = 25.0       # metres: join way endpoints this close
-MAXJUMP = 2000.0    # metres: split a way here instead of bridging
+# metres: split a way where two consecutive nodes are farther apart than this,
+# taking it for a broken way rather than track. OSM maps long straights with few
+# nodes: the island cache has real edges up to 3,631 m (Kandangan-Indro) and
+# 3,582 m (Cirebon-Prupuk). At 2,000 m this cut both tracks of five main lines,
+# between Cipunegara and Pegadenbaru, Prupuk and Songgom, Telawa and Padas,
+# Gubug and Karangjati, and Wadu and Randublatung; the lines stayed connected
+# the long way round, so no bridge closed the cut, and a 7 km hop routed 653 km.
+MAXJUMP = 5000.0
 BRIDGE = 6000.0     # metres: span a hole in the OSM data between components
 RDP = 8.0           # metres: output simplification
 
@@ -78,9 +85,10 @@ def build_graph(rail_path, label):
           f'({added} stitched), {len(comps)} components', file=sys.stderr)
 
     # Attach every island to the trunk at its closest approach. OpenStreetMap maps
-    # some lines in disconnected pieces (Lamongan-Duduk-Cerme, Kandangan-Indro),
-    # and without this a trip gives up on the whole station-to-station leg instead
-    # of only the unmapped metres.
+    # some lines in disconnected pieces, and without this a trip gives up on the
+    # whole station-to-station leg instead of only the unmapped metres. (The two
+    # this comment once named, Lamongan-Duduk-Cerme and Kandangan-Indro, were not
+    # OSM's holes but MAXJUMP's: long straights it cut.)
     trunk = set(comps[0])
     rest = [set(c) for c in comps[1:]]
     bridged = []
