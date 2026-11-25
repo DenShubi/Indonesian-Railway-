@@ -245,3 +245,15 @@ def test_a_step_that_drifts_as_it_is_walked_leaves_no_sliver():
     covered = tiles((-9.0, 105.0, -8.0, 106.0), step=0.1)
     assert len(covered) == 100
     assert covered[-1] == (-8.1, 105.9, -8.0, 106.0)
+
+
+def test_the_extra_station_tags_go_as_one_request_into_their_own_file(post, monkeypatch, tmp_path):
+    from scripts import fetch_osm
+    calls, answers = post
+    answers.append(Answer({'elements': [{'type': 'node', 'id': 9, 'lat': -6.2, 'lon': 106.8,
+                                         'tags': {'railway': 'stop', 'name': 'Karet'}}]}))
+    monkeypatch.setattr(fetch_osm, 'ROOT', tmp_path)
+    fetch_osm.fetch_stations(tmp_path, JAVA, fetch_osm.EXTRA_STATION_QUERY, 'stations_extra.csv')
+    assert len(calls) == 1 and 'train_station' in calls[0][1]
+    assert (tmp_path / 'stations_extra.csv').exists()
+    assert not (tmp_path / 'stations.csv').exists()        # the main cache is left alone

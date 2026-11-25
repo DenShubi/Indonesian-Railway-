@@ -72,6 +72,23 @@ STATION_QUERY = """[out:json][timeout:180];
 );
 out tags center;"""
 
+# The other ways Indonesian stations get mapped: as stop positions, platforms,
+# public-transport stations or just a station building. Only named features, and
+# written to their own file, stations_extra.csv, which build_stations.py consults
+# only for a code the main cache cannot place. Mixed into the main cache they
+# would repeat one station's code on every platform and stop position, and turn
+# the ref pass's ambiguity check - the one that caught TGR - into noise.
+EXTRA_STATION_QUERY = """[out:json][timeout:180];
+(
+  nwr["railway"~"^(stop|platform)$"]["name"]({s},{w},{n},{e});
+  nwr["public_transport"~"^(station|platform|stop_position)$"]["train"="yes"]["name"]({s},{w},{n},{e});
+  nwr["building"="train_station"]["name"]({s},{w},{n},{e});
+);
+out tags center;"""
+
+# The one region whose stations are also fetched with EXTRA_STATION_QUERY.
+ISLAND = 'java'
+
 
 def norm(s: str) -> str:
     """Station name reduced to letters and digits, for fuzzy comparison."""
@@ -241,12 +258,13 @@ def fetch_rail(out: pathlib.Path, bbox) -> None:
           f'({path.stat().st_size / 1e6:.1f} MB)')
 
 
-def fetch_stations(out: pathlib.Path, bbox) -> None:
-    print('  stations...')
+def fetch_stations(out: pathlib.Path, bbox, query: str = STATION_QUERY,
+                   filename: str = 'stations.csv') -> None:
+    print(f'  {filename}...')
     rows = []
     # One query for any bbox: Java's stations are about a thousand points, less
     # than a single railway tile, so tiling them would only multiply the waits.
-    for el in merge_stations(gather(STATION_QUERY, bbox, tiled=False)):
+    for el in merge_stations(gather(query, bbox, tiled=False)):
         tags = el.get('tags', {})
         if el['type'] == 'node':
             lat, lon = el.get('lat'), el.get('lon')
@@ -265,7 +283,7 @@ def fetch_stations(out: pathlib.Path, bbox) -> None:
             'norm': norm(name),
         })
     rows.sort(key=lambda r: (r['ref'] == '', r['ref'], r['name']))
-    path = out / 'stations.csv'
+    path = out / filename
     with open(path, 'w', newline='', encoding='utf-8') as fh:
         writer = csv.DictWriter(fh, fieldnames=['ref', 'name', 'railway', 'lat', 'lon', 'norm'])
         writer.writeheader()
@@ -298,6 +316,11 @@ def main() -> None:
             fetch_stations(out, bbox)
         else:
             print('  stations.csv cached - pass --force to refetch')
+        extra = out / 'stations_extra.csv'
+        if region['id'] == ISLAND and (force or not extra.exists()):
+            fetch_stations(out, bbox, EXTRA_STATION_QUERY, extra.name)
+        elif region['id'] == ISLAND:
+            print('  stations_extra.csv cached - pass --force to refetch')
 
 
 if __name__ == '__main__':
