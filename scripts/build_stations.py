@@ -25,21 +25,24 @@ it could not, so a name match never replaces a ref match:
 
 A code no pass can place fails the build, by name. It is never dropped.
 
-Two checks stand against a wrong match, both judged by a code's timetable
-neighbours, the stations printed next to it in some run:
+Every position is held to the code's neighbours: the stations some run prints
+either side of it, and the stations next to it in the distance tables.
 
-  * A ref or name OSM puts on more than one station is resolved to the
-    candidate nearest those neighbours, never first-match-wins. OSM tags both
-    Tegalluar Summarecon, near Bandung, and Temuguruh, near Banyuwangi, `TGR`;
-    the timetables run TGR between Singojuruh and Kalisetail, so it is
+  * A ref or name OSM puts on more than one feature is resolved to the
+    candidate that best fits those neighbours, never first-match-wins. OSM tags
+    both Tegalluar Summarecon, near Bandung, and Temuguruh, near Banyuwangi,
+    `TGR`; the timetables run TGR between Singojuruh and Kalisetail, so it is
     Temuguruh, and a first match in sorted order would have kept the station
     730 km away.
-  * A placed station farther than FAR_KM from every placed neighbour is
-    reported, so a wrong ref on a single station cannot pass quietly either. It
-    is reported, not moved: which coordinate is right is for OSM to settle.
+  * A position is ruled out by a relative detour over DETOUR through any run's
+    stations either side, by lying over FAR_KM from every neighbour, or by a
+    straight line to a table neighbour longer than the track the table prints.
+    A name candidate that fails is dropped, and the later passes try the code;
+    a ref that fails stops the build, which is how a wrong ref on a single
+    station is caught too. Which coordinate is right is then for OSM to settle.
 
-Every ambiguity, every name and km-post placement and every far station is
-printed, so OSM's tagging can be fixed upstream.
+Every ambiguity, rejection, name, km-post and estimated placement is printed,
+so OSM's tagging can be fixed upstream.
 
 Usage:  python scripts/build_stations.py
 """
@@ -50,6 +53,7 @@ import json
 import pathlib
 import sys
 import time
+from dataclasses import dataclass, field
 
 import networkx as nx
 
@@ -63,11 +67,26 @@ from fetch_osm import norm                                    # noqa: E402
 SOURCES = ('osm-ref', 'osm-name', 'osm-extra', 'km-post', 'estimated')
 # How a 2026 service names a published region's line: "Commuter Line Dhoho".
 LINE_PREFIX = 'Commuter Line '
+# A station's relative detour is (d(a,s) + d(s,b) - d(a,b)) / max(d(a,b), 1 km),
+# the least over every run that prints a and b either side of it: 0 on the
+# straight line between them, 1 where going by s doubles the way. The worst a
+# correctly placed 2026 station scores is Rangkasbitung's 0.69, where the line
+# bends sharply into a terminus-like junction. The other Karawang, 11 km off the
+# line, scores 0.99, and Karet put on Kranji 17.4 -- an absolute distance cannot
+# tell these apart in Jabodetabek, where everything is within 30 km of
+# everything.
+DETOUR = 0.8
 # Twice the farthest any correctly placed 2026 station lies from its nearest
-# timetable neighbour: Ciledug (CLD) is 15.2 km from Sindanglaut. A station
-# placed farther than this from every neighbour is almost certainly the wrong
-# station -- TGR at Tegalluar is over 700 km from both of its own.
+# timetable neighbour: Ciledug (CLD) is 15.2 km from Sindanglaut. It judges the
+# stations no run prints with a neighbour on each side: termini and the ends of
+# branches.
 FAR_KM = 30.0
+# A straight line can be shorter than the track the distance tables measure but
+# not longer, bar where the two points sit: OSM's station point is not the km
+# post. The most any pair exceeds its table km by today is Mesigit -
+# Segitigamesigit, 1.262 km straight against 0.948, and that is km-post's own
+# placement of STM, which OSM's track there limits.
+TABLE_SLACK_KM = 0.5
 # How far the routed track between a km-post code's two anchors may differ from
 # the span the distance table prints before the route is taken to be the wrong
 # one, round a loop or down a branch, rather than the line the km run along. A
@@ -164,38 +183,132 @@ def _nearest(p, code, neighbours, where):
     return min(near) if near else None
 
 
-def _match(wanted: dict[str, list[int]], osm: list[dict], source: str,
-           neighbours, where: dict, report: list[str]) -> dict[str, int]:
-    """Each code on its one OSM candidate, or on the one nearest its neighbours.
+def triples_of(runs: list[dict]) -> dict[str, set[tuple[str, str]]]:
+    """Each code -> the (a, b) pairs some run prints either side of it, a < b."""
+    out: dict[str, set[tuple[str, str]]] = collections.defaultdict(set)
+    for run in runs:
+        codes = [row[0] for row in run['rows']]
+        for a, s, b in zip(codes, codes[1:], codes[2:]):
+            out[s].add((min(a, b), max(a, b)))
+    return dict(out)
 
-    A code with several candidates waits until one of its neighbours is placed,
-    and is retried as the others resolve. One that never gets a placed
-    neighbour is left for the next pass, and said so, rather than decided by
-    which candidate happens to come first.
+
+def table_spans(corridors) -> dict[str, dict[str, float]]:
+    """Each code -> its consecutive distance-table neighbours -> the km between.
+
+    Where corridors print one pair differently, the largest is kept: the split
+    Brumbung junction puts Alastua - Brumbung at 6.856 km on one corridor and
+    5.976 on another, and both are the track's own reading.
     """
-    chosen = {c: ix[0] for c, ix in wanted.items() if len(ix) == 1}
-    pending = {c: ix for c, ix in wanted.items() if len(ix) > 1}
+    out: dict[str, dict[str, float]] = collections.defaultdict(dict)
+    for corridor in corridors:
+        for (a, ka), (b, kb) in zip(corridor['stations'], corridor['stations'][1:]):
+            km = abs(kb - ka)
+            out[a][b] = out[b][a] = max(out[a].get(b, 0.0), km)
+    return dict(out)
+
+
+@dataclass
+class Checks:
+    """What a position must agree with to be a code's: its run neighbours and tables."""
+    neighbours: dict = field(default_factory=dict)
+    triples: dict = field(default_factory=dict)
+    spans: dict = field(default_factory=dict)
+
+    def detour(self, code, p, where):
+        """(score, a, b): the least relative detour through `p` of any run a-code-b."""
+        best = None
+        for a, b in sorted(self.triples.get(code, ())):
+            if a in where and b in where:
+                ab = hav(where[a], where[b]) / 1000
+                score = ((hav(where[a], p) + hav(p, where[b])) / 1000 - ab) / max(ab, 1.0)
+                if best is None or score < best[0]:
+                    best = (score, a, b)
+        return best
+
+    def rank(self, code, p, where):
+        """A sort key: least detour first, then nearest a neighbour; None if no neighbour
+        is placed to judge by."""
+        detour = self.detour(code, p, where)
+        near = _nearest(p, code, self.neighbours, where)
+        if detour is None and near is None:
+            return None
+        return (detour is None, detour[0] if detour else 0.0, near[0] if near else 0.0)
+
+    def fault(self, code, p, where) -> str | None:
+        """Why `p` cannot be where `code` is, judged by what is placed, or None."""
+        detour = self.detour(code, p, where)
+        if detour and detour[0] > DETOUR:
+            return f'detour score {detour[0]:.2f} between {detour[1]} and {detour[2]}'
+        near = _nearest(p, code, self.neighbours, where)
+        if near and near[0] > FAR_KM:
+            return f'{near[0]:.1f} km from its nearest neighbour {near[1]}'
+        for n, km in sorted(self.spans.get(code, {}).items()):
+            if n in where and hav(p, where[n]) / 1000 > km + TABLE_SLACK_KM:
+                return (f'{hav(p, where[n]) / 1000:.3f} km in a straight line from {n}, '
+                        f'which the distance tables put {km:.3f} km away along the track')
+        return None
+
+
+def _match(wanted: dict[str, list[int]], osm: list[dict], source: str, checks: Checks,
+           where: dict, report: list[str], why: dict[str, str] | None = None) -> dict[str, int]:
+    """Each code on its one OSM candidate, or on the one that best fits its neighbours.
+
+    A code with several candidates waits until a neighbour is placed, and is
+    retried as the others resolve. One that never gets a placed neighbour is
+    left for the next pass, and said so, rather than decided by which candidate
+    happens to come first. Candidates are ranked by Checks.rank(): the least
+    detour through a run's stations either side, which tells the Karawang on the
+    line from the Karawang 11 km off it where plain distance to a neighbour
+    does not.
+
+    With `why`, a candidate Checks.fault() rejects is dropped, and a code left
+    with none is recorded there for the later passes: a name is only a guess at
+    which feature is the station, so geometry may veto it. Without `why`, as for
+    a ref, nothing is dropped here; the caller fails the build instead.
+    """
+    pending = {c: list(ix) for c, ix in wanted.items()}
+    chosen: dict[str, int] = {}
     progress = True
     while pending and progress:
         progress = False
-        here = {**where, **{c: _point(osm[i]) for c, i in chosen.items()}}
         for code in sorted(pending):
-            scored = [(_nearest(_point(osm[i]), code, neighbours, here), i)
-                      for i in pending[code]]
-            if scored[0][0] is None:
+            here = {**where, **{c: _point(osm[i]) for c, i in chosen.items()}}
+            ix = pending[code]
+            if why is not None:
+                faults = {i: checks.fault(code, _point(osm[i]), here) for i in ix}
+                ix = [i for i in ix if faults[i] is None]
+                if not ix:
+                    why[code] = f'{source} rejected: ' + '; '.join(
+                        f'{osm[i]["name"]} {_point(osm[i])}, {faults[i]}' for i in sorted(faults))
+                    report.append(f'  {code}: {why[code]}')
+                    del pending[code]
+                    progress = True
+                    continue
+                pending[code] = ix
+            if len(ix) == 1:
+                chosen[code] = ix[0]
+                del pending[code]
+                progress = True
                 continue
-            scored.sort()
-            (km, n), i = scored[0]
+            ranks = [(checks.rank(code, _point(osm[i]), here), i) for i in ix]
+            if ranks[0][0] is None:
+                continue
+            ranks.sort()
+            i = ranks[0][1]
+            near = _nearest(_point(osm[i]), code, checks.neighbours, here)
             took = (f'took {osm[i]["name"] or "(unnamed)"} {_point(osm[i])}, '
-                    f'{km:.2f} km from {n}')
-            spread = max(hav(_point(osm[i]), _point(osm[j])) for _, j in scored[1:])
+                    f'{near[0]:.2f} km from {near[1]}')
+            spread = max(hav(_point(osm[i]), _point(osm[j])) for _, j in ranks[1:])
             if spread <= SAME_STATION_M:
-                report.append(f'  {code}: {source} on {len(scored)} OSM features, all within '
+                report.append(f'  {code}: {source} on {len(ix)} OSM features, all within '
                               f'{spread:.0f} m of the one taken; {took}')
             else:
-                others = '; '.join(f'{osm[j]["name"] or "(unnamed)"} {_point(osm[j])}, '
-                                   f'{d:.2f} km from {m}' for (d, m), j in scored[1:])
-                report.append(f'  {code}: {source} on {len(scored)} OSM stations; {took}; '
+                others = '; '.join(
+                    f'{osm[j]["name"] or "(unnamed)"} {_point(osm[j])}, '
+                    + (f'detour {r[1]:.2f}' if not r[0] else f'{r[2]:.2f} km from a neighbour')
+                    for r, j in ranks[1:])
+                report.append(f'  {code}: {source} on {len(ix)} OSM stations; {took}; '
                               f'not {others}')
             chosen[code] = i
             del pending[code]
@@ -206,18 +319,19 @@ def _match(wanted: dict[str, list[int]], osm: list[dict], source: str,
     return chosen
 
 
-def by_ref(codes: dict[str, str], osm: list[dict], neighbours, where: dict,
+def by_ref(codes: dict[str, str], osm: list[dict], checks: Checks, where: dict,
            report: list[str]) -> dict[str, int]:
     """Pass 1: code -> index of the OSM station carrying it as railway:ref."""
     wanted = collections.defaultdict(list)
     for i, o in enumerate(osm):
         if o['ref'] in codes:
             wanted[o['ref']].append(i)
-    return _match(wanted, osm, 'railway:ref', neighbours, where, report)
+    return _match(wanted, osm, 'railway:ref', checks, where, report)
 
 
-def by_name(codes: dict[str, str], osm: list[dict], claimed: set[int], neighbours,
-            where: dict, report: list[str], label: str = 'name') -> dict[str, int]:
+def by_name(codes: dict[str, str], osm: list[dict], claimed: set[int], checks: Checks,
+            where: dict, report: list[str], why: dict[str, str],
+            label: str = 'name') -> dict[str, int]:
     """Pass 2: code -> index of the unclaimed OSM station bearing its printed name.
 
     OSM's names are normalised here rather than read from the caches' stored
@@ -228,7 +342,12 @@ def by_name(codes: dict[str, str], osm: list[dict], claimed: set[int], neighbour
         if i not in claimed and norm(o['name']):
             index[norm(o['name'])].append(i)
     wanted = {c: index[norm(name)] for c, name in codes.items() if index.get(norm(name))}
-    return _match(wanted, osm, label, neighbours, where, report)
+    return _match(wanted, osm, label, checks, where, report, why)
+
+
+def _why(why: dict[str, str], code: str, reason: str) -> None:
+    """Add a reason a code went unplaced, keeping what earlier passes said."""
+    why[code] = f'{why[code]}; {reason}' if code in why else reason
 
 
 def by_km_post(codes: list[str], corridors: list[dict], graph, where: dict,
@@ -258,8 +377,8 @@ def by_km_post(codes: list[str], corridors: list[dict], graph, where: dict,
                 brackets.append((k1 - k0, corridor['name'], a, k0, b, k1, k))
         if not brackets:
             tabled = any(code == c for corridor in corridors for c, _ in corridor['stations'])
-            why[code] = ('no placed station either side of it on any corridor' if tabled
-                         else 'on no distance-table corridor')
+            _why(why, code, 'no placed station either side of it on any corridor' if tabled
+                 else 'on no distance-table corridor')
             continue
         tried = []
         for span, name, a, k0, b, k1, k in sorted(brackets):
@@ -279,7 +398,7 @@ def by_km_post(codes: list[str], corridors: list[dict], graph, where: dict,
                           f'against the table\'s {span:.3f}')
             break
         else:
-            why[code] = 'every bracket failed: ' + '; '.join(tried)
+            _why(why, code, 'every bracket failed: ' + '; '.join(tried))
     return placed
 
 
@@ -297,7 +416,7 @@ def by_estimate(codes: list[str], runs: list[dict], graph, where: dict,
     judges one, fails the code rather than putting it somewhere else.
     """
     def fail(code, reason):
-        why[code] = f'{why[code]}; {reason}' if code in why else reason
+        _why(why, code, reason)
 
     left = set(codes)
     votes: dict[str, collections.Counter] = collections.defaultdict(collections.Counter)
@@ -351,15 +470,9 @@ def by_estimate(codes: list[str], runs: list[dict], graph, where: dict,
     return placed
 
 
-def far_from_neighbours(where: dict, neighbours, limit: float = FAR_KM):
-    """[(code, km, nearest neighbour)] for each station farther than `limit`
-    from every one of its placed neighbours."""
-    far = []
-    for code in sorted(where):
-        near = _nearest(where[code], code, neighbours, where)
-        if near and near[0] > limit:
-            far.append((code, near[0], near[1]))
-    return far
+def misplaced(where: dict, checks: Checks) -> list[tuple[str, str]]:
+    """[(code, why)] for each placed code its placed neighbours and tables reject."""
+    return [(c, f) for c in sorted(where) if (f := checks.fault(c, where[c], where))]
 
 
 def build(codes: dict[str, str], osm: list[dict], neighbours=None, placed=None,
@@ -371,23 +484,37 @@ def build(codes: dict[str, str], osm: list[dict], neighbours=None, placed=None,
     names only. `runs` give pass 4 its run order, each station its region by
     regions_by_service(), and the neighbours when `neighbours` is not passed. Without a `graph` neither the km post nor the
     estimate has track to go on, and both are skipped.
+
+    Every placement is held to Checks.fault() three times. A name candidate it
+    rejects is dropped and the later passes try the code. A ref match it
+    rejects, once the ref pass is done, fails the build: a ref is OSM's own
+    claim, and is neither silently kept nor silently moved. And once every pass
+    is done, any station it rejects fails the build, since a name accepted
+    while its neighbours were still unplaced has only now been judged.
     """
     extra = list(extra)
     runs = list(runs)
     neighbours = neighbours if neighbours is not None else neighbours_of(runs)
+    checks = Checks(neighbours, triples_of(runs), table_spans(corridors))
     known = dict(placed or {})
     report = {'ambiguous': [], 'name': [], 'km': [], 'estimate': []}
     found: dict[str, tuple[float, float, str]] = {}
+    why: dict[str, str] = {}
 
     def where():
         return {**known, **{c: (la, lo) for c, (la, lo, _) in found.items()}}
 
-    refs = by_ref(codes, osm, neighbours, known, report['ambiguous'])
+    refs = by_ref(codes, osm, checks, known, report['ambiguous'])
     found.update({c: (*_point(osm[i]), 'osm-ref') for c, i in refs.items()})
+    bad = [(c, f) for c, f in misplaced(where(), checks) if c in refs]
+    if bad:
+        raise SystemExit('railway:ref puts these stations where their neighbours rule out:\n'
+                         + '\n'.join(f'  {c} ({codes[c]}) at {_point(osm[refs[c]])}: {f}'
+                                     for c, f in bad))
     for label, cache, claimed, source in (('name', osm, set(refs.values()), 'osm-name'),
                                           ('extra name', extra, set(), 'osm-extra')):
         rest = {c: n for c, n in codes.items() if c not in found}
-        names = by_name(rest, cache, claimed, neighbours, where(), report['ambiguous'], label)
+        names = by_name(rest, cache, claimed, checks, where(), report['ambiguous'], why, label)
         for code, i in sorted(names.items()):
             o = cache[i]
             found[code] = (*_point(o), source)
@@ -395,7 +522,6 @@ def build(codes: dict[str, str], osm: list[dict], neighbours=None, placed=None,
             report['name'].append(f'  {code} ({source}): "{codes[code]}" is OSM\'s '
                                   f'"{o["name"]}" ({o["railway"] or "no railway tag"}, {tag})')
 
-    why: dict[str, str] = {}
     if graph is not None:
         left = [c for c in codes if c not in found]
         posts = by_km_post(left, list(corridors), graph, where(), report['km'], why)
@@ -404,28 +530,35 @@ def build(codes: dict[str, str], osm: list[dict], neighbours=None, placed=None,
         guesses = by_estimate(left, runs, graph, where(), report['estimate'], why)
         found.update({c: (*p, 'estimated') for c, p in guesses.items()})
     else:
-        why.update({c: 'no track graph to place it on' for c in codes if c not in found})
+        for c in codes:
+            if c not in found:
+                _why(why, c, 'no track graph to place it on')
 
     region = regions_by_service(runs, list(regions))
     rows = {code: {'code': code, 'name': codes[code], 'lat': la, 'lon': lo,
                    'source': source, 'region': region.get(code, '')}
             for code, (la, lo, source) in found.items()}
 
-    far = [f'  {c} ({rows[c]["source"]}): {km:.1f} km from its nearest neighbour {n}'
-           for c, km, n in far_from_neighbours(where(), neighbours) if c in rows]
-
-    for title, lines in (('ambiguous matches', report['ambiguous']),
+    everywhere = where()
+    scores = sorted(((d[0], c, d[1], d[2]) for c in rows
+                     if (d := checks.detour(c, everywhere[c], everywhere))), reverse=True)
+    for title, lines in (('ambiguous or rejected matches', report['ambiguous']),
                          ('placed by printed name', report['name']),
                          ('placed by km post', report['km']),
-                         ('placed by estimate on the track', report['estimate']),
-                         (f'farther than {FAR_KM:g} km from every placed neighbour', far)):
+                         ('placed by estimate on the track', report['estimate'])):
         print(f'{len(lines)} {title}' + (':' if lines else ''))
         for line in lines:
             print(line)
+    print(f'highest detour scores (limit {DETOUR:g}): '
+          + ', '.join(f'{c} {s:.2f} ({a}-{b})' for s, c, a, b in scores[:5]))
     tally = collections.Counter(r['source'] for r in rows.values())
     print(f'{len(rows)} of {len(codes)} stations placed: '
           + ', '.join(f'{tally[s]} {s}' for s in SOURCES))
 
+    bad = [(c, f) for c, f in misplaced(everywhere, checks) if c in rows]
+    if bad:
+        raise SystemExit('placed where their neighbours rule out:\n' + '\n'.join(
+            f'  {c} ({codes[c]}, {rows[c]["source"]}): {f}' for c, f in bad))
     missing = [c for c in codes if c not in rows]
     if missing:
         lines = [f'  {c} ({codes[c]}), between {", ".join(sorted(neighbours.get(c, ()))) or "-"}:'
