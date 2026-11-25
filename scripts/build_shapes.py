@@ -148,8 +148,9 @@ def route_between(g, a, b):
     overestimates what is left, and A* with it as the heuristic finds the path
     Dijkstra would, while searching towards the target rather than in a disc
     around the source -- on a graph the length of the island, the difference
-    between routing one pair and searching half of Java for it. Raises networkx.NetworkXNoPath where the two ends are on pieces
-    of track that bridging did not join.
+    between routing one pair and searching half of Java for it. Raises
+    networkx.NetworkXNoPath where the two ends are on pieces of track that
+    bridging did not join.
     """
     return nx.astar_path(g, nearest_node(g, a), nearest_node(g, b),
                          heuristic=hav, weight='weight')

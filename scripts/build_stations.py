@@ -357,7 +357,8 @@ def _share(group: list[str], ix: list[int], osm: list[dict], checks: Checks, whe
     name = osm[ix[0]]['name']
     best = {}
     for code in group:
-        ranks = [(checks.rank(code, _point(osm[st[0]]), where), k) for k, st in enumerate(stations)]
+        ranks = [(checks.rank(code, _point(osm[st[0]]), where), k)
+                 for k, st in enumerate(stations)]
         if any(r is None for r, _ in ranks):
             raise SystemExit(f'{" and ".join(group)} all match {label} "{name}", on '
                              f'{len(stations)} OSM station(s), and {code} has no placed '
@@ -368,8 +369,9 @@ def _share(group: list[str], ix: list[int], osm: list[dict], checks: Checks, whe
         shared[k].append(code)
     clash = [codes for codes in shared.values() if len(codes) > 1]
     if clash:
+        station = stations[best[clash[0][0]]][0]
         raise SystemExit(f'{" and ".join(clash[0])} all match {label} "{name}" and fit the '
-                         f'same OSM station best, at {_point(osm[stations[best[clash[0][0]]][0]])}')
+                         f'same OSM station best, at {_point(osm[station])}')
     report.append(f'  {", ".join(sorted(group))}: one {label}, "{name}", each on the station '
                   'nearest its own line: '
                   + ', '.join(f'{c} {_point(osm[stations[best[c]][0]])}' for c in sorted(group)))
@@ -425,6 +427,12 @@ def by_km_post(codes: list[str], corridors: list[dict], graph, where: dict,
     the table's span, so both anchors keep their own coordinates and the code
     lands at its share of the way between them; a route more than KM_SLACK off
     that span, or KM_SLACK_FLOOR on a short one, is not used.
+
+    Its one placement today, Segitigamesigit (STM), lands about 0.3 km from
+    where the table's km puts it. That is left alone on purpose: its two
+    brackets, Surabaya Kota - Pasarturi and Surabaya Kota - Mesigit, put it
+    132 m apart, so the limit is OSM's track there, not the method, and Task 8
+    is where that track's disagreement with the table is taken up.
     """
     placed = {}
     for code in sorted(codes):
@@ -552,8 +560,9 @@ def build(codes: dict[str, str], osm: list[dict], neighbours=None, placed=None,
     `placed` holds coordinates already known for codes outside `codes`, which
     count as neighbours but are not written. `extra` is stations_extra.csv, for
     names only. `runs` give pass 4 its run order, each station its region by
-    regions_by_service(), and the neighbours when `neighbours` is not passed. Without a `graph` neither the km post nor the
-    estimate has track to go on, and both are skipped.
+    regions_by_service(), and the neighbours when `neighbours` is not passed.
+    Without a `graph` neither the km post nor the estimate has track to go on,
+    and both are skipped.
 
     Every placement is held to Checks.fault() three times. A name candidate it
     rejects is dropped and the later passes try the code. A ref match it

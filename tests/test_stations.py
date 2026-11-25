@@ -210,7 +210,8 @@ def test_a_rejected_name_falls_through_to_the_km_post():
 def test_a_name_accepted_before_its_neighbours_were_placed_is_judged_at_the_end():
     # X's name is taken while only A is placed, 11 km from it, which passes; B,
     # placed later from the extra cache, shows X is on the wrong side of A.
-    with pytest.raises(SystemExit, match=r'placed where .*\n  X \(Ex, osm-name\): detour score 2\.00'):
+    with pytest.raises(SystemExit,
+                       match=r'placed where .*\n  X \(Ex, osm-name\): detour score 2\.00'):
         build(codes={'A': 'Aa', 'X': 'Ex', 'B': 'Bee'},
               osm=[osm('A', 'Aa', 0.0, 0.0), osm('', 'Ex', 0.0, -0.1)],
               extra=[osm('', 'Bee', 0.0, 0.1)], runs=[run('A', 'X', 'B')])
