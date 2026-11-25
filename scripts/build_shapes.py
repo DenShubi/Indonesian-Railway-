@@ -119,6 +119,40 @@ def snap_stations(g, stations, lat0, plane):
     return snap, far
 
 
+def nearest_node(g, p):
+    """The graph node nearest `p`, from a k-d tree kept on the graph.
+
+    Routing is called thousands of times over one island graph, so the tree is
+    built on first use and cached in `g.graph`; a graph changed after that
+    would need the cache dropped.
+    """
+    cache = g.graph.get('_nearest')
+    if cache is None:
+        arr = np.array(list(g.nodes()))
+        k = math.cos(math.radians(float(np.mean(arr[:, 0]))))
+        cache = g.graph['_nearest'] = (arr, k, cKDTree(np.c_[arr[:, 0], arr[:, 1] * k]))
+    arr, k, tree = cache
+    _, idx = tree.query([p[0], p[1] * k], k=1)
+    return tuple(float(x) for x in arr[idx])
+
+
+def route_between(g, a, b):
+    """The shortest track from `a` to `b`, as the (lat, lon) nodes it runs through.
+
+    Neither end has to be a node: each is snapped to the nearest one, so a
+    station's OSM coordinate can be routed from directly. Every edge weighs at
+    least the haversine distance between its ends (a bridged hole, measured on
+    build_graph's plane, to within a fraction of a percent), so A* with haversine
+    as its heuristic finds the path Dijkstra would, while searching towards the
+    target rather than in a disc around the source -- on a graph the length of
+    the island, the difference between routing one pair and searching half of
+    Java for it. Raises networkx.NetworkXNoPath where the two ends are on pieces
+    of track that bridging did not join.
+    """
+    return nx.astar_path(g, nearest_node(g, a), nearest_node(g, b),
+                         heuristic=hav, weight='weight')
+
+
 def rdp(pts, eps, lat0, pinned):
     """Simplify, but never drop a pinned point (the station nodes)."""
     if len(pts) < 3:
