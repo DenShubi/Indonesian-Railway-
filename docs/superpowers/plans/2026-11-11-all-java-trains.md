@@ -328,6 +328,8 @@ def test_an_unroutable_pair_is_reported_not_silently_straightened(capsys):
 
 The island graph is built by the existing `build_graph`, with its stitching and hole bridging. Segments route consecutive printed stations — passes included, since a pass is still a point the train runs through. The existing detour guard stays and reports per segment. Every straightened pair is listed with its gap.
 
+Two segments the Task 7 review found worth checking first, because the routed track and the distance table disagree: **Sidotopo–Benteng** (`SDT`→`SBE`), where the table says 5.740 km and trains take 10-11 minutes at no more than 50 km/h, but the OSM route is 2.37 km (2.12 km straight) — so either OSM's Benteng point or the track it routes along is wrong; and **Pasarturi–Segitigamesigit** (`SB`→`SBI` through `STM`), routed 14% over the table, which leaves Segitigamesigit about 0.3 km from where the table puts it. Report what each segment's routed length is against its table km, and investigate any segment more than 25% off before trusting it.
+
 - [ ] **Step 4: Run the tests, then the build**
 
 Run: `python -m pytest -q && python scripts/build_shapes.py`
