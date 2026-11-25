@@ -278,6 +278,8 @@ The three passes run in order: `railway:ref`, then printed name (normalised with
 Run: `python -m pytest -q && python scripts/build_stations.py`
 Expected: 466 stations, none unplaced; the tally printed.
 
+> **Measured after Task 7.** All 466 placed: 427 `osm-ref`, 11 `osm-name`, 16 `osm-extra`, 1 `km-post`, 11 `estimated` (Margasari, Sadang, Pondok Leungsir, Cijambe, Rajamandala, Selajambe, Tipar, Ranji, Karet, Gunung Putri, Rawabebek). Pass 4's accuracy was calibrated by running it on the 16 halts OSM does have: 24 m to 1.95 km from their real points. **Each station's `region` comes from service, not from a bounding box**: a station belongs to a published region when one of that region's own lines calls at it (`Commuter Line Dhoho` and so on, one-to-one with the `colors` keys in `data/regions.json`). A bounding-box rule put 50 Jakarta stations into Bandung, whose box contains Jakarta.
+
 - [ ] **Step 5: Commit**
 
 ---
