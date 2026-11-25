@@ -99,17 +99,30 @@ def timetable_pages() -> dict[str, str]:
             for page, lines in load_pages('timetables_2026.txt').items()}
 
 
+def committed(path: pathlib.Path, rebuild: str) -> None:
+    """Fail, never skip, when a committed cache is missing.
+
+    These caches are in the repository, so their absence is a broken
+    checkout, not an optional extra. Skipping would turn the suite green with
+    the evidence gone: the carried-forward Tegal-Cepu corridor would still be
+    built - parse_gapeka.py re-extracts the 2025 PDF on its own - while the
+    test that justifies carrying it quietly stopped running.
+    """
+    pytest.fail(f'{path} is committed but missing; rebuild it with {rebuild}')
+
+
 @pytest.fixture(scope='session')
 def cached_2026_pages() -> dict[str, str]:
     """All 1,887 pages of GAPEKA 2026 as cache_gapeka_2026.py cached them.
 
     data/gapeka/2026/pages.json is committed; the 61 MB PDF it came from is
-    not, and no test opens it. A checkout without the cache skips.
+    not, and no test opens it. A checkout without the cache fails: see
+    `committed()`.
     """
     path = (pathlib.Path(__file__).resolve().parents[1]
             / 'data' / 'gapeka' / '2026' / 'pages.json')
     if not path.exists():
-        pytest.skip('data/gapeka/2026/pages.json missing - run scripts/cache_gapeka_2026.py')
+        committed(path, 'scripts/cache_gapeka_2026.py')
     return json.loads(path.read_text(encoding='utf-8'))
 
 
@@ -124,21 +137,21 @@ def cached_2026_words() -> dict[str, list]:
     path = (pathlib.Path(__file__).resolve().parents[1]
             / 'data' / 'gapeka' / '2026' / 'words.json')
     if not path.exists():
-        pytest.skip('data/gapeka/2026/words.json missing - run scripts/cache_gapeka_2026.py')
+        committed(path, 'scripts/cache_gapeka_2026.py')
     return json.loads(path.read_text(encoding='utf-8'))
 
 
 @pytest.fixture(scope='session')
 def cached_pages() -> dict[str, dict]:
-    """The whole 2025 register as parse_gapeka.py cached it, or a skip.
+    """The whole 2025 register as parse_gapeka.py cached it.
 
     data/gapeka/2025/pages.json is committed. The pipeline now reads it only
     for the one corridor 2026 does not print, but the 2025 parser tests and
     the evidence for carrying that corridor forward run off it, so a test may
-    read it; the PDF it came from no test opens. Without it, these skip.
+    read it; the PDF it came from no test opens. Without it, these fail.
     """
     path = (pathlib.Path(__file__).resolve().parents[1]
             / 'data' / 'gapeka' / '2025' / 'pages.json')
     if not path.exists():
-        pytest.skip('data/gapeka/2025/pages.json missing - run scripts/parse_gapeka.py --force')
+        committed(path, 'scripts/parse_gapeka.py --force')
     return json.loads(path.read_text(encoding='utf-8'))
