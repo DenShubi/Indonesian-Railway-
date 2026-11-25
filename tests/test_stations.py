@@ -4,6 +4,7 @@ The pass tests run on hand-made OSM rows and tiny graphs, so each shows one
 rule. The last tests run the name passes over the committed caches, which is
 where the ambiguity and the missing halts they guard against were found.
 """
+import collections
 import csv
 import json
 import pathlib
@@ -13,6 +14,7 @@ import pytest
 
 from conftest import committed
 from scripts.build_shapes import hav, route_between
+from scripts.fetch_osm import norm
 from scripts.build_stations import (Checks, build, by_name, by_ref, cumulative_km,
                                     misplaced, neighbours_of, table_spans, triples_of,
                                     place_by_km, printed_names, regions_by_service)
@@ -160,6 +162,39 @@ def test_a_distant_extra_cache_name_loses_to_the_one_on_the_line():
     rows = build(codes={'GDG': 'Gedangan'}, osm=[], extra=[FAR_GEDANGAN, GEDANGAN],
                  placed=BJK_STP, runs=[run('STP', 'GDG', 'BJK')])
     assert (rows['GDG']['source'], rows['GDG']['lon']) == ('osm-extra', 112.7284204)
+
+
+LARANGAN = osm('', 'Larangan', -6.9, 109.0)
+
+
+def test_two_codes_of_one_name_never_both_take_one_station():
+    with pytest.raises(SystemExit, match=r'LR and LRA all match name "Larangan"'):
+        build(codes={'LR': 'Larangan', 'LRA': 'Larangan'}, osm=[LARANGAN])
+
+
+def test_two_codes_of_one_name_each_take_the_station_on_their_own_line():
+    far = osm('', 'Larangan', -6.9, 109.27)                 # 30 km east
+    rows = build(codes={'LR': 'Larangan', 'LRA': 'Larangan'}, osm=[far, LARANGAN],
+                 placed={'A': (-6.9, 108.98), 'B': (-6.9, 109.02),
+                         'C': (-6.9, 109.25), 'D': (-6.9, 109.29)},
+                 runs=[run('A', 'LR', 'B'), run('C', 'LRA', 'D')])
+    assert (rows['LR']['lon'], rows['LRA']['lon']) == (109.0, 109.27)
+
+
+def test_two_codes_of_one_name_that_fit_one_station_best_fail_naming_both():
+    far = osm('', 'Larangan', -6.9, 109.27)
+    with pytest.raises(SystemExit, match=r'LR and LRA all match name "Larangan" and fit the same'):
+        build(codes={'LR': 'Larangan', 'LRA': 'Larangan'}, osm=[far, LARANGAN],
+              placed={'A': (-6.9, 108.98), 'B': (-6.9, 109.02)},
+              runs=[run('A', 'LR', 'B'), run('A', 'LRA', 'B')])
+
+
+def test_the_extra_cache_cannot_hand_a_code_another_code_s_station():
+    # LR is placed by ref; the extra cache maps the same station as a platform.
+    platform = osm('', 'Larangan', -6.9005, 109.0)
+    with pytest.raises(SystemExit, match=r'LRA \(Larangan\)'):
+        build(codes={'LR': 'Larangan', 'LRA': 'Larangan'},
+              osm=[osm('LR', 'Larangan', -6.9, 109.0)], extra=[platform])
 
 
 def test_a_rejected_name_falls_through_to_the_km_post():
@@ -338,11 +373,16 @@ def name_passes(runs, rows, extra=()):
     checks = Checks(neighbours_of(runs), triples_of(runs))
     refs = by_ref(codes, rows, checks, {}, [])
     where = {c: (float(rows[i]['lat']), float(rows[i]['lon'])) for c, i in refs.items()}
+    taken = collections.defaultdict(list)
+    for c, i in refs.items():
+        taken[norm(codes[c])].append(where[c])
     rest = {c: n for c, n in codes.items() if c not in refs}
-    names = by_name(rest, rows, set(refs.values()), checks, where, [], {})
-    where.update({c: (float(rows[i]['lat']), float(rows[i]['lon'])) for c, i in names.items()})
+    names = by_name(rest, rows, taken, checks, where, [], {})
+    for c, i in names.items():
+        where[c] = (float(rows[i]['lat']), float(rows[i]['lon']))
+        taken[norm(codes[c])].append(where[c])
     rest = {c: n for c, n in rest.items() if c not in names}
-    return refs, names, by_name(rest, list(extra), set(), checks, where, [], {})
+    return refs, names, by_name(rest, list(extra), taken, checks, where, [], {})
 
 
 def test_the_committed_caches_place_the_airport_by_name(committed_inputs):

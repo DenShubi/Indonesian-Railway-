@@ -329,19 +329,83 @@ def by_ref(codes: dict[str, str], osm: list[dict], checks: Checks, where: dict,
     return _match(wanted, osm, 'railway:ref', checks, where, report)
 
 
-def by_name(codes: dict[str, str], osm: list[dict], claimed: set[int], checks: Checks,
+def _station_of(i: int, osm: list[dict], taken: dict[str, list]) -> bool:
+    """Whether feature `i` is a station a code was already placed on: the same
+    name, within SAME_STATION_M of it."""
+    p = _point(osm[i])
+    return any(hav(p, q) <= SAME_STATION_M for q in taken.get(norm(osm[i]['name']), ()))
+
+
+def _share(group: list[str], ix: list[int], osm: list[dict], checks: Checks, where: dict,
+           report: list[str], label: str) -> dict[str, list[int]]:
+    """Codes printed with one name -> each its own station among that name's features.
+
+    The timetables print two such pairs, LR and LRA "Larangan" 29 km apart and
+    KRR and KRAI "Karangsari" 135 km apart, and left to themselves both codes
+    of a pair would take the first station. Each code goes to the station that
+    best fits its own neighbours; where two would go to the same one, or a code
+    has no placed neighbour to judge by, the build fails, naming them all.
+    """
+    stations: list[list[int]] = []
+    for i in ix:
+        for station in stations:
+            if hav(_point(osm[station[0]]), _point(osm[i])) <= SAME_STATION_M:
+                station.append(i)
+                break
+        else:
+            stations.append([i])
+    name = osm[ix[0]]['name']
+    best = {}
+    for code in group:
+        ranks = [(checks.rank(code, _point(osm[st[0]]), where), k) for k, st in enumerate(stations)]
+        if any(r is None for r, _ in ranks):
+            raise SystemExit(f'{" and ".join(group)} all match {label} "{name}", on '
+                             f'{len(stations)} OSM station(s), and {code} has no placed '
+                             f'neighbour to tell them apart by')
+        best[code] = min(ranks)[1]
+    shared = collections.defaultdict(list)
+    for code, k in best.items():
+        shared[k].append(code)
+    clash = [codes for codes in shared.values() if len(codes) > 1]
+    if clash:
+        raise SystemExit(f'{" and ".join(clash[0])} all match {label} "{name}" and fit the '
+                         f'same OSM station best, at {_point(osm[stations[best[clash[0][0]]][0]])}')
+    report.append(f'  {", ".join(sorted(group))}: one {label}, "{name}", each on the station '
+                  'nearest its own line: '
+                  + ', '.join(f'{c} {_point(osm[stations[best[c]][0]])}' for c in sorted(group)))
+    return {code: stations[best[code]] for code in group}
+
+
+def by_name(codes: dict[str, str], osm: list[dict], taken: dict[str, list], checks: Checks,
             where: dict, report: list[str], why: dict[str, str],
             label: str = 'name') -> dict[str, int]:
-    """Pass 2: code -> index of the unclaimed OSM station bearing its printed name.
+    """Pass 2: code -> index of an OSM feature bearing its printed name.
 
     OSM's names are normalised here rather than read from the caches' stored
     `norm` column, which was written before norm() learnt to drop "Halte".
+
+    `taken` holds, under each normalised name, the stations codes were already
+    placed on, by their OSM name and by their printed one. A feature of the
+    same name within SAME_STATION_M of one is that station, and no second code
+    may take it -- whichever cache it is in, which is why this goes by name and
+    place rather than by row: the extra cache repeats a station as its platforms
+    and stop positions, so a code would otherwise find another code's station
+    there under its own name.
     """
     index = collections.defaultdict(list)
     for i, o in enumerate(osm):
-        if i not in claimed and norm(o['name']):
+        if norm(o['name']) and not _station_of(i, osm, taken):
             index[norm(o['name'])].append(i)
-    wanted = {c: index[norm(name)] for c, name in codes.items() if index.get(norm(name))}
+    groups = collections.defaultdict(list)
+    for code, name in sorted(codes.items()):
+        if index.get(norm(name)):
+            groups[norm(name)].append(code)
+    wanted = {}
+    for key, group in groups.items():
+        if len(group) == 1:
+            wanted[group[0]] = index[key]
+        else:
+            wanted.update(_share(group, index[key], osm, checks, where, report, label))
     return _match(wanted, osm, label, checks, where, report, why)
 
 
@@ -511,13 +575,21 @@ def build(codes: dict[str, str], osm: list[dict], neighbours=None, placed=None,
         raise SystemExit('railway:ref puts these stations where their neighbours rule out:\n'
                          + '\n'.join(f'  {c} ({codes[c]}) at {_point(osm[refs[c]])}: {f}'
                                      for c, f in bad))
-    for label, cache, claimed, source in (('name', osm, set(refs.values()), 'osm-name'),
-                                          ('extra name', extra, set(), 'osm-extra')):
+    taken: dict[str, list] = collections.defaultdict(list)
+
+    def take(code, o):
+        for key in {norm(o['name']), norm(codes[code])} - {''}:
+            taken[key].append(_point(o))
+
+    for code, i in refs.items():
+        take(code, osm[i])
+    for label, cache, source in (('name', osm, 'osm-name'), ('extra name', extra, 'osm-extra')):
         rest = {c: n for c, n in codes.items() if c not in found}
-        names = by_name(rest, cache, claimed, checks, where(), report['ambiguous'], why, label)
+        names = by_name(rest, cache, taken, checks, where(), report['ambiguous'], why, label)
         for code, i in sorted(names.items()):
             o = cache[i]
             found[code] = (*_point(o), source)
+            take(code, o)
             tag = f'ref {o["ref"]}' if o['ref'] else 'no ref'
             report['name'].append(f'  {code} ({source}): "{codes[code]}" is OSM\'s '
                                   f'"{o["name"]}" ({o["railway"] or "no railway tag"}, {tag})')
