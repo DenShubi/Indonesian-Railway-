@@ -440,6 +440,13 @@ def test_an_erratum_that_no_longer_matches_the_parse_is_refused():
         apply_errata([], (Erratum(59, KUTOARJO.name, (4, 5), ('WT', 'KDG')),))
 
 
+def test_an_erratum_whose_corridor_is_printed_twice_is_refused():
+    # Two corridors of one name would leave which of them is corrected to the
+    # order they were parsed in; the second would keep the misprint unseen.
+    with pytest.raises(ValueError, match='found 2'):
+        apply_errata([KUTOARJO, KUTOARJO])
+
+
 def test_the_register_errata_are_named_and_hold_on_the_cached_register(
         cached_pages):
     from scripts.parse_gapeka import read_network

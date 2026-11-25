@@ -308,6 +308,26 @@ def test_a_junction_the_tables_do_not_print_twice_is_refused():
         build_topology([MAIN_LINE, same], [], BRUMBUNG)
 
 
+def test_a_junction_whose_lines_meet_on_both_sides_is_refused():
+    # Both lines run ATA - BBG - TGW, so two stations could carry the offset
+    # and taking either would be a choice the tables do not make.
+    both = corridor('TG - BBG - GD', ('ATA', 156.966), ('BBG', 162.942),
+                    ('TGW', 172.369))
+    with pytest.raises(ValueError, match=r"one shared station, not \['ATA', 'TGW'\]"):
+        build_topology([MAIN_LINE, both], [], BRUMBUNG)
+
+
+@pytest.mark.parametrize('second', [
+    # The main line printed twice, Alastua - Brumbung differently each time.
+    corridor('TG - SMT - BBG', ('ATA', 156.966), ('BBG', 163.900)),
+    # The Gundih line printed twice, the same way on its own side.
+    corridor('TG - BBG - GD', ('ATA', 156.966), ('BBG', 162.900)),
+])
+def test_a_junction_one_line_measures_two_ways_is_refused(second):
+    with pytest.raises(ValueError, match='two ways'):
+        build_topology([MAIN_LINE, GUNDIH_LINE, second], [], BRUMBUNG)
+
+
 def test_the_register_has_no_conflicting_edge_left_once_its_junctions_split(
         cached_pages):
     from scripts.parse_gapeka import read_network
