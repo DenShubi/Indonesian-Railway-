@@ -241,15 +241,32 @@ and writes:
   already expects. Each timetable's printed times increase monotonically, so a
   time that goes backwards means the day has turned.
 
-**`scripts/build_stations.py`** (extended) — 466 codes, all named. Three passes,
-in order: OSM `railway:ref` from the island station cache (380 of 396
-distance-table codes already match this way); then the **printed name** against
-OSM names; then, for a station in the distance tables, its km post along its
-corridor's routed polyline. A `railway:ref` that OSM puts on two stations is
-resolved by proximity to the code's neighbours, never first-match-wins: `TGR` is
-both Tegalluar Summarecon near Bandung and Temuguruh near Banyuwangi, 650 km
-apart, and the timetables put it between `SGJ` and `KSL`. A station no pass can
-place fails the build.
+**`scripts/build_stations.py`** (extended) — 466 codes, all named. Four passes,
+in order, none overriding an earlier one:
+
+1. OSM `railway:ref` from the island station cache — 427 of the 466.
+2. The **printed name**, matched exactly after normalising, against OSM names:
+   first the main cache, then `stations_extra.csv`, a second island fetch of the
+   other ways stations get mapped (stop positions, platforms, public-transport
+   stations, station buildings), kept in its own file so it never adds noise to
+   the ref pass. Normalising strips a leading *Halte* ("halt") as well as
+   *Stasiun*: the eight new Surabaya–Sidoarjo halts are mapped as "Halte Ngagel"
+   and so on. The match is exact, never a substring — "Ranji" is inside
+   "Kranji", a different station on another line.
+3. For a station in the distance tables, its km post along its corridor's
+   routed polyline.
+4. Otherwise, an **estimated position on the routed track** between the nearest
+   placed stations either side of it in the timetables, spaced evenly where
+   several consecutive halts are unplaced, and flagged `estimated`. This is the
+   user's decision for the 11 halts no source has, Karet in Jakarta among them.
+   The position is always on the line the train runs, never between stations
+   across country, and the app marks it the way it marks an estimated time. A
+   station whose neighbours cannot be routed between fails the build.
+
+A `railway:ref` that OSM puts on two stations is resolved by proximity to the
+code's neighbours, never first-match-wins: `TGR` is both Tegalluar Summarecon
+near Bandung and Temuguruh near Banyuwangi, 730 km apart, and the timetables put
+it between `SGJ` and `KSL`.
 
 **`scripts/build_shapes.py`** (extended) — the **segment library**: one polyline
 per consecutive printed station pair, keyed `A>B`, routed over the island OSM
